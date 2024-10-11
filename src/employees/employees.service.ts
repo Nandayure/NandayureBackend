@@ -197,7 +197,7 @@ export class EmployeesService {
   async validateAvaiableVacationsDays(id: string, requestedDays: number) {
     const existEmployee = await this.findOneById(id);
     if (!existEmployee) {
-      throw new ConflictException(
+      throw new NotFoundException(
         'No existe un empleado con ese número de identificación',
       );
     }

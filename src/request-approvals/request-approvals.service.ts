@@ -100,15 +100,14 @@ export class RequestApprovalsService {
       if (mailType === false) {
         this.mailClient.sendRequestResolution(
           requester.Email,
-          requester.Name,
           request.RequestType.name,
           false,
         );
+
         //Case request is approved
       } else if (mailType === true) {
         this.mailClient.sendRequestResolution(
           requester.Email,
-          requester.Name,
           request.RequestType.name,
           true,
         );
@@ -117,7 +116,7 @@ export class RequestApprovalsService {
         const nextApprover = await this.employeeRepository.findOneById(
           nextStep.approverId,
         );
-        this.mailClient.sendNewRequestProcessApproverMail(
+        this.mailClient.sendApproverNotificationMail(
           nextApprover.Email,
           requester.id,
           requester.Name,

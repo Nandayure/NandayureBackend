@@ -129,21 +129,18 @@ export class RequestVacationService {
 
     const requester = await this.employeeRService.findOneById(requesterId);
 
+    const wholeName = `${requester.Name} ${requester.Surname1} ${requester.Surname2}`;
+
     //mail to notify the approver
     this.mailClient.sendNewRequestProcessApproverMail(
       approver.Email,
       requester.id,
-      requester.Name,
+      wholeName,
       'Vacaciones',
     );
 
     //mail to notify the requester
-    this.mailClient.sendNewRequestProcessRequesterMail(
-      approver.Name,
-      requester.Email,
-      requester.Name,
-      'Vacaciones',
-    );
+    this.mailClient.sendRequestConfirmationMail(requester.Email, 'Vacaciones');
   }
 
   //this method is used to get the entities needed for the approval process and validate if the department head of RRHH exists
@@ -166,21 +163,6 @@ export class RequestVacationService {
 
     return { RRHHdepartment, mayor, RequesterDepartment }; //return the entities who will be used in the approval process
   }
-
-  //this method is used to create the request who will be related to the vacation request and approvals
-  // async createRequest(
-  //   EmployeeId: string,
-  //   RequestTypeId: number,
-  //   queryRunner: QueryRunner,
-  // ) {
-  //   const request = this.requestRepository.create({
-  //     EmployeeId: EmployeeId,
-  //     RequestTypeId: RequestTypeId, //requestTypeId 1 is for vacation requests
-  //     RequestStateId: 1, //requestStateId 1 is for pending requests
-  //   });
-
-  //   return await queryRunner.manager.save(request);
-  // }
 
   //this method is used to create the approvals for the request. The approvals are created in the order of the process and the approvers are the department head, the RRHH head and the mayor
   async createApprovals(

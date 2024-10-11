@@ -92,20 +92,20 @@ export class RequestSalaryCertificatesService {
   async sendRequestConfirmationMails(approver: Employee, requester: Employee) {
     //mail to notify the approver
 
+    const wholeName = `${requester.Name} ${requester.Surname1} ${requester.Surname2}`;
+
     this.mailClient.sendNewRequestProcessApproverMail(
       approver.Email,
       requester.id,
-      requester.Name,
-      'Boleta de pago',
+      wholeName,
+      'Constancia salarial',
     );
 
     //mail to notify the requester
     if (approver.id !== requester.id) {
-      this.mailClient.sendNewRequestProcessRequesterMail(
-        approver.Name,
+      this.mailClient.sendRequestConfirmationMail(
         requester.Email,
-        requester.Name,
-        'Boleta de pago',
+        'Constancia salarial',
       );
     }
   }

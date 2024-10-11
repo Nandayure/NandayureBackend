@@ -100,15 +100,14 @@ export class RequestApprovalsService {
       if (mailType === false) {
         this.mailClient.sendRequestResolution(
           requester.Email,
-          requester.Name,
           request.RequestType.name,
           false,
         );
+
         //Case request is approved
       } else if (mailType === true) {
         this.mailClient.sendRequestResolution(
           requester.Email,
-          requester.Name,
           request.RequestType.name,
           true,
         );

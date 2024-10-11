@@ -116,7 +116,7 @@ export class RequestApprovalsService {
         const nextApprover = await this.employeeRepository.findOneById(
           nextStep.approverId,
         );
-        this.mailClient.sendNewRequestProcessApproverMail(
+        this.mailClient.sendApproverNotificationMail(
           nextApprover.Email,
           requester.id,
           requester.Name,

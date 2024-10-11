@@ -105,9 +105,9 @@ export class RequestPaymentConfirmationsService {
   async sendRequestConfirmationMails(approver: Employee, requester: Employee) {
     //mail to notify the approver
 
-    let wholeName = `${requester.Name} ${requester.Surname1} ${requester.Surname2}`;
+    const wholeName = `${requester.Name} ${requester.Surname1} ${requester.Surname2}`;
 
-    this.mailClient.sendNewRequestProcessApproverMail(
+    this.mailClient.sendApproverNotificationMail(
       approver.Email,
       requester.id,
       wholeName,

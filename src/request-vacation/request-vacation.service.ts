@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -100,7 +101,10 @@ export class RequestVacationService {
       return savedRequest;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-      if (error instanceof NotFoundException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof ConflictException
+      ) {
         throw error;
       }
 
@@ -132,7 +136,7 @@ export class RequestVacationService {
     const wholeName = `${requester.Name} ${requester.Surname1} ${requester.Surname2}`;
 
     //mail to notify the approver
-    this.mailClient.sendNewRequestProcessApproverMail(
+    this.mailClient.sendApproverNotificationMail(
       approver.Email,
       requester.id,
       wholeName,

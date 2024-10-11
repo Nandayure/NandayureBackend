@@ -1,15 +1,11 @@
 import { Injectable } from '@nestjs/common';
-//import { CreateMailClientDto } from './dto/create-mail-client.dto';
-//import { UpdateMailClientDto } from './dto/update-mail-client.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { CreateMailClientDto } from './dto/create-mail-client.dto';
-import {
-  RecoverPasswordMail,
-  WelcomeMail,
-  ConfirmationRequestMail,
-  ApproverNotificationMail,
-  RequestResolutionnMail,
-} from './templates/mails';
+import { WelcomeMail } from './templates/WelcomeMail';
+import { RecoverPasswordMail } from './templates/RecoverPasswordMail';
+import { RequestConfirmationMail } from './templates/RequestConfirmationMail';
+import { ApproverNotificationMail } from './templates/ApproverNotificationMail';
+import { RequestResolutionMail } from './templates/RequestResolutionMail';
 
 @Injectable()
 export class MailClientService {
@@ -59,7 +55,7 @@ export class MailClientService {
       to: mail,
       subject: `Solicitud de ${requestType} enviada`,
       text: 'Su solicitud ha sido enviada con éxito, pronto recibirá una respuesta',
-      html: await ConfirmationRequestMail(requestType),
+      html: await RequestConfirmationMail(requestType),
       attachments: [
         {
           filename: 'MuniLogo',
@@ -70,7 +66,7 @@ export class MailClientService {
     });
   }
 
-  async sendNewRequestProcessApproverMail(
+  async sendApproverNotificationMail(
     approverMail: string,
     requesterId: string,
     requesterName: string,
@@ -95,20 +91,7 @@ export class MailClientService {
       ],
     });
   }
-  async sendNewRequestProcessRequesterMail(
-    approverName: string,
-    requesterEmail: string,
-    requesterName: string,
-    requestType: string,
-  ) {
-    this.mailService.sendMail({
-      from: 'RRHH-Nandayure',
-      to: requesterEmail,
-      subject: `Su solicitud de ${requestType} está en proceso`,
-      text: `Estimado ${requesterName} en este momento su solicitud está a la espera de de la revision de ${approverName}`,
-      //html: welcomeMail,
-    });
-  }
+
   async sendRequestResolution(
     requesterEmail: string,
     requestType: string,
@@ -118,7 +101,7 @@ export class MailClientService {
       from: 'RH-Nandayure',
       to: requesterEmail,
       subject: `Respuesta de solicitud de ${requestType}`,
-      html: await RequestResolutionnMail(approved, requestType),
+      html: await RequestResolutionMail(approved, requestType),
       attachments: [
         {
           filename: 'MuniLogo',
@@ -129,3 +112,19 @@ export class MailClientService {
     });
   }
 }
+
+// //->
+// async sendNewRequestProcessRequesterMail(
+//   approverName: string,
+//   requesterEmail: string,
+//   requesterName: string,
+//   requestType: string,
+// ) {
+//   this.mailService.sendMail({
+//     from: 'RRHH-Nandayure',
+//     to: requesterEmail,
+//     subject: `Su solicitud de ${requestType} está en proceso`,
+//     text: `Estimado ${requesterName} en este momento su solicitud está a la espera de de la revision de ${approverName}`,
+//     //html: welcomeMail,
+//   });
+// }

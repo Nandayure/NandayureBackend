@@ -32,6 +32,15 @@ export class Request {
   @Column()
   EmployeeId: string;
 
+  @Column()
+  Name: string;
+
+  @Column()
+  Surname1: string;
+
+  @Column()
+  Surname2: string;
+
   @ManyToOne(() => RequestsState, (requestState) => requestState.requests)
   @JoinColumn({ name: 'RequestStateId' })
   RequestStatus: RequestsState;

@@ -49,11 +49,14 @@ export class RequestVacationService {
       // 3. Get the entities needed for the approval process
       const { RRHHdepartment, mayor, RequesterDepartment } =
         await this.getApprovalEntities(EmployeeId);
-
+      const employee = await this.employeeRService.findOneById(EmployeeId);
       // 4. Create the request who will be related to the vacation request and approvals
       //requestTypeId 1 is for vacation requests
       const request = await this.requestService.createRequest(
         EmployeeId,
+        employee.Name,
+        employee.Surname1,
+        employee.Surname2,
         1,
         queryRunner,
       );
@@ -176,9 +179,25 @@ export class RequestVacationService {
     mayorId: string,
     requesterId: number,
   ) {
+    // Obtener los datos de cada aprobador
+    const departmentHead =
+      await this.employeeRService.findOneById(departmentHeadId);
+    const RRHHHead = await this.employeeRService.findOneById(RRHHHeadId);
+    const mayor = await this.employeeRService.findOneById(mayorId);
+
+    // Verificar que los aprobadores existen
+    if (!departmentHead || !RRHHHead || !mayor) {
+      throw new NotFoundException(
+        'No se pudieron obtener los datos de los aprobadores.',
+      );
+    }
+
     const approvals: CreateRequestApprovalDto[] = [
       {
         approverId: departmentHeadId,
+        Name: departmentHead.Name,
+        Surname1: departmentHead.Surname1,
+        Surname2: departmentHead.Surname2,
         processNumber: 1,
         current: false,
         RequestId: requesterId,
@@ -186,6 +205,9 @@ export class RequestVacationService {
       },
       {
         approverId: RRHHHeadId,
+        Name: RRHHHead.Name,
+        Surname1: RRHHHead.Surname1,
+        Surname2: RRHHHead.Surname2,
         processNumber: 2,
         current: false,
         RequestId: requesterId,
@@ -193,6 +215,9 @@ export class RequestVacationService {
       },
       {
         approverId: mayorId,
+        Name: mayor.Name,
+        Surname1: mayor.Surname1,
+        Surname2: mayor.Surname2,
         processNumber: 3,
         current: false,
         RequestId: requesterId,
@@ -202,7 +227,6 @@ export class RequestVacationService {
 
     return approvals;
   }
-
   // this method is used to auto approve the request if the employee is the department head/ doesn't hace department head or the mayor
   async autoApproveRequest(
     approvals: CreateRequestApprovalDto[],

@@ -16,6 +16,15 @@ export class RequestApproval {
   approverId: string;
 
   @Column()
+  Name: string;
+
+  @Column()
+  Surname1: string;
+
+  @Column()
+  Surname2: string;
+
+  @Column()
   requesterId: string;
 
   @Column()

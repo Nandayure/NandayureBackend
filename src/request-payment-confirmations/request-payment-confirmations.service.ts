@@ -39,10 +39,13 @@ export class RequestPaymentConfirmationsService {
       // 2. Validate the employee who made the request and the RRHH department
       const { existEmployee, RRHHdepartment, deparmentHead } =
         await this.getApprovalEntity(EmployeeId);
-
+      const employee = await this.employeeService.findOneById(EmployeeId);
       // 3. Create a new request who will be related to the payment confirmation
       const request = await this.requestService.createRequest(
         EmployeeId,
+        employee.Name,
+        employee.Surname1,
+        employee.Surname2,
         3, //requestTypeId 3 is for payment confirmation
         queryRunner,
       );
@@ -89,10 +92,19 @@ export class RequestPaymentConfirmationsService {
     requestId: number,
     EmployeeId: string,
   ) {
-    // Create a new approval for the payment confirmation request
+    // Obtener datos del aprobador
+    const approver = await this.employeeService.findOneById(departmentHeadId);
 
+    if (!approver) {
+      throw new NotFoundException('El aprobador no existe');
+    }
+
+    // Crear el objeto de aprobación con los campos adicionales
     const approval: CreateRequestApprovalDto = {
       approverId: departmentHeadId,
+      Name: approver.Name,
+      Surname1: approver.Surname1,
+      Surname2: approver.Surname2,
       processNumber: 1,
       current: true,
       RequestId: requestId,
@@ -101,7 +113,6 @@ export class RequestPaymentConfirmationsService {
 
     return this.requestApprovalRepository.create(approval);
   }
-
   async sendRequestConfirmationMails(approver: Employee, requester: Employee) {
     //mail to notify the approver
 

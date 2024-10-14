@@ -26,7 +26,7 @@ export class RequestApprovalsController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('currentToApprove:ApproverId')
+  @Get('currentToApprove')
   findCurrentToApprove(@Req() req) {
     return this.requestApprovalsService.findCurrentRequestToApprove(
       req.user.id,

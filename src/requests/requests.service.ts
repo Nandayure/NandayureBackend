@@ -14,12 +14,18 @@ export class RequestsService {
 
   async createRequest(
     EmployeeId: string,
+    Name: string,
+    Surname1: string,
+    Surname2: string,
     RequestTypeId: number,
     queryRunner: QueryRunner,
   ) {
     const request = this.requestRepository.create({
       EmployeeId: EmployeeId,
       RequestTypeId: RequestTypeId,
+      Name: Name,
+      Surname1: Surname1,
+      Surname2: Surname2,
       RequestStateId: 1,
       date: new Date(),
     });

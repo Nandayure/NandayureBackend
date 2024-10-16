@@ -58,14 +58,9 @@ export class DepartmentsService {
         throw new NotFoundException('Registro no encontrado');
       }
 
-      if (
-        departmentToRemove.departmentProgram || // Verifica si tiene programa relacionado
-        departmentToRemove.JobPosition.length || // Verifica si tiene puestos de trabajo
-        departmentToRemove.BudgetCode || // Verifica si tiene código de presupuesto
-        departmentToRemove.departmentHead // Verifica si tiene jefe de departamento
-      ) {
+      if (departmentToRemove.JobPosition.length > 0) {
         throw new BadRequestException(
-          'No se puede eliminar el departamento porque está relacionado con otros recursos.',
+          'No se puede eliminar el departamento porque está relacionado con otros puestos de trabajo.',
         );
       }
       return await this.departmentRepository.remove(departmentToRemove);

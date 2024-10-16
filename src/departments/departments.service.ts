@@ -1,26 +1,79 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
+import { DepartmentRepository } from './repository/Department.repository';
+import { Department } from './entities/department.entity';
 
 @Injectable()
 export class DepartmentsService {
-  create(createDepartmentDto: CreateDepartmentDto) {
-    return 'This action adds a new department';
+  constructor(private readonly departmentRepository: DepartmentRepository) {}
+
+  async create(createDepartmentDto: CreateDepartmentDto) {
+    const newDepartment = this.departmentRepository.create(createDepartmentDto);
+
+    return await this.departmentRepository.save(newDepartment);
   }
 
-  findAll() {
-    return `This action returns all departments`;
+  async findAll() {
+    return await this.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} department`;
+  async findOne(id: number) {
+    return await this.departmentRepository.findOneById(id);
+  }
+  async findOneByName(name: string) {
+    return await this.departmentRepository.findOne({ where: { name } });
   }
 
-  update(id: number, updateDepartmentDto: UpdateDepartmentDto) {
-    return `This action updates a #${id} department`;
+  async update(id: number, updateDepartmentDto: UpdateDepartmentDto) {
+    const departmentToEdit = await this.departmentRepository.findOneById(id);
+
+    if (!departmentToEdit) {
+      throw new NotFoundException('Registro no encontrado');
+    }
+
+    return await this.departmentRepository.save({
+      ...departmentToEdit,
+      ...updateDepartmentDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} department`;
+  async remove(id: number) {
+    try {
+      const departmentToRemove = await this.departmentRepository.findOne({
+        where: { id },
+        relations: {
+          departmentProgram: true,
+          JobPosition: true,
+          BudgetCode: true,
+          departmentHead: true,
+        },
+      });
+
+      if (!departmentToRemove) {
+        throw new NotFoundException('Registro no encontrado');
+      }
+
+      if (departmentToRemove.JobPosition.length > 0) {
+        throw new BadRequestException(
+          'No se puede eliminar el departamento porque está relacionado con otros puestos de trabajo.',
+        );
+      }
+      return await this.departmentRepository.remove(departmentToRemove);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async validateDepartmentHead(department: Department) {
+    if (!department.departmentHeadId) {
+      throw new NotFoundException(
+        `El departamento ${department.name} no tiene jefe asignado`,
+      );
+    }
   }
 }

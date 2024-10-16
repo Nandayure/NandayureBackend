@@ -1,15 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { LaborCodeRegulationsService } from './labor-code-regulations.service';
 import { CreateLaborCodeRegulationDto } from './dto/create-labor-code-regulation.dto';
 import { UpdateLaborCodeRegulationDto } from './dto/update-labor-code-regulation.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('labor-code-regulations')
 @Controller('labor-code-regulations')
 export class LaborCodeRegulationsController {
-  constructor(private readonly laborCodeRegulationsService: LaborCodeRegulationsService) {}
+  constructor(
+    private readonly laborCodeRegulationsService: LaborCodeRegulationsService,
+  ) {}
 
   @Post()
   create(@Body() createLaborCodeRegulationDto: CreateLaborCodeRegulationDto) {
-    return this.laborCodeRegulationsService.create(createLaborCodeRegulationDto);
+    return this.laborCodeRegulationsService.create(
+      createLaborCodeRegulationDto,
+    );
   }
 
   @Get()
@@ -23,8 +37,14 @@ export class LaborCodeRegulationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLaborCodeRegulationDto: UpdateLaborCodeRegulationDto) {
-    return this.laborCodeRegulationsService.update(+id, updateLaborCodeRegulationDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateLaborCodeRegulationDto: UpdateLaborCodeRegulationDto,
+  ) {
+    return this.laborCodeRegulationsService.update(
+      +id,
+      updateLaborCodeRegulationDto,
+    );
   }
 
   @Delete(':id')

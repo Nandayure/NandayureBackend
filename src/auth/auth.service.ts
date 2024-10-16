@@ -47,7 +47,6 @@ export class AuthService {
       }
 
       const rolesNames = userToLogin.Roles?.map((role) => role.RoleName);
-      console.log(rolesNames);
       const payload = {
         id: userToLogin.id,
         roles: rolesNames,
@@ -84,7 +83,7 @@ export class AuthService {
   }
 
   async changePassword(
-    EmployeeId: number,
+    EmployeeId: string,
     oldPassword: string,
     newPassword: string,
   ) {
@@ -109,8 +108,8 @@ export class AuthService {
     const userToEdit = await this.userService.findOneByEmail(Email);
     if (userToEdit) {
       const payload = await {
-        id: userToEdit.id,
         Email: userToEdit.Employee.Email,
+        id: userToEdit.id,
         jti: uuidv4(),
       };
 
@@ -134,7 +133,7 @@ export class AuthService {
     };
   }
 
-  async resetPassword(EmployeeId: number, newPassword: string) {
+  async resetPassword(EmployeeId: string, newPassword: string) {
     const userToEdit = await this.userService.findOneById(EmployeeId);
 
     if (!userToEdit) {
@@ -143,12 +142,4 @@ export class AuthService {
 
     return this.userService.updatePassword(EmployeeId, newPassword);
   }
-  // async sendMail() {
-  //   return this.mailClient.sendRecoverPasswordMail({
-  //     to: 'marcortes.stives@gmail.com',
-  //     subject: 'welcome',
-  //     message: 'welcomea',
-  //     RecoverPasswordURL: 'https:recover',
-  //   });
-  // }
 }

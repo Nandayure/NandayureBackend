@@ -11,25 +11,6 @@ import { GenderRepository } from './repository/gender.repository';
 export class GendersService {
   constructor(private readonly gendersService: GenderRepository) {}
 
-  async onModuleInit() {
-    const defaulGenres: CreateGenderDto[] = [
-      {
-        Name: 'Masculino',
-      },
-      {
-        Name: 'Femenino',
-      },
-    ];
-
-    for (const genre of defaulGenres) {
-      try {
-        await this.create(genre);
-      } catch (error) {
-        console.error(`Error creating role ${genre.Name}:`, error.message);
-      }
-    }
-  }
-
   async create(createGenderDto: CreateGenderDto) {
     try {
       const existGenre = await this.findOneByName(createGenderDto.Name);

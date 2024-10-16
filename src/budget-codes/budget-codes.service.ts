@@ -1,26 +1,43 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBudgetCodeDto } from './dto/create-budget-code.dto';
 import { UpdateBudgetCodeDto } from './dto/update-budget-code.dto';
+import { BudgetCodeRepository } from './repository/BudgetCode.repository';
 
 @Injectable()
 export class BudgetCodesService {
-  create(createBudgetCodeDto: CreateBudgetCodeDto) {
-    return 'This action adds a new budgetCode';
+  constructor(private readonly budgetCodeRepostory: BudgetCodeRepository) {}
+  async create(createBudgetCodeDto: CreateBudgetCodeDto) {
+    const newCode = this.budgetCodeRepostory.create(createBudgetCodeDto);
+
+    return await this.budgetCodeRepostory.save(newCode);
   }
 
-  findAll() {
-    return `This action returns all budgetCodes`;
+  async findAll() {
+    return await this.budgetCodeRepostory.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} budgetCode`;
+  async findOne(id: number) {
+    return await this.budgetCodeRepostory.findOneById(id);
   }
 
-  update(id: number, updateBudgetCodeDto: UpdateBudgetCodeDto) {
-    return `This action updates a #${id} budgetCode`;
+  async update(id: number, updateBudgetCodeDto: UpdateBudgetCodeDto) {
+    const codeToEdit = await this.budgetCodeRepostory.findOneById(id);
+
+    if (!codeToEdit) {
+      throw new NotFoundException('Registro no encontrado');
+    }
+    return await this.budgetCodeRepostory.save({
+      ...codeToEdit,
+      ...updateBudgetCodeDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} budgetCode`;
+  async remove(id: number) {
+    const codeToRemove = await this.budgetCodeRepostory.findOneById(id);
+
+    if (!codeToRemove) {
+      throw new NotFoundException('Registro no encontrado');
+    }
+    return await this.budgetCodeRepostory.remove(codeToRemove);
   }
 }

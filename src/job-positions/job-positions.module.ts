@@ -9,5 +9,6 @@ import { JobPosition } from './entities/job-position.entity';
   imports: [TypeOrmModule.forFeature([JobPosition])],
   controllers: [JobPositionsController],
   providers: [JobPositionsService, JobPositionRepository],
+  exports: [JobPositionsService],
 })
 export class JobPositionsModule {}

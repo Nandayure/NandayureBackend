@@ -7,7 +7,7 @@ export class UpdateDto {
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value, 10))
   @IsNumber()
-  EmployeeId: number;
+  EmployeeId: string;
 
   @IsOptional()
   @ApiProperty()

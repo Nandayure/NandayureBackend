@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRequestsStateDto } from './dto/create-requests-state.dto';
 import { UpdateRequestsStateDto } from './dto/update-requests-state.dto';
+import { RequestStateRepository } from './repository/request-state.repository';
 
 @Injectable()
 export class RequestsStateService {
-  create(createRequestsStateDto: CreateRequestsStateDto) {
-    return 'This action adds a new requestsState';
+  constructor(
+    private readonly requestStateRepository: RequestStateRepository,
+  ) {}
+  async create(createRequestsStateDto: CreateRequestsStateDto) {
+    const newState = this.requestStateRepository.create(createRequestsStateDto);
+
+    return await this.requestStateRepository.save(newState);
   }
 
-  findAll() {
-    return `This action returns all requestsState`;
+  async findAll() {
+    return await this.requestStateRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} requestsState`;
+  async findOne(id: number) {
+    return await this.requestStateRepository.findOneById(id);
   }
 
-  update(id: number, updateRequestsStateDto: UpdateRequestsStateDto) {
-    return `This action updates a #${id} requestsState`;
+  async update(id: number, updateRequestsStateDto: UpdateRequestsStateDto) {
+    const stateToEdit = await this.requestStateRepository.findOneById(id);
+    if (!stateToEdit) {
+      throw new NotFoundException('Estado no encontrado');
+    }
+
+    return await this.requestStateRepository.save({
+      ...stateToEdit,
+      ...updateRequestsStateDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} requestsState`;
+  async remove(id: number) {
+    const stateToRemove = await this.requestStateRepository.findOneById(id);
+    if (!stateToRemove) {
+      throw new NotFoundException('Estado no encontrado');
+    }
+
+    return await this.requestStateRepository.remove(stateToRemove);
   }
 }

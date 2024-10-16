@@ -41,5 +41,5 @@ export class CreateAttendanceDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  employeeId: number;
+  employeeId: string;
 }

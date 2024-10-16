@@ -1,15 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { RequestPaymentConfirmationsService } from './request-payment-confirmations.service';
 import { CreateRequestPaymentConfirmationDto } from './dto/create-request-payment-confirmation.dto';
 import { UpdateRequestPaymentConfirmationDto } from './dto/update-request-payment-confirmation.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
+@ApiTags('request-payment-confirmations')
 @Controller('request-payment-confirmations')
 export class RequestPaymentConfirmationsController {
-  constructor(private readonly requestPaymentConfirmationsService: RequestPaymentConfirmationsService) {}
-
+  constructor(
+    private readonly requestPaymentConfirmationsService: RequestPaymentConfirmationsService,
+  ) {}
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createRequestPaymentConfirmationDto: CreateRequestPaymentConfirmationDto) {
-    return this.requestPaymentConfirmationsService.create(createRequestPaymentConfirmationDto);
+  create(
+    @Req() req,
+    @Body()
+    createRequestPaymentConfirmationDto: CreateRequestPaymentConfirmationDto,
+  ) {
+    return this.requestPaymentConfirmationsService.create(
+      createRequestPaymentConfirmationDto,
+      req.user.id,
+    );
   }
 
   @Get()
@@ -23,8 +45,15 @@ export class RequestPaymentConfirmationsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRequestPaymentConfirmationDto: UpdateRequestPaymentConfirmationDto) {
-    return this.requestPaymentConfirmationsService.update(+id, updateRequestPaymentConfirmationDto);
+  update(
+    @Param('id') id: string,
+    @Body()
+    updateRequestPaymentConfirmationDto: UpdateRequestPaymentConfirmationDto,
+  ) {
+    return this.requestPaymentConfirmationsService.update(
+      +id,
+      updateRequestPaymentConfirmationDto,
+    );
   }
 
   @Delete(':id')

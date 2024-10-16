@@ -11,7 +11,7 @@ export class LoginDto {
   @Transform(({ value }) => parseInt(value, 10))
   @IsNotEmpty()
   @IsNumber()
-  EmployeeId: number;
+  EmployeeId: string;
 
   @ApiProperty()
   @IsNotEmpty()

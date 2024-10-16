@@ -53,7 +53,7 @@ export class UsersService {
     }
   }
 
-  async findOneById(id: number) {
+  async findOneById(id: string) {
     try {
       const user = await this.userRepository.findOne({
         where: { id },
@@ -111,7 +111,7 @@ export class UsersService {
     return await bcrypt.hash(password, salt);
   }
 
-  async updatePassword(employeeId: number, newPassword: string) {
+  async updatePassword(employeeId: string, newPassword: string) {
     try {
       const user = await this.findOneById(employeeId);
       user.Password = await this.hashPassword(newPassword, 10);

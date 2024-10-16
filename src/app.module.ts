@@ -3,21 +3,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-//import { User } from './users/entities/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-//import { Role } from './roles/entities/role.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
-
-//import { MailClientModule } from './mail-client/mail-client.module';
 import { EmployeesModule } from './employees/employees.module';
 import { MaritalStatusModule } from './marital-status/marital-status.module';
-
 import { GendersModule } from './genders/genders.module';
 import { MunicipalityModule } from './municipality/municipality.module';
 import { JobPositionsModule } from './job-positions/job-positions.module';
 import { TrainingsModule } from './trainings/trainings.module';
-import { EmbargoesModule } from './embargoes/embargoes.module';
 import { AnnuitiesModule } from './annuities/annuities.module';
 import { OvertimesModule } from './overtimes/overtimes.module';
 import { AttendanceModule } from './attendance/attendance.module';
@@ -35,7 +28,9 @@ import { TypeFinancialInstitutionsModule } from './type-financial-institutions/t
 import { DepartmentsModule } from './departments/departments.module';
 import { DepartmentProgramsModule } from './department-programs/department-programs.module';
 import { BudgetCodesModule } from './budget-codes/budget-codes.module';
-import { TypeBudgetCodesModule } from './type-budget-codes/type-budget-codes.module';
+import { DbModule } from './db/db.module';
+import { RequestApprovalsModule } from './request-approvals/request-approvals.module';
+import { RequestTypesModule } from './request-types/request-types.module';
 
 @Module({
   imports: [
@@ -44,32 +39,17 @@ import { TypeBudgetCodesModule } from './type-budget-codes/type-budget-codes.mod
       isGlobal: true,
       expandVariables: true,
     }),
-
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule], // Importa ConfigModule aquí
-      inject: [ConfigService], // Inyecta ConfigService
-      useFactory: async (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
-        synchronize: true,
-        autoLoadEntities: true,
-      }),
-    }),
+    DbModule,
     CacheModule.register({ isGlobal: true }),
     AuthModule,
     UsersModule,
+    FinancialInstitutionsModule,
     EmployeesModule,
     MaritalStatusModule,
-    GendersModule,
     GendersModule,
     MunicipalityModule,
     JobPositionsModule,
     TrainingsModule,
-    EmbargoesModule,
     AnnuitiesModule,
     OvertimesModule,
     AttendanceModule,
@@ -82,12 +62,12 @@ import { TypeBudgetCodesModule } from './type-budget-codes/type-budget-codes.mod
     RequestSalaryCertificatesModule,
     RequestPaymentConfirmationsModule,
     LaborCodeRegulationsModule,
-    FinancialInstitutionsModule,
     TypeFinancialInstitutionsModule,
     DepartmentsModule,
     DepartmentProgramsModule,
     BudgetCodesModule,
-    TypeBudgetCodesModule,
+    RequestApprovalsModule,
+    RequestTypesModule,
   ],
 
   controllers: [AppController],

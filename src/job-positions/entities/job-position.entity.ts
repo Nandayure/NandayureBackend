@@ -1,5 +1,13 @@
+import { Department } from 'src/departments/entities/department.entity';
 import { Employee } from 'src/employees/entities/employee.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class JobPosition {
@@ -21,6 +29,14 @@ export class JobPosition {
   @Column('decimal', { precision: 10, scale: 4 })
   extrafees: number;
 
-  @OneToMany(() => Employee, (employee) => employee.JopPosition)
+  @Column()
+  DepartmentId: number;
+
+  @OneToMany(() => Employee, (employee) => employee.JobPosition)
   Employees: Employee;
+
+  //relacion marcada como opcional para etapa de desarrrollo
+  @ManyToOne(() => Department, (department) => department.JobPosition)
+  @JoinColumn({ name: 'DepartmentId' })
+  Department: Department;
 }

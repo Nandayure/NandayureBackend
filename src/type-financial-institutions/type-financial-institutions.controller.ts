@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TypeFinancialInstitutionsService } from './type-financial-institutions.service';
 import { CreateTypeFinancialInstitutionDto } from './dto/create-type-financial-institution.dto';
 import { UpdateTypeFinancialInstitutionDto } from './dto/update-type-financial-institution.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('type-financial-institutions')
 @Controller('type-financial-institutions')
 export class TypeFinancialInstitutionsController {
-  constructor(private readonly typeFinancialInstitutionsService: TypeFinancialInstitutionsService) {}
+  constructor(
+    private readonly typeFinancialInstitutionsService: TypeFinancialInstitutionsService,
+  ) {}
 
   @Post()
-  create(@Body() createTypeFinancialInstitutionDto: CreateTypeFinancialInstitutionDto) {
-    return this.typeFinancialInstitutionsService.create(createTypeFinancialInstitutionDto);
+  create(
+    @Body()
+    createTypeFinancialInstitutionDto: CreateTypeFinancialInstitutionDto,
+  ) {
+    return this.typeFinancialInstitutionsService.create(
+      createTypeFinancialInstitutionDto,
+    );
   }
 
   @Get()
@@ -23,8 +40,15 @@ export class TypeFinancialInstitutionsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTypeFinancialInstitutionDto: UpdateTypeFinancialInstitutionDto) {
-    return this.typeFinancialInstitutionsService.update(+id, updateTypeFinancialInstitutionDto);
+  update(
+    @Param('id') id: string,
+    @Body()
+    updateTypeFinancialInstitutionDto: UpdateTypeFinancialInstitutionDto,
+  ) {
+    return this.typeFinancialInstitutionsService.update(
+      +id,
+      updateTypeFinancialInstitutionDto,
+    );
   }
 
   @Delete(':id')

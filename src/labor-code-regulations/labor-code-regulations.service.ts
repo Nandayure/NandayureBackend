@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLaborCodeRegulationDto } from './dto/create-labor-code-regulation.dto';
 import { UpdateLaborCodeRegulationDto } from './dto/update-labor-code-regulation.dto';
+import { LaborCodeRegulationRepository } from './repository/LaborCodeRegulation.repository';
 
 @Injectable()
 export class LaborCodeRegulationsService {
-  create(createLaborCodeRegulationDto: CreateLaborCodeRegulationDto) {
-    return 'This action adds a new laborCodeRegulation';
+  constructor(
+    private readonly laborCodeRegulationRepository: LaborCodeRegulationRepository,
+  ) {}
+  async create(createLaborCodeRegulationDto: CreateLaborCodeRegulationDto) {
+    const newRegulation = this.laborCodeRegulationRepository.create(
+      createLaborCodeRegulationDto,
+    );
+
+    return await this.laborCodeRegulationRepository.save(newRegulation);
   }
 
-  findAll() {
-    return `This action returns all laborCodeRegulations`;
+  async findAll() {
+    return await this.laborCodeRegulationRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} laborCodeRegulation`;
+  async findOne(id: number) {
+    return await this.laborCodeRegulationRepository.findOneById(id);
   }
 
-  update(id: number, updateLaborCodeRegulationDto: UpdateLaborCodeRegulationDto) {
-    return `This action updates a #${id} laborCodeRegulation`;
+  async update(
+    id: number,
+    updateLaborCodeRegulationDto: UpdateLaborCodeRegulationDto,
+  ) {
+    const regulationToEdit =
+      await this.laborCodeRegulationRepository.findOneById(id);
+    if (!regulationToEdit) {
+      throw new NotFoundException('No se encontró el registro a editar');
+    }
+
+    return this.laborCodeRegulationRepository.save({
+      ...regulationToEdit,
+      ...updateLaborCodeRegulationDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} laborCodeRegulation`;
+  async remove(id: number) {
+    const regulationToRemove =
+      await this.laborCodeRegulationRepository.findOneById(id);
+    if (!regulationToRemove) {
+      throw new NotFoundException('No se encontró el registro a eliminar');
+    }
+    return await this.laborCodeRegulationRepository.remove(regulationToRemove);
   }
 }

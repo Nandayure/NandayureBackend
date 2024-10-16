@@ -11,7 +11,9 @@ describe('RequestPaymentConfirmationsController', () => {
       providers: [RequestPaymentConfirmationsService],
     }).compile();
 
-    controller = module.get<RequestPaymentConfirmationsController>(RequestPaymentConfirmationsController);
+    controller = module.get<RequestPaymentConfirmationsController>(
+      RequestPaymentConfirmationsController,
+    );
   });
 
   it('should be defined', () => {

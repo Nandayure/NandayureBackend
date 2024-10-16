@@ -5,7 +5,7 @@ export class CreateMailClientDto {
 
   message?: string;
 
-  EmployeeId?: number;
+  EmployeeId?: string;
 
   Password?: string;
 

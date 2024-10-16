@@ -27,5 +27,5 @@ export class CreateAnnuityDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  EmployeeId: number;
+  EmployeeId: string;
 }

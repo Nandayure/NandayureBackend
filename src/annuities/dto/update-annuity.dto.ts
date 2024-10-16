@@ -26,5 +26,5 @@ export class UpdateAnnuityDto extends PartialType(CreateAnnuityDto) {
   @ApiPropertyOptional()
   @IsNotEmpty()
   @IsNumber()
-  EmployeeId: number;
+  EmployeeId: string;
 }

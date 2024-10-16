@@ -17,14 +17,14 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  //app.useGlobalFilters(new HttpExceptionFilter());
-  // const httpAdapter = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter());
   // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
   const config = new DocumentBuilder()
     .setTitle('HR department')
     .setDescription('Endpoints')
     .setVersion('1.0')
     .addTag('auth')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

@@ -15,5 +15,5 @@ export class CreateOvertimeDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
-  EmployeeId: number;
+  EmployeeId: string;
 }

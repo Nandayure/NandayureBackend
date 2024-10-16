@@ -1,7 +1,8 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { IsDateString, IsInt, IsOptional, IsString } from 'class-validator';
+import { CreateEmployeeDto } from './create-employee.dto';
 
-export class UpdateEmployeeDto {
+export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -47,11 +48,6 @@ export class UpdateEmployeeDto {
   @IsInt()
   AvailableVacationDays?: number;
 
-  // @ApiPropertyOptional()
-  // @IsOptional()
-  // @IsNumber()
-  // GrossSalary?: number;
-
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
@@ -61,4 +57,8 @@ export class UpdateEmployeeDto {
   @IsOptional()
   @IsInt()
   GenderId?: number;
+
+  @ApiPropertyOptional()
+  @IsInt()
+  JobPositionId?: number;
 }

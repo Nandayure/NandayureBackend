@@ -10,31 +10,6 @@ export class RolesService {
     private dataSource: DataSource,
   ) {}
 
-  async onModuleInit() {
-    const defaultRoles: CreateRoleDto[] = [
-      {
-        RoleName: 'USER',
-      },
-      {
-        RoleName: 'TI',
-      },
-      {
-        RoleName: 'RH',
-      },
-      {
-        RoleName: 'VA',
-      },
-    ];
-
-    for (const role of defaultRoles) {
-      try {
-        await this.create(role);
-      } catch (error) {
-        console.error(`Error creating role ${role.RoleName}:`, error.message);
-      }
-    }
-  }
-
   async create(createRoleDto: CreateRoleDto) {
     try {
       const existRole = await this.findOneByName(createRoleDto.RoleName);

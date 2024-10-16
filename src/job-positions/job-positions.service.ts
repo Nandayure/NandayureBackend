@@ -10,6 +10,7 @@ import { JobPositionRepository } from './repository/job-position.repository';
 @Injectable()
 export class JobPositionsService {
   constructor(private readonly jobPositionRepository: JobPositionRepository) {}
+
   async create(createJobPositionDto: CreateJobPositionDto) {
     const existJobPosition = await this.findOneByName(
       createJobPositionDto.Name,
@@ -35,6 +36,7 @@ export class JobPositionsService {
       where: { Name: Name },
     });
   }
+
   async findOneById(id: number) {
     return this.jobPositionRepository.findOneById(id);
   }

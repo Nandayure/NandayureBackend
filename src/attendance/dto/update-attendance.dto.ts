@@ -38,5 +38,5 @@ export class UpdateAttendanceDto extends PartialType(CreateAttendanceDto) {
   @ApiProperty()
   @IsOptional()
   @IsNotEmpty()
-  employeeId?: number;
+  employeeId?: string;
 }

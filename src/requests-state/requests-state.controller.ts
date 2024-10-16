@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { RequestsStateService } from './requests-state.service';
 import { CreateRequestsStateDto } from './dto/create-requests-state.dto';
 import { UpdateRequestsStateDto } from './dto/update-requests-state.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('requests-state')
 @Controller('requests-state')
 export class RequestsStateController {
   constructor(private readonly requestsStateService: RequestsStateService) {}
@@ -23,7 +32,10 @@ export class RequestsStateController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRequestsStateDto: UpdateRequestsStateDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRequestsStateDto: UpdateRequestsStateDto,
+  ) {
     return this.requestsStateService.update(+id, updateRequestsStateDto);
   }
 

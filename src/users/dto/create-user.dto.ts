@@ -5,7 +5,7 @@ export class CreateUserDto {
   @Transform(({ value }) => parseInt(value, 10))
   @IsNotEmpty()
   @IsNumber()
-  id: number;
+  id: string;
 
   @IsNotEmpty()
   @IsEmail()

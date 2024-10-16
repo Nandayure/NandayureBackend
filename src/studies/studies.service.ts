@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudyDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
+import { StudyRepository } from './repository/study.repository';
 
 @Injectable()
 export class StudiesService {
-  create(createStudyDto: CreateStudyDto) {
-    return 'This action adds a new study';
+  constructor(private readonly studyRepository: StudyRepository) {}
+
+  async create(createStudyDto: CreateStudyDto) {
+    const newStudy = this.studyRepository.create(createStudyDto);
+
+    return await this.studyRepository.save(newStudy);
   }
 
-  findAll() {
-    return `This action returns all studies`;
+  async findAll() {
+    return await this.studyRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} study`;
+  async findOne(id: number) {
+    return await this.studyRepository.findOneById(id);
   }
 
-  update(id: number, updateStudyDto: UpdateStudyDto) {
-    return `This action updates a #${id} study`;
+  async update(id: number, updateStudyDto: UpdateStudyDto) {
+    const studyToEdit = await this.studyRepository.findOneById(id);
+
+    if (!studyToEdit) {
+      throw new NotFoundException('registro no encontrado');
+    }
+
+    return await this.studyRepository.save({
+      ...studyToEdit,
+      ...updateStudyDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} study`;
+  async remove(id: number) {
+    const studyToRemove = await this.studyRepository.findOneById(id);
+
+    if (!studyToRemove) {
+      throw new NotFoundException('registro no encontrado');
+    }
+
+    return await this.studyRepository.remove(studyToRemove);
   }
 }

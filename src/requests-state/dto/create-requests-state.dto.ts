@@ -1,1 +1,9 @@
-export class CreateRequestsStateDto {}
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
+
+export class CreateRequestsStateDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  Name: string;
+}

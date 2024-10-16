@@ -7,6 +7,7 @@ import { UsersModule } from 'src/users/users.module';
 import { EmployeeRepository } from './repository/employee.repository';
 import { MaritalStatusModule } from 'src/marital-status/marital-status.module';
 import { GendersModule } from 'src/genders/genders.module';
+import { JobPositionsModule } from 'src/job-positions/job-positions.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { GendersModule } from 'src/genders/genders.module';
     UsersModule,
     MaritalStatusModule,
     GendersModule,
+    JobPositionsModule,
   ],
   controllers: [EmployeesController],
   providers: [EmployeesService, EmployeeRepository],

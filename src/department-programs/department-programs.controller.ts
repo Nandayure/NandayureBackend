@@ -1,11 +1,22 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { DepartmentProgramsService } from './department-programs.service';
 import { CreateDepartmentProgramDto } from './dto/create-department-program.dto';
 import { UpdateDepartmentProgramDto } from './dto/update-department-program.dto';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('department-programs')
 @Controller('department-programs')
 export class DepartmentProgramsController {
-  constructor(private readonly departmentProgramsService: DepartmentProgramsService) {}
+  constructor(
+    private readonly departmentProgramsService: DepartmentProgramsService,
+  ) {}
 
   @Post()
   create(@Body() createDepartmentProgramDto: CreateDepartmentProgramDto) {
@@ -23,8 +34,14 @@ export class DepartmentProgramsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDepartmentProgramDto: UpdateDepartmentProgramDto) {
-    return this.departmentProgramsService.update(+id, updateDepartmentProgramDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateDepartmentProgramDto: UpdateDepartmentProgramDto,
+  ) {
+    return this.departmentProgramsService.update(
+      +id,
+      updateDepartmentProgramDto,
+    );
   }
 
   @Delete(':id')

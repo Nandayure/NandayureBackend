@@ -10,5 +10,6 @@ import { EmployeesModule } from 'src/employees/employees.module';
   imports: [TypeOrmModule.forFeature([Attendance]), EmployeesModule],
   controllers: [AttendanceController],
   providers: [AttendanceService, AttendanceRepository],
+  exports: [AttendanceService],
 })
 export class AttendanceModule {}

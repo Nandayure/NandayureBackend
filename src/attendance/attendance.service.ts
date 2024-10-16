@@ -20,7 +20,7 @@ export class AttendanceService {
       throw new NotFoundException('empleado no encontrado');
     }
 
-    const newAttendance = await this.attendanceRepository.create({
+    const newAttendance = this.attendanceRepository.create({
       ...createAttendanceDto,
       employee: { id: createAttendanceDto.employeeId },
     });

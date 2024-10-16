@@ -1,3 +1,4 @@
+import { AttendanceStatus } from 'src/attendance-status/entities/attendance-status.entity';
 import { Employee } from 'src/employees/entities/employee.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -20,6 +21,12 @@ export class Attendance {
 
   @Column({ type: 'time' })
   departureTime: string;
+
+  @ManyToOne(
+    () => AttendanceStatus,
+    (attendanceStatus) => attendanceStatus.attendance,
+  )
+  attendanceStatus: AttendanceStatus;
 
   @ManyToOne(() => Employee, (employee) => employee.attendances)
   employee: Employee;

@@ -9,6 +9,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     JwtModule.registerAsync({
+      global: true,
       imports: [ConfigModule], // Importar el módulo de configuración
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({

@@ -1,26 +1,53 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDepartmentProgramDto } from './dto/create-department-program.dto';
 import { UpdateDepartmentProgramDto } from './dto/update-department-program.dto';
+import { DepartmentProgramRepository } from './repository/DepartmentProgram.repository';
 
 @Injectable()
 export class DepartmentProgramsService {
-  create(createDepartmentProgramDto: CreateDepartmentProgramDto) {
-    return 'This action adds a new departmentProgram';
+  constructor(
+    private readonly departmentProgramRepository: DepartmentProgramRepository,
+  ) {}
+  async create(createDepartmentProgramDto: CreateDepartmentProgramDto) {
+    const newProgram = this.departmentProgramRepository.create(
+      createDepartmentProgramDto,
+    );
+
+    return await this.departmentProgramRepository.save(newProgram);
   }
 
-  findAll() {
-    return `This action returns all departmentPrograms`;
+  async findAll() {
+    return await this.departmentProgramRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} departmentProgram`;
+  async findOne(id: number) {
+    return await this.departmentProgramRepository.findOneById(id);
   }
 
-  update(id: number, updateDepartmentProgramDto: UpdateDepartmentProgramDto) {
-    return `This action updates a #${id} departmentProgram`;
+  async update(
+    id: number,
+    updateDepartmentProgramDto: UpdateDepartmentProgramDto,
+  ) {
+    const programToEdit =
+      await this.departmentProgramRepository.findOneById(id);
+
+    if (!programToEdit) {
+      throw new NotFoundException('registro no encontrado');
+    }
+
+    return await this.departmentProgramRepository.save({
+      ...programToEdit,
+      ...updateDepartmentProgramDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} departmentProgram`;
+  async remove(id: number) {
+    const programToRemove =
+      await this.departmentProgramRepository.findOneById(id);
+
+    if (!programToRemove) {
+      throw new NotFoundException('registro no encontrado');
+    }
+    return await this.departmentProgramRepository.remove(programToRemove);
   }
 }

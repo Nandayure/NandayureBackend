@@ -1,7 +1,10 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
+import { CreateMaritalStatusDto } from './create-marital-status.dto';
 
-export class UpdateMaritalStatusDto {
+export class UpdateMaritalStatusDto extends PartialType(
+  CreateMaritalStatusDto,
+) {
   @ApiPropertyOptional()
   @IsNotEmpty()
   @IsString()

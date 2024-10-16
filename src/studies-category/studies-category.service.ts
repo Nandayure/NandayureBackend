@@ -1,26 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudiesCategoryDto } from './dto/create-studies-category.dto';
 import { UpdateStudiesCategoryDto } from './dto/update-studies-category.dto';
+import { StudiesCategoryRepository } from './repository/StudiesCategory.repository';
 
 @Injectable()
 export class StudiesCategoryService {
-  create(createStudiesCategoryDto: CreateStudiesCategoryDto) {
-    return 'This action adds a new studiesCategory';
+  constructor(
+    private readonly studiesCategoryRepository: StudiesCategoryRepository,
+  ) {}
+  async create(createStudiesCategoryDto: CreateStudiesCategoryDto) {
+    const newCategory = this.studiesCategoryRepository.create(
+      createStudiesCategoryDto,
+    );
+
+    return await this.studiesCategoryRepository.save(newCategory);
   }
 
-  findAll() {
-    return `This action returns all studiesCategory`;
+  async findAll() {
+    return await this.studiesCategoryRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} studiesCategory`;
+  async findOne(id: string) {
+    return await this.studiesCategoryRepository.findOneById(id);
   }
 
-  update(id: number, updateStudiesCategoryDto: UpdateStudiesCategoryDto) {
-    return `This action updates a #${id} studiesCategory`;
+  async update(id: string, updateStudiesCategoryDto: UpdateStudiesCategoryDto) {
+    const categoryToEdit = await this.studiesCategoryRepository.findOneById(id);
+
+    if (!categoryToEdit) {
+      throw new NotFoundException('registro no encontrado');
+    }
+
+    return await this.studiesCategoryRepository.save({
+      ...categoryToEdit,
+      ...updateStudiesCategoryDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} studiesCategory`;
+  async remove(id: string) {
+    const categoryToRemove =
+      await this.studiesCategoryRepository.findOneById(id);
+
+    if (!categoryToRemove) {
+      throw new NotFoundException('registro no encontrado');
+    }
+
+    return await this.studiesCategoryRepository.remove(categoryToRemove);
   }
 }

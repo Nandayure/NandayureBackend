@@ -12,6 +12,7 @@ import { MailClientService } from 'src/mail-client/mail-client.service';
 import { RequestRepository } from 'src/requests/repository/request.repository';
 import { DataSource, IsNull, QueryRunner } from 'typeorm';
 import { RequestApproval } from './entities/request-approval.entity';
+import { Employee } from 'src/employees/entities/employee.entity';
 
 @Injectable()
 export class RequestApprovalsService {
@@ -168,6 +169,7 @@ export class RequestApprovalsService {
       where: { id: RequestId },
       relations: {
         RequestType: true,
+        RequestVacation: true,
       },
     });
     const nextStep = await queryRunner.manager.findOne(RequestApproval, {
@@ -187,6 +189,16 @@ export class RequestApprovalsService {
         request.RequestStateId = 2; // Aprobado
         await queryRunner.manager.save(request);
         mailType = true;
+        if (request.RequestTypeId === 1) {
+          //case when the request is a vacation request, when the request is approved the system must update the vacation days of the employee
+          const employee = await queryRunner.manager.findOne(Employee, {
+            where: { id: request.EmployeeId },
+          });
+          employee.AvailableVacationDays -=
+            request.RequestVacation.daysRequested;
+          await queryRunner.manager.save(employee);
+          console.log(employee);
+        }
       }
     } else {
       request.RequestStateId = 3; // Rechazado

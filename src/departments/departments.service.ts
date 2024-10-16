@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { DepartmentRepository } from './repository/Department.repository';
@@ -39,12 +43,30 @@ export class DepartmentsService {
   }
 
   async remove(id: number) {
-    const departmentToRemove = await this.departmentRepository.findOneById(id);
+    try {
+      const departmentToRemove = await this.departmentRepository.findOne({
+        where: { id },
+        relations: {
+          departmentProgram: true,
+          JobPosition: true,
+          BudgetCode: true,
+          departmentHead: true,
+        },
+      });
 
-    if (!departmentToRemove) {
-      throw new NotFoundException('Registro no encontrado');
+      if (!departmentToRemove) {
+        throw new NotFoundException('Registro no encontrado');
+      }
+
+      if (departmentToRemove.JobPosition.length > 0) {
+        throw new BadRequestException(
+          'No se puede eliminar el departamento porque está relacionado con otros puestos de trabajo.',
+        );
+      }
+      return await this.departmentRepository.remove(departmentToRemove);
+    } catch (error) {
+      throw error;
     }
-    return await this.departmentRepository.remove(departmentToRemove);
   }
 
   async validateDepartmentHead(department: Department) {

@@ -31,6 +31,10 @@ import { BudgetCodesModule } from './budget-codes/budget-codes.module';
 import { DbModule } from './db/db.module';
 import { RequestApprovalsModule } from './request-approvals/request-approvals.module';
 import { RequestTypesModule } from './request-types/request-types.module';
+import { EmployeesStateModule } from './employees-state/employees-state.module';
+import { PayrollModule } from './payroll/payroll.module';
+import { EmployeeProcedureModule } from './employee-procedure/employee-procedure.module';
+import { PayrollDetailModule } from './payroll-detail/payroll-detail.module';
 
 @Module({
   imports: [
@@ -68,6 +72,10 @@ import { RequestTypesModule } from './request-types/request-types.module';
     BudgetCodesModule,
     RequestApprovalsModule,
     RequestTypesModule,
+    EmployeesStateModule,
+    PayrollModule,
+    EmployeeProcedureModule,
+    PayrollDetailModule,
   ],
 
   controllers: [AppController],

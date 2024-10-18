@@ -1,24 +1,24 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBudgetCodeDto {
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   CodSalary?: string;
 
   @ApiPropertyOptional()
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   CodExtra?: string;
 
   @ApiPropertyOptional()
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   CodAnuity?: string;
 
   @ApiPropertyOptional()
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   CodSalaryPlus?: string;
 }

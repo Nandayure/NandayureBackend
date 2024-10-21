@@ -1,26 +1,56 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateFinancialInstitutionDto } from './dto/create-financial-institution.dto';
 import { UpdateFinancialInstitutionDto } from './dto/update-financial-institution.dto';
+import { FinancialInstitutionRepository } from './repository/FinancialInstitution.repository';
 
 @Injectable()
 export class FinancialInstitutionsService {
-  create(createFinancialInstitutionDto: CreateFinancialInstitutionDto) {
-    return 'This action adds a new financialInstitution';
+  constructor(
+    private readonly financialInstitutionRepository: FinancialInstitutionRepository,
+  ) {}
+
+  async create(createFinancialInstitutionDto: CreateFinancialInstitutionDto) {
+    const financialInstitution = this.financialInstitutionRepository.create(
+      createFinancialInstitutionDto,
+    );
+    return this.financialInstitutionRepository.save(financialInstitution);
   }
 
-  findAll() {
-    return `This action returns all financialInstitutions`;
+  async findAll() {
+    return await this.financialInstitutionRepository.findAll();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} financialInstitution`;
+  async findOne(id: number) {
+    return await this.financialInstitutionRepository.findOneById(id);
   }
 
-  update(id: number, updateFinancialInstitutionDto: UpdateFinancialInstitutionDto) {
-    return `This action updates a #${id} financialInstitution`;
+  async update(
+    id: number,
+    updateFinancialInstitutionDto: UpdateFinancialInstitutionDto,
+  ) {
+    const financialInstitutionToUpdate =
+      await this.financialInstitutionRepository.findOneById(id);
+
+    if (!financialInstitutionToUpdate) {
+      throw new NotFoundException('Registro no encontrado');
+    }
+
+    return await this.financialInstitutionRepository.save({
+      ...financialInstitutionToUpdate,
+      ...updateFinancialInstitutionDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} financialInstitution`;
+  async remove(id: number) {
+    const financialInstitutionToRemove =
+      await this.financialInstitutionRepository.findOneById(id);
+
+    if (!financialInstitutionToRemove) {
+      throw new NotFoundException('Registro no encontrado');
+    }
+
+    return await this.financialInstitutionRepository.remove(
+      financialInstitutionToRemove,
+    );
   }
 }

@@ -40,6 +40,7 @@ export class RequestsService {
         RequestVacation: true,
         RequestSalaryCertificate: true,
         RequestPaymentConfirmation: true,
+        Employee: true,
       },
     });
   }

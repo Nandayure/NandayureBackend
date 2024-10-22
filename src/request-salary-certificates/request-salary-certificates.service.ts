@@ -40,14 +40,9 @@ export class RequestSalaryCertificatesService {
       // 2. Validate the employee who made the request and the RRHH department
       const { existEmployee, RRHHdepartment, deparmentHead } =
         await this.getApprovalEntity(EmployeeId);
-
-      const employee = await this.employeeService.findOneById(EmployeeId);
       // 3. Create a new request who will be related to the salary certificate
       const request = await this.requestService.createRequest(
         EmployeeId,
-        employee.Name,
-        employee.Surname1,
-        employee.Surname2,
         2, //requestTypeId 3 is for salary certificate
         queryRunner,
       );

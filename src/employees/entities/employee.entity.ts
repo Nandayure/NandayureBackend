@@ -118,6 +118,7 @@ export class Employee {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+  length: number;
 
   // future relations
 }

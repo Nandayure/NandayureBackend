@@ -48,4 +48,5 @@ export class Department {
   @ManyToOne(() => Employee, { nullable: true })
   @JoinColumn({ name: 'departmentHeadId' })
   departmentHead: Employee;
+  length: number;
 }

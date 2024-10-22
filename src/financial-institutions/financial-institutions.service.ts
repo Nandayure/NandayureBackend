@@ -42,15 +42,28 @@ export class FinancialInstitutionsService {
   }
 
   async remove(id: number) {
-    const financialInstitutionToRemove =
-      await this.financialInstitutionRepository.findOneById(id);
+    try {
+      const financialInstitutionToRemove =
+        await this.financialInstitutionRepository.findOne({
+          where: { id },
+          relations: {
+            Employees: true,
+          },
+        });
 
-    if (!financialInstitutionToRemove) {
-      throw new NotFoundException('Registro no encontrado');
+      if (!financialInstitutionToRemove) {
+        throw new NotFoundException('Registro no encontrado');
+      }
+      if (financialInstitutionToRemove.Employees.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar la institución financiera porque está relacionado con empleados',
+        );
+      }
+      return await this.financialInstitutionRepository.remove(
+        financialInstitutionToRemove,
+      );
+    } catch (error) {
+      throw error;
     }
-
-    return await this.financialInstitutionRepository.remove(
-      financialInstitutionToRemove,
-    );
   }
 }

@@ -38,13 +38,24 @@ export class StudiesCategoryService {
   }
 
   async remove(id: string) {
-    const categoryToRemove =
-      await this.studiesCategoryRepository.findOneById(id);
-
-    if (!categoryToRemove) {
-      throw new NotFoundException('registro no encontrado');
+    try {
+      const categoryToRemove = await this.studiesCategoryRepository.findOne({
+        where: { id },
+        relations: {
+          Studies: true,
+        },
+      });
+      if (!categoryToRemove) {
+        throw new NotFoundException('registro no encontrado');
+      }
+      if (categoryToRemove.Studies.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar la categoría porque está relacionado con estudios',
+        );
+      }
+      return await this.studiesCategoryRepository.remove(categoryToRemove);
+    } catch (error) {
+      throw error;
     }
-
-    return await this.studiesCategoryRepository.remove(categoryToRemove);
   }
 }

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateJobPositionDto } from './dto/create-job-position.dto';
 import { UpdateJobPositionDto } from './dto/update-job-position.dto';
@@ -55,6 +56,33 @@ export class JobPositionsService {
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} jobPosition`;
+    try {
+      const jobPositionToRemove = await this.jobPositionRepository.findOne({
+        where: { id },
+        relations: {
+          Department: true,
+          Employees: true,
+        },
+      });
+
+      if (!jobPositionToRemove) {
+        throw new NotFoundException('No se encontró el registro a eliminar');
+      }
+
+      if (jobPositionToRemove.Department.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar el puesto de trabajo porque está relacionado con departamentos',
+        );
+      }
+      if (jobPositionToRemove.Employees.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar el puesto de trabajo porque está relacionado con empleados',
+        );
+      }
+
+      return await this.jobPositionRepository.remove(jobPositionToRemove);
+    } catch (error) {
+      throw error;
+    }
   }
 }

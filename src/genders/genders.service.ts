@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateGenderDto } from './dto/create-gender.dto';
 import { UpdateGenderDto } from './dto/update-gender.dto';
@@ -57,6 +58,25 @@ export class GendersService {
   }
 
   async remove(id: number) {
-    return `This action removes a #${id} gender`;
+    try {
+      const genreToRemove = await this.gendersService.findOneById({
+        where: { id },
+        relations: {
+          Employees: true,
+        },
+      });
+
+      if (!genreToRemove) {
+        throw new NotFoundException('No existe el id del genero: ' + id);
+      }
+      if (genreToRemove.employees.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar el genero porque está relacionado con empleados',
+        );
+      }
+      return this.gendersService.remove(genreToRemove);
+    } catch {
+      throw Error;
+    }
   }
 }

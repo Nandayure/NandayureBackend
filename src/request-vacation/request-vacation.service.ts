@@ -49,14 +49,10 @@ export class RequestVacationService {
       // 3. Get the entities needed for the approval process
       const { RRHHdepartment, mayor, RequesterDepartment } =
         await this.getApprovalEntities(EmployeeId);
-      const employee = await this.employeeRService.findOneById(EmployeeId);
       // 4. Create the request who will be related to the vacation request and approvals
       //requestTypeId 1 is for vacation requests
       const request = await this.requestService.createRequest(
         EmployeeId,
-        employee.Name,
-        employee.Surname1,
-        employee.Surname2,
         1,
         queryRunner,
       );

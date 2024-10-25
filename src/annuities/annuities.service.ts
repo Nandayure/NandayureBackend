@@ -28,11 +28,16 @@ export class AnnuitiesService {
   }
 
   async findAll() {
-    return await this.annuityRepository.findAll();
+    return await this.annuityRepository.findAll({
+      relations: { employee: true },
+    });
   }
 
   async findOne(id: number) {
-    return await this.annuityRepository.findOneById(id);
+    return await this.annuityRepository.findOneById({
+      where: { id },
+      relations: { employee: true },
+    });
   }
 
   async update(id: number, updateAnnuityDto: UpdateAnnuityDto) {

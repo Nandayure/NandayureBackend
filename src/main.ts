@@ -8,6 +8,7 @@ import { HttpExceptionFilter } from './core/exceptions/HttpExceptionFilter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   const configService = app.get(ConfigService);
   app.setGlobalPrefix('/api/v1');
   app.useGlobalPipes(
@@ -30,6 +31,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.enableCors();
+
   await app.listen(configService.get('PORT'));
 }
 bootstrap();

@@ -33,8 +33,8 @@ import { RequestApprovalsModule } from './request-approvals/request-approvals.mo
 import { RequestTypesModule } from './request-types/request-types.module';
 import { EmployeesStateModule } from './employees-state/employees-state.module';
 import { PayrollModule } from './payroll/payroll.module';
-import { EmployeeProcedureModule } from './employee-procedure/employee-procedure.module';
 import { PayrollDetailModule } from './payroll-detail/payroll-detail.module';
+import { GoogleDriveFilesModule } from './google-drive-files/google-drive-files.module';
 
 @Module({
   imports: [
@@ -74,8 +74,8 @@ import { PayrollDetailModule } from './payroll-detail/payroll-detail.module';
     RequestTypesModule,
     EmployeesStateModule,
     PayrollModule,
-    EmployeeProcedureModule,
     PayrollDetailModule,
+    GoogleDriveFilesModule,
   ],
 
   controllers: [AppController],

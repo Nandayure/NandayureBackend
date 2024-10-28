@@ -14,4 +14,5 @@ export class TypeFinancialInstitution {
     (financialInstitution) => financialInstitution.TypeFinancialInstitution,
   )
   FinancialInstitutions: FinancialInstitution[];
+  length: number;
 }

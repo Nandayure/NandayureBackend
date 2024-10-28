@@ -19,7 +19,9 @@ export class DepartmentsService {
   }
 
   async findAll() {
-    return await this.findAll();
+    return await this.departmentRepository.findAll({
+      relations: { departmentHead: true },
+    });
   }
 
   async findOne(id: number) {

@@ -35,12 +35,24 @@ export class StudiesService {
   }
 
   async remove(id: number) {
-    const studyToRemove = await this.studyRepository.findOneById(id);
-
-    if (!studyToRemove) {
-      throw new NotFoundException('registro no encontrado');
+    try {
+      const studyToRemove = await this.studyRepository.findOne({
+        where: { id },
+        relations: {
+          Employees: true,
+        },
+      });
+      if (!studyToRemove) {
+        throw new NotFoundException('registro no encontrado');
+      }
+      if (studyToRemove.Employees.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar los estudios porque está relacionado con empleados',
+        );
+      }
+      return await this.studyRepository.remove(studyToRemove);
+    } catch (error) {
+      throw error;
     }
-
-    return await this.studyRepository.remove(studyToRemove);
   }
 }

@@ -37,6 +37,7 @@ export class RequestApprovalsService {
           RequestSalaryCertificate: true,
           RequestPaymentConfirmation: true,
           RequestVacation: true,
+          Employee: true,
         },
       },
     });

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateMaritalStatusDto } from './dto/create-marital-status.dto';
 import { UpdateMaritalStatusDto } from './dto/update-marital-status.dto';
@@ -64,7 +65,27 @@ export class MaritalStatusService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} maritalStatus`;
+  async remove(id: number) {
+    try {
+      const maritalStatusToRemove = await this.maritarStatusRepository.findOne({
+        where: { id },
+        relations: {
+          employees: true,
+        },
+      });
+
+      if (!maritalStatusToRemove) {
+        throw new NotFoundException('No se encontró el registro a eliminar');
+      }
+
+      if (maritalStatusToRemove.employees.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar el estado civil porque está relacionado con empleados',
+        );
+      }
+      return await this.maritarStatusRepository.remove(maritalStatusToRemove);
+    } catch (error) {
+      throw error;
+    }
   }
 }

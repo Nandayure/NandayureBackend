@@ -33,11 +33,24 @@ export class BudgetCodesService {
   }
 
   async remove(id: number) {
-    const codeToRemove = await this.budgetCodeRepostory.findOneById(id);
-
-    if (!codeToRemove) {
-      throw new NotFoundException('Registro no encontrado');
+    try {
+      const codeToRemove = await this.budgetCodeRepostory.findOne({
+        where: { id },
+        relations: {
+          Department: true,
+        },
+      });
+      if (!codeToRemove) {
+        throw new NotFoundException('Registro no encontrado');
+      }
+      if (codeToRemove.Department.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar el código de presupuesto porque está relacionado con departamentos',
+        );
+      }
+      return await this.budgetCodeRepostory.remove(codeToRemove);
+    } catch (error) {
+      throw error;
     }
-    return await this.budgetCodeRepostory.remove(codeToRemove);
   }
 }

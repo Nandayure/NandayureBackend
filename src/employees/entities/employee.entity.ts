@@ -69,6 +69,8 @@ export class Employee {
   @Column({ nullable: true })
   EmbargoId: number;
 
+  //agregar salario==============================================
+
   @OneToOne(() => User, (user) => user.Employee)
   User: User;
 
@@ -116,6 +118,7 @@ export class Employee {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+  length: number;
 
   // future relations
 }

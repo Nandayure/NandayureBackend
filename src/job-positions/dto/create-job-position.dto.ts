@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDecimal, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { IsNumber, IsInt, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateJobPositionDto {
   @ApiProperty({
@@ -19,7 +19,7 @@ export class CreateJobPositionDto {
     type: 'number',
     format: 'decimal',
   })
-  @IsDecimal()
+  @IsNumber()
   baseSalary: number;
 
   @ApiProperty({
@@ -27,7 +27,7 @@ export class CreateJobPositionDto {
     type: 'number',
     format: 'decimal',
   })
-  @IsDecimal()
+  @IsNumber()
   globalSalary: number;
 
   @ApiProperty({
@@ -36,7 +36,7 @@ export class CreateJobPositionDto {
     type: 'number',
     format: 'decimal',
   })
-  @IsDecimal()
+  @IsNumber()
   extrafees: number;
 
   @ApiProperty()

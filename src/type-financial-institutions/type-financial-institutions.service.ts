@@ -45,13 +45,25 @@ export class TypeFinancialInstitutionsService {
   }
 
   async remove(id: number) {
-    const typeToRemove =
-      await this.typeFinantialInstitutionRepository.findOneById(id);
-
-    if (!typeToRemove) {
-      throw new NotFoundException('registro no encontrado');
+    try {
+      const typeToRemove =
+        await this.typeFinantialInstitutionRepository.findOne({
+          where: { id },
+          relations: {
+            FinancialInstitutions: true,
+          },
+        });
+      if (!typeToRemove) {
+        throw new NotFoundException('registro no encontrado');
+      }
+      if (typeToRemove.FinancialInstitutions.length > 0) {
+        throw new NotFoundException(
+          'No se puede eliminar el tipo de institución financiera porque está relacionado con instituciones financieras',
+        );
+      }
+      return await this.typeFinantialInstitutionRepository.remove(typeToRemove);
+    } catch (error) {
+      throw error;
     }
-
-    return await this.typeFinantialInstitutionRepository.remove(typeToRemove);
   }
 }

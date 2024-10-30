@@ -12,6 +12,8 @@ import { MaritalStatusService } from 'src/marital-status/marital-status.service'
 import { GendersService } from 'src/genders/genders.service';
 import { DataSource } from 'typeorm';
 import { JobPositionsService } from 'src/job-positions/job-positions.service';
+import { GoogleDriveFilesService } from 'src/google-drive-files/google-drive-files.service';
+import { DriveFolderRepository } from 'src/drive-folder/repository/drive-folder.repository';
 
 @Injectable()
 export class EmployeesService {
@@ -21,6 +23,8 @@ export class EmployeesService {
     private readonly maritalStatusService: MaritalStatusService,
     private readonly genderService: GendersService,
     private readonly jobPositionService: JobPositionsService,
+    private readonly googleDriveFilesService: GoogleDriveFilesService,
+    private readonly driveFolderRepository: DriveFolderRepository,
     private dataSource: DataSource,
   ) {}
 
@@ -42,6 +46,21 @@ export class EmployeesService {
         },
         queryRunner,
       );
+      const employeeWholeName = `${created.Name} ${created.Surname1}`;
+
+      const folder = await this.googleDriveFilesService.createMainFolder(
+        newEmployee.id,
+        employeeWholeName,
+      );
+
+      console.log(folder);
+      const newDriveFolder = this.driveFolderRepository.create({
+        id: created.id,
+        FolderId: folder,
+      });
+
+      await queryRunner.manager.save(newDriveFolder);
+
       await queryRunner.commitTransaction();
 
       return created;

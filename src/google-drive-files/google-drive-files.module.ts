@@ -3,9 +3,13 @@ import { GoogleDriveFilesService } from './google-drive-files.service';
 import { GoogleDriveFilesController } from './google-drive-files.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { google } from 'googleapis';
+import { DriveFolderModule } from 'src/drive-folder/drive-folder.module';
+//import { EmployeesModule } from 'src/employees/employees.module';
+//import { EmployeesModule } from 'src/employees/employees.module';
+//import { EmployeesModule } from 'src/employees/employees.module';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule, DriveFolderModule],
   providers: [
     {
       provide: 'GOOGLE_DRIVE_CLIENT',

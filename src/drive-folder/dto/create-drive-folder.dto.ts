@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateGoogleDriveFileDto {
+export class CreateDriveFolderDto {
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
-  EmployeeId: string;
+  @IsNotEmpty()
+  id: string;
 
   @ApiProperty()
-  @IsNotEmpty()
   @IsString()
-  FileName: string;
+  @IsNotEmpty()
+  FolderId: string;
 }

@@ -5,10 +5,5 @@ export class CreateGoogleDriveFileDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  EmployeeId: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  FileName: string;
+  folderName: string;
 }

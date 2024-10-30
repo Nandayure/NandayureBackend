@@ -35,6 +35,7 @@ import { EmployeesStateModule } from './employees-state/employees-state.module';
 import { PayrollModule } from './payroll/payroll.module';
 import { PayrollDetailModule } from './payroll-detail/payroll-detail.module';
 import { GoogleDriveFilesModule } from './google-drive-files/google-drive-files.module';
+import { DriveFolderModule } from './drive-folder/drive-folder.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { GoogleDriveFilesModule } from './google-drive-files/google-drive-files.
     PayrollModule,
     PayrollDetailModule,
     GoogleDriveFilesModule,
+    DriveFolderModule,
   ],
 
   controllers: [AppController],

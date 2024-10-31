@@ -15,7 +15,7 @@ export const dataSourceOptions: DataSourceOptions & SeederOptions = {
   database: configService.get<string>('DB_NAME'),
   synchronize: true, //solo en etapa de desarrollo (hace que dure mas arrancando)
   entities: ['dist/**/entities/*.entity.js'],
-  logging: false,
+  logging: true,
   seeds: ['dist/db/seed/*.seeder.js'],
   factories: ['dist/**/factory/*.factory.js'],
 };

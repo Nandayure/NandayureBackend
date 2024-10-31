@@ -21,7 +21,6 @@ export class AnnuitiesService {
     }
     this.annuityRepository.create({
       ...createAnnuityDto,
-      employee: { id: createAnnuityDto.EmployeeId },
     });
 
     return await this.annuityRepository.save(createAnnuityDto);

@@ -1,5 +1,6 @@
 import { Annuity } from 'src/annuities/entities/annuity.entity';
 import { Attendance } from 'src/attendance/entities/attendance.entity';
+import { DriveFolder } from 'src/drive-folder/entities/drive-folder.entity';
 import { FinancialInstitution } from 'src/financial-institutions/entities/financial-institution.entity';
 import { Gender } from 'src/genders/entities/gender.entity';
 import { JobPosition } from 'src/job-positions/entities/job-position.entity';
@@ -73,6 +74,9 @@ export class Employee {
 
   @OneToOne(() => User, (user) => user.Employee)
   User: User;
+
+  @OneToOne(() => DriveFolder, (DriveFolder) => DriveFolder.Employee)
+  DriveFolder: DriveFolder;
 
   @ManyToOne(() => MaritalStatus, (maritalStatus) => maritalStatus.employees)
   @JoinColumn({ name: 'MaritalStatusId' })

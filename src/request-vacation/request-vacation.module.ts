@@ -3,7 +3,7 @@ import { RequestVacationService } from './request-vacation.service';
 import { RequestVacationController } from './request-vacation.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RequestVacation } from './entities/request-vacation.entity';
-import { RequestVacationRepository } from './repository/Request-Vacation.repository';
+import { RequestVacationRepository } from './repository/request-Vacation.repository';
 import { RequestsModule } from 'src/requests/requests.module';
 import { EmployeesModule } from 'src/employees/employees.module';
 import { DepartmentsModule } from 'src/departments/departments.module';

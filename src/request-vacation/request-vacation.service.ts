@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateRequestVacationDto } from './dto/create-request-vacation.dto';
 import { UpdateRequestVacationDto } from './dto/update-request-vacation.dto';
-import { RequestVacationRepository } from './repository/Request-Vacation.repository';
+import { RequestVacationRepository } from './repository/request-Vacation.repository';
 import { EmployeesService } from 'src/employees/employees.service';
 import { DataSource } from 'typeorm';
 import { CreateRequestApprovalDto } from 'src/request-approvals/dto/create-request-approval.dto';

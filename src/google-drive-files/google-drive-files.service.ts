@@ -44,7 +44,7 @@ export class GoogleDriveFilesService {
 
       if (!userFolder) {
         throw new ConflictException(
-          'El usuario no tiene un forlder en Google Drive',
+          'El usuario no tiene un forder en Google Drive',
         );
       }
 
@@ -163,7 +163,7 @@ export class GoogleDriveFilesService {
     try {
       if (!userFolder) {
         throw new NotFoundException(
-          'El usuario no tiene un forlder en Google Drive',
+          'El usuario no tiene un forder en Google Drive',
         );
       }
       const res = await this.driveClient.files.list({
@@ -185,7 +185,7 @@ export class GoogleDriveFilesService {
     try {
       if (!userFolder) {
         throw new NotFoundException(
-          'El usuario no tiene un forlder en Google Drive',
+          'El usuario no tiene un forder en Google Drive',
         );
       }
       const res = await this.driveClient.files.list({

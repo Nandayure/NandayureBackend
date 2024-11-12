@@ -11,7 +11,9 @@ describe('GoogleDriveFilesController', () => {
       providers: [GoogleDriveFilesService],
     }).compile();
 
-    controller = module.get<GoogleDriveFilesController>(GoogleDriveFilesController);
+    controller = module.get<GoogleDriveFilesController>(
+      GoogleDriveFilesController,
+    );
   });
 
   it('should be defined', () => {

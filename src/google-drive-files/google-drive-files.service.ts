@@ -156,12 +156,12 @@ export class GoogleDriveFilesService {
         throw new Error('El usuario no tiene un forlder en Google Drive');
       }
       const res = await this.driveClient.files.list({
-        //q: `'${(await userFolder).FolderId}' in parents`,
+        q: `'${(await userFolder).FolderId}' in parents`,
         pageSize: 10,
         fields:
           'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink)',
         supportsAllDrives: true,
-        // orderby: 'odifiedTime desc',
+        orderby: 'odifiedTime desc',
       });
       console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
       return res.data.files;

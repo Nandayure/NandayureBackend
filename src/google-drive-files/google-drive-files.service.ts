@@ -1,8 +1,11 @@
+import { Response } from 'express';
 import {
   Injectable,
   Inject,
   ConflictException,
   NotFoundException,
+  BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { CreateGoogleDriveFileDto } from './dto/create-google-drive-file.dto';
 //import { UpdateGoogleDriveFileDto } from './dto/update-google-drive-file.dto';
@@ -28,6 +31,7 @@ export class GoogleDriveFilesService {
     stream.push(null); // Indica que el stream ha terminado
     return stream;
   }
+
   async createFile(
     createGoogleDriveFileDto: CreateGoogleDriveFileDto,
     file: Express.Multer.File,
@@ -188,7 +192,7 @@ export class GoogleDriveFilesService {
         q: `'${(await userFolder).FolderId}' in parents`,
         pageSize: 10,
         fields:
-          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink)',
+          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType)',
         supportsAllDrives: true,
         orderby: 'odifiedTime desc',
       });
@@ -196,6 +200,88 @@ export class GoogleDriveFilesService {
       return res.data.files;
     } catch (e) {
       throw e;
+    }
+  }
+
+  async downloadFile(fileId: string, res: Response) {
+    try {
+      // Obtener los metadatos del archivo para verificar si existe y conocer la extensión y el tipo MIME
+      const fileMetadata = await this.driveClient.files.get({
+        fileId,
+        fields: 'id, name, mimeType, fileExtension',
+      });
+
+      if (!fileMetadata.data) {
+        throw new NotFoundException('Archivo no encontrado en Google Drive');
+      }
+
+      const mimeType = fileMetadata.data.mimeType;
+      const fileName = fileMetadata.data.name;
+      const fileExtension = fileMetadata.data.fileExtension
+        ? `.${fileMetadata.data.fileExtension}`
+        : '';
+
+      // Verificar si el archivo es un archivo de Google Docs (que debe ser exportado)
+      if (mimeType.startsWith('application/vnd.google-apps')) {
+        // Determinar el tipo MIME de exportación basado en el tipo de archivo de Google
+        let exportMimeType = 'application/pdf'; // Por defecto, exportar como PDF
+
+        if (mimeType === 'application/vnd.google-apps.spreadsheet') {
+          exportMimeType =
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; // Exportar Google Sheets como Excel
+        } else if (mimeType === 'application/vnd.google-apps.presentation') {
+          exportMimeType =
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation'; // Exportar Google Slides como PowerPoint
+        }
+
+        const exportResponse = await this.driveClient.files.export(
+          {
+            fileId,
+            mimeType: exportMimeType,
+          },
+          { responseType: 'stream' },
+        );
+
+        // Configurar encabezados para la descarga
+        res.setHeader('Content-Type', exportMimeType);
+        res.setHeader(
+          'Content-Disposition',
+          `inline; filename="${fileName}${fileExtension || (exportMimeType.includes('spreadsheet') ? '.xlsx' : exportMimeType.includes('presentation') ? '.pptx' : '.pdf')}"`,
+        );
+
+        exportResponse.data.pipe(res);
+      } else {
+        // Descargar el archivo binario directamente usando la extensión original
+        const fileResponse = await this.driveClient.files.get(
+          {
+            fileId,
+            alt: 'media',
+          },
+          { responseType: 'stream' },
+        );
+
+        // Configurar encabezados para la descarga directa
+        res.setHeader('Content-Type', mimeType || 'application/octet-stream');
+        res.setHeader(
+          'Content-Disposition',
+          `attachment; filename="${fileName}${fileExtension}"`,
+        );
+
+        console.log('Descargando archivo binario:', fileName);
+        fileResponse.data.pipe(res);
+      }
+    } catch (e) {
+      console.error('Error al descargar el archivo:', e);
+
+      if (e.code === 403) {
+        throw new ForbiddenException(
+          'No tienes permisos para descargar este archivo.',
+        );
+      }
+
+      throw new NotFoundException(
+        'No se pudo descargar el archivo desde Google Drive',
+      );
     }
   }
 

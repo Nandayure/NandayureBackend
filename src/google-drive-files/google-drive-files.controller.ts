@@ -12,7 +12,9 @@ import {
   UploadedFile,
   ConflictException,
   Param,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { GoogleDriveFilesService } from './google-drive-files.service';
 import { CreateGoogleDriveFileDto } from './dto/create-google-drive-file.dto';
 //import { UpdateGoogleDriveFileDto } from './dto/update-google-drive-file.dto';
@@ -56,6 +58,11 @@ export class GoogleDriveFilesController {
   @Get('FilesByEmployee/:employeeId')
   findAllByUser(@Param('employeeId') employeeId: string) {
     return this.googleDriveFilesService.findAllFilesByUser(employeeId);
+  }
+
+  @Get('getFile/:fileId')
+  async downloadPdfFile(@Param('fileId') fileId: string, @Res() res: Response) {
+    return this.googleDriveFilesService.downloadFile(fileId, res);
   }
 
   // @Get(':id')

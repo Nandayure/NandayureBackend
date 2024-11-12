@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   UploadedFile,
   ConflictException,
+  Param,
 } from '@nestjs/common';
 import { GoogleDriveFilesService } from './google-drive-files.service';
 import { CreateGoogleDriveFileDto } from './dto/create-google-drive-file.dto';
@@ -46,9 +47,15 @@ export class GoogleDriveFilesController {
   }
 
   @UseGuards(AuthGuard)
-  @Get('FilesByUser')
+  @Get('MyFiles')
   findAll(@Req() req) {
-    return this.googleDriveFilesService.findAllByUser(req.user.id);
+    return this.googleDriveFilesService.findMyAllFiles(req.user.id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('FilesByEmployee/:employeeId')
+  findAllByUser(@Param('employeeId') employeeId: string) {
+    return this.googleDriveFilesService.findAllFilesByUser(employeeId);
   }
 
   // @Get(':id')

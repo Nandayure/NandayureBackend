@@ -1,4 +1,9 @@
-import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGoogleDriveFileDto } from './dto/create-google-drive-file.dto';
 //import { UpdateGoogleDriveFileDto } from './dto/update-google-drive-file.dto';
 import { ConfigService } from '@nestjs/config';
@@ -149,11 +154,35 @@ export class GoogleDriveFilesService {
   findAll() {
     return `This action returns all googleDriveFiles`;
   }
-  async findAllByUser(id: string) {
+  async findMyAllFiles(id: string) {
     const userFolder = await this.driveFolderService.findOne(id);
     try {
       if (!userFolder) {
-        throw new Error('El usuario no tiene un forlder en Google Drive');
+        throw new NotFoundException(
+          'El usuario no tiene un forlder en Google Drive',
+        );
+      }
+      const res = await this.driveClient.files.list({
+        q: `'${(await userFolder).FolderId}' in parents`,
+        pageSize: 10,
+        fields:
+          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink)',
+        supportsAllDrives: true,
+        orderby: 'odifiedTime desc',
+      });
+      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+      return res.data.files;
+    } catch (e) {
+      throw e;
+    }
+  }
+  async findAllFilesByUser(id: string) {
+    const userFolder = await this.driveFolderService.findOne(id);
+    try {
+      if (!userFolder) {
+        throw new NotFoundException(
+          'El usuario no tiene un forlder en Google Drive',
+        );
       }
       const res = await this.driveClient.files.list({
         q: `'${(await userFolder).FolderId}' in parents`,

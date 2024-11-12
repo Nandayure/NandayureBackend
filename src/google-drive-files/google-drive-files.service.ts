@@ -150,7 +150,6 @@ export class GoogleDriveFilesService {
     return `This action returns all googleDriveFiles`;
   }
   async findAllByUser(id: string) {
-    console.log('Buscando archivos del usuario:', id);
     const userFolder = await this.driveFolderService.findOne(id);
     try {
       if (!userFolder) {

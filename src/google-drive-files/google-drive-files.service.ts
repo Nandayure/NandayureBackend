@@ -264,7 +264,7 @@ export class GoogleDriveFilesService {
         res.setHeader('Content-Type', mimeType || 'application/octet-stream');
         res.setHeader(
           'Content-Disposition',
-          `attachment; filename="${fileName}${fileExtension}"`,
+          `inline; filename="${fileName}${fileExtension}"`,
         );
 
         console.log('Descargando archivo binario:', fileName);

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateRequestVacationDto } from './dto/create-request-vacation.dto';
 import { UpdateRequestVacationDto } from './dto/update-request-vacation.dto';
-import { RequestVacationRepository } from './repository/Request-Vacation.repository';
+import { requestVacationRepository } from './repository/request-vacations.repository';
 import { EmployeesService } from 'src/employees/employees.service';
 import { DataSource } from 'typeorm';
 import { CreateRequestApprovalDto } from 'src/request-approvals/dto/create-request-approval.dto';
@@ -20,7 +20,7 @@ import { RequestsService } from 'src/requests/requests.service';
 @Injectable()
 export class RequestVacationService {
   constructor(
-    private readonly requestVacationRepository: RequestVacationRepository,
+    private readonly requestVacationRepository: requestVacationRepository,
     private readonly requestService: RequestsService,
     private readonly employeeRService: EmployeesService,
     private readonly requestApprovalRepository: RequestApprovalRepository,

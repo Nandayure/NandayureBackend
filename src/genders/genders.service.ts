@@ -76,7 +76,7 @@ export class GendersService {
       }
       return this.gendersService.remove(genreToRemove);
     } catch {
-      throw Error;
+      throw new NotFoundException();
     }
   }
 }

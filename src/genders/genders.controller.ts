@@ -28,7 +28,7 @@ export class GendersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return 'e'; //this.gendersService.findOne(+id);
+    return id; //this.gendersService.findOne(+id);
   }
 
   @Patch(':id')

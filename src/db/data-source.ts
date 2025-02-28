@@ -14,7 +14,7 @@ export const dataSourceOptions: DataSourceOptions & SeederOptions = {
   // username: configService.get<string>('DB_USERNAME'),
   // password: configService.get<string>('DB_PASSWORD'),
   // database: configService.get<string>('DB_NAME'),
-  synchronize: false, //solo en etapa de desarrollo (hace que dure mas arrancando)
+  synchronize: true, //solo en etapa de desarrollo (hace que dure mas arrancando)
   entities: ['dist/**/entities/*.entity.js'],
   logging: false,
   seeds: ['dist/src/db/seed/*.seeder.js'],

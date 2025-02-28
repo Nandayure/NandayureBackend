@@ -59,12 +59,12 @@ export class GendersService {
 
   async remove(id: number) {
     try {
-      const genreToRemove = await this.gendersService.findOneById({
+      const genreToRemove = await this.gendersService.findOne({
         where: { id },
-        relations: {
-          Employees: true,
-        },
+        relations: ['employees'], // Corrige "Employees" si la relación se define como "employees"
       });
+
+      console.log('genreToRemove', genreToRemove.employees);
 
       if (!genreToRemove) {
         throw new NotFoundException('No existe el id del genero: ' + id);
@@ -74,9 +74,9 @@ export class GendersService {
           'No se puede eliminar el genero porque está relacionado con empleados',
         );
       }
-      return this.gendersService.remove(genreToRemove);
+      return await this.gendersService.remove(genreToRemove);
     } catch {
-      throw Error;
+      throw new NotFoundException();
     }
   }
 }

@@ -52,17 +52,21 @@ export class MaritalStatusService {
   //   return this.maritarStatusRepository.findOneBy();
   // }
 
-  update(id: number, updateMaritalStatusDto: UpdateMaritalStatusDto) {
-    const maritalStatusToEdit = this.maritarStatusRepository.findOneById(id);
+  async update(id: number, updateMaritalStatusDto: UpdateMaritalStatusDto) {
+    const maritalStatusToEdit =
+      await this.maritarStatusRepository.findOneById(id);
+
     if (!maritalStatusToEdit) {
       throw new BadRequestException({
-        error: 'No existe el usuario con número de cédula: ' + id,
+        error: 'No existe el el estado civil con id: ' + id,
       });
     }
-    return this.maritarStatusRepository.save({
+    console.log('maritalStatusToEdit', maritalStatusToEdit);
+    const maritalStatusUpdated = await this.maritarStatusRepository.save({
       ...maritalStatusToEdit,
       ...updateMaritalStatusDto,
     });
+    return maritalStatusUpdated;
   }
 
   async remove(id: number) {

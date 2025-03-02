@@ -22,13 +22,13 @@ export class RolesService {
       console.error('Error:', error);
       // Manejo de cualquier otra excepción no prevista
       throw new InternalServerErrorException({
-        message: 'Error en el inicio de sesión: ' + error.message,
+        message: 'Error al crear el rol: ' + error.message,
       });
     }
   }
 
   async findAll() {
-    return `This action returns all roles`;
+    return await this.roleRepository.findAll();
   }
 
   async findOneByName(RoleName: string) {

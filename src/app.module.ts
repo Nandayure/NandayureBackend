@@ -36,6 +36,8 @@ import { PayrollModule } from './payroll/payroll.module';
 import { PayrollDetailModule } from './payroll-detail/payroll-detail.module';
 import { GoogleDriveFilesModule } from './google-drive-files/google-drive-files.module';
 import { DriveFolderModule } from './drive-folder/drive-folder.module';
+import { FaqCategoriesModule } from './faq-categories/faq-categories.module';
+import { FaqsModule } from './faqs/faqs.module';
 
 @Module({
   imports: [
@@ -78,6 +80,8 @@ import { DriveFolderModule } from './drive-folder/drive-folder.module';
     PayrollDetailModule,
     GoogleDriveFilesModule,
     DriveFolderModule,
+    FaqCategoriesModule,
+    FaqsModule,
   ],
 
   controllers: [AppController],

@@ -7,4 +7,7 @@ export class Role {
 
   @Column()
   RoleName: string;
+
+  @Column()
+  Description: string;
 }

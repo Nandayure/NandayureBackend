@@ -9,6 +9,7 @@ import { EmployeesModule } from 'src/employees/employees.module';
 import { DepartmentsModule } from 'src/departments/departments.module';
 import { RequestApprovalsModule } from 'src/request-approvals/request-approvals.module';
 import { MailClientModule } from 'src/mail-client/mail-client.module';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MailClientModule } from 'src/mail-client/mail-client.module';
     RequestApprovalsModule,
     DepartmentsModule,
     MailClientModule,
+    RolesModule,
   ],
   controllers: [RequestVacationController],
   providers: [RequestVacationService, requestVacationRepository],

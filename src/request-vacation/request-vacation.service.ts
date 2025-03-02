@@ -16,6 +16,7 @@ import { MailClientService } from 'src/mail-client/mail-client.service';
 import { Department } from 'src/departments/entities/department.entity';
 import { Employee } from 'src/employees/entities/employee.entity';
 import { RequestsService } from 'src/requests/requests.service';
+import { RolesService } from 'src/roles/roles.service';
 
 @Injectable()
 export class RequestVacationService {
@@ -27,6 +28,7 @@ export class RequestVacationService {
     private readonly dataSource: DataSource,
     private readonly departmentService: DepartmentsService,
     private readonly mailClient: MailClientService,
+    private readonly roleService: RolesService,
   ) {}
 
   //this method is used to create a new vacation request, the request is related to the vacation request and the approvals
@@ -45,6 +47,9 @@ export class RequestVacationService {
         EmployeeId,
         createRequestVacationDto.daysRequested,
       );
+
+      //Validate if the employee has a pending request
+      await this.validateIfThereIsPendingRequest(EmployeeId);
 
       // 3. Get the entities needed for the approval process
       const { RRHHdepartment, mayor, RequesterDepartment } =
@@ -148,8 +153,7 @@ export class RequestVacationService {
 
   //this method is used to get the entities needed for the approval process and validate if the department head of RRHH exists
   async getApprovalEntities(EmployeeId: string) {
-    const RRHHdepartment =
-      await this.departmentService.findOneByName('RECURSOS HUMANOS');
+    const RRHHdepartment = await this.departmentService.findOne(3);
 
     const mayor = await this.employeeRService.findMayor();
 
@@ -165,6 +169,17 @@ export class RequestVacationService {
     await this.departmentService.validateDepartmentHead(RRHHdepartment);
 
     return { RRHHdepartment, mayor, RequesterDepartment }; //return the entities who will be used in the approval process
+  }
+
+  async validateIfThereIsPendingRequest(EmployeeId: string) {
+    const pendingRequests =
+      await this.requestService.findPendingRequestsByRequester(EmployeeId);
+
+    if (pendingRequests.length > 0) {
+      throw new ConflictException(
+        'Ya existe una solicitud pendiente de aprobación',
+      );
+    }
   }
 
   //this method is used to create the approvals for the request. The approvals are created in the order of the process and the approvers are the department head, the RRHH head and the mayor
@@ -231,6 +246,10 @@ export class RequestVacationService {
     mayor: Employee,
     EmployeeId: string,
   ) {
+    const isMayor = mayor.User.Roles.some((role) => role.id === 4)
+      ? true
+      : false;
+
     // If the department head is not assigned, or the department head is the employee who is requesting the vacation, the department approval is true
     if (
       !RequesterDepartment.departmentHeadId ||
@@ -249,12 +268,13 @@ export class RequestVacationService {
       approvals[1].ApprovedDate = new Date();
     }
     // If the mayor is the employee who is requesting the vacation, the mayor approval is true (teddy o vica)
-    if (mayor.id === EmployeeId) {
+    if (isMayor) {
       approvals[2].approved = true;
       approvals[2].observation =
-        'La solicitud fue aprobada automáticamente por el sistema en el proceso 3 ya que el solicitante es Alcalde municipal';
+        'La solicitud fue aprobada automáticamente por el sistema en el proceso 3 ya que el solicitante tiene rol de Alcalde o Vicealcalde';
       approvals[2].ApprovedDate = new Date();
     }
+    console.log(mayor);
 
     // Find the first approval index not approved
     const firstNoApprovedIndex = approvals.findIndex(

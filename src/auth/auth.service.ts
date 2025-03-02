@@ -46,6 +46,12 @@ export class AuthService {
         throw new UnauthorizedException('Contraseña incorrecta');
       }
 
+      if (!userToLogin.enabled) {
+        throw new UnauthorizedException(
+          'Usuario inactivo, contacte al administrador de Recurso Humano',
+        );
+      }
+
       const rolesNames = userToLogin.Roles?.map((role) => role.RoleName);
       const payload = {
         id: userToLogin.id,

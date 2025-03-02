@@ -23,6 +23,7 @@ export default class UserSeeder implements Seeder {
 
     const adminRole = await Rolerepository.findOneBy({ RoleName: 'RH' });
     const userRole = await Rolerepository.findOneBy({ RoleName: 'USER' });
+    // const mayorRole = await Rolerepository.findOneBy({ RoleName: 'VA' });
 
     const data: DefaultUserDto[] = defaultEmployeesData.map((employee) => ({
       id: employee.id,

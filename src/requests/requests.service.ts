@@ -43,6 +43,12 @@ export class RequestsService {
     return await this.requestRepository.findOneById(id);
   }
 
+  async findPendingRequestsByRequester(requesterId: string) {
+    return await this.requestRepository.findAll({
+      where: { EmployeeId: requesterId, RequestStateId: 1, RequestTypeId: 1 },
+    });
+  }
+
   async findAllRequestByEmployee(EmployeeId: string) {
     return await this.requestRepository.findAll({
       where: { EmployeeId: EmployeeId },

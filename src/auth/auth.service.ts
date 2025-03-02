@@ -46,6 +46,12 @@ export class AuthService {
         throw new UnauthorizedException('Contraseña incorrecta');
       }
 
+      if (!userToLogin.enabled) {
+        throw new UnauthorizedException(
+          'Usuario inactivo, contacte al administrador de Recurso Humano',
+        );
+      }
+
       const rolesNames = userToLogin.Roles?.map((role) => role.RoleName);
       const payload = {
         id: userToLogin.id,
@@ -53,22 +59,41 @@ export class AuthService {
         jti: uuidv4(),
       };
 
+      // Mejora para la detección de cumpleaños
+      let isBirthday = false;
+
+      if (userToLogin.Employee.Birthdate) {
+        const birthDate = new Date(userToLogin.Employee.Birthdate);
+        const today = new Date();
+        isBirthday =
+          birthDate.getMonth() === today.getMonth() &&
+          birthDate.getDate() === today.getDate();
+
+        if (birthDate.getMonth() === 1 && birthDate.getDate() === 29) {
+          const isLeapYear =
+            new Date(today.getFullYear(), 1, 29).getMonth() === 1;
+          if (!isLeapYear && today.getMonth() === 1 && today.getDate() === 28) {
+            isBirthday = true;
+          }
+        }
+      }
+
       return {
         name: userToLogin.Employee.Name,
         employeeId: userToLogin.id,
         surname1: userToLogin.Employee.Surname1,
         surname2: userToLogin.Employee.Surname2,
         email: userToLogin.Employee.Email,
+        isBirthday,
         access_token: await this.jwtService.signAsync(payload),
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {
-        throw error; // Relanza la excepción específica
+        throw error;
       }
       if (error instanceof InternalServerErrorException) {
         throw error;
       }
-      // Manejo de cualquier otra excepción no prevista
       throw new InternalServerErrorException('Error en el inicio de sesión: ');
     }
   }

@@ -22,6 +22,9 @@ export class User {
   @Exclude()
   Password: string;
 
+  @Column({ default: true })
+  enabled: boolean;
+
   @OneToOne(() => Employee, (employee) => employee.User)
   @JoinColumn({ name: 'id' })
   Employee: Employee;

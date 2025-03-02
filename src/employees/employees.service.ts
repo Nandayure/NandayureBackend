@@ -96,6 +96,11 @@ export class EmployeesService {
   async findMayor() {
     return await this.employeeRepository.findOne({
       where: { JobPositionId: 1 },
+      relations: {
+        User: {
+          Roles: true,
+        },
+      },
     });
   }
 

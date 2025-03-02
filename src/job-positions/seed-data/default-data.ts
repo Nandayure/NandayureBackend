@@ -9,6 +9,14 @@ export const defaultJobPositionsData: CreateJobPositionDto[] = [
     DepartmentId: 1,
   },
   {
+    Name: 'Vice Alcalde',
+    Description: 'Vice alcalde municipal.',
+    baseSalary: 4500.0,
+    globalSalary: 5000.0,
+    extrafees: 500.0,
+    DepartmentId: 1,
+  },
+  {
     Name: 'Secret. Mun',
     Description:
       'Persona encargada de las funciones administrativas y secretariales del municipio.',

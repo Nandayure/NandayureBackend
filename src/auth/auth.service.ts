@@ -65,7 +65,9 @@ export class AuthService {
         surname1: userToLogin.Employee.Surname1,
         surname2: userToLogin.Employee.Surname2,
         email: userToLogin.Employee.Email,
-        access_token: await this.jwtService.signAsync(payload),
+        access_token: await this.jwtService.signAsync(payload, {
+          expiresIn: '1d',
+        }),
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

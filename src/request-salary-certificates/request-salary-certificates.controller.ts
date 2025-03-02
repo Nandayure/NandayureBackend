@@ -16,11 +16,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('request-salary-certificates')
 @Controller('request-salary-certificates')
+@UseGuards(AuthGuard)
 export class RequestSalaryCertificatesController {
   constructor(
     private readonly requestSalaryCertificatesService: RequestSalaryCertificatesService,
   ) {}
-  @UseGuards(AuthGuard)
+
   @Post()
   create(
     @Req() req,

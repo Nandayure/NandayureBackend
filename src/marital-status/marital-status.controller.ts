@@ -6,14 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { MaritalStatusService } from './marital-status.service';
 import { CreateMaritalStatusDto } from './dto/create-marital-status.dto';
 import { UpdateMaritalStatusDto } from './dto/update-marital-status.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @ApiTags('marital-status')
 @Controller('marital-status')
+@UseGuards(AuthGuard)
 export class MaritalStatusController {
   constructor(private readonly maritalStatusService: MaritalStatusService) {}
 

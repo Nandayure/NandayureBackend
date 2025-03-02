@@ -23,6 +23,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 @ApiTags('google-drive-files')
 @Controller('google-drive-files')
+@UseGuards(AuthGuard)
 export class GoogleDriveFilesController {
   constructor(
     private readonly googleDriveFilesService: GoogleDriveFilesService,
@@ -48,13 +49,11 @@ export class GoogleDriveFilesController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Get('MyFiles')
   findAll(@Req() req) {
     return this.googleDriveFilesService.findMyAllFiles(req.user.id);
   }
 
-  @UseGuards(AuthGuard)
   @Get('FilesByEmployee/:employeeId')
   findAllByUser(@Param('employeeId') employeeId: string) {
     return this.googleDriveFilesService.findAllFilesByUser(employeeId);

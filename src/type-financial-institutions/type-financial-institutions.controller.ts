@@ -6,14 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TypeFinancialInstitutionsService } from './type-financial-institutions.service';
 import { CreateTypeFinancialInstitutionDto } from './dto/create-type-financial-institution.dto';
 import { UpdateTypeFinancialInstitutionDto } from './dto/update-type-financial-institution.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @ApiTags('type-financial-institutions')
 @Controller('type-financial-institutions')
+@UseGuards(AuthGuard)
 export class TypeFinancialInstitutionsController {
   constructor(
     private readonly typeFinancialInstitutionsService: TypeFinancialInstitutionsService,

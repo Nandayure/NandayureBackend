@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AnnuitiesService } from './annuities.service';
 import { CreateAnnuityDto } from './dto/create-annuity.dto';
 import { UpdateAnnuityDto } from './dto/update-annuity.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('annuites')
 @Controller('annuities')
+@UseGuards(AuthGuard)
 export class AnnuitiesController {
   constructor(private readonly annuitiesService: AnnuitiesService) {}
 

@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { RequestsStateService } from './requests-state.service';
 import { CreateRequestsStateDto } from './dto/create-requests-state.dto';
 import { UpdateRequestsStateDto } from './dto/update-requests-state.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('requests-state')
 @Controller('requests-state')
+@UseGuards(AuthGuard)
 export class RequestsStateController {
   constructor(private readonly requestsStateService: RequestsStateService) {}
 

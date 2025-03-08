@@ -6,12 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { DriveFolderService } from './drive-folder.service';
 import { CreateDriveFolderDto } from './dto/create-drive-folder.dto';
 import { UpdateDriveFolderDto } from './dto/update-drive-folder.dto';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('drive-folder')
 @Controller('drive-folder')
+@UseGuards(AuthGuard)
 export class DriveFolderController {
   constructor(private readonly driveFolderService: DriveFolderService) {}
 

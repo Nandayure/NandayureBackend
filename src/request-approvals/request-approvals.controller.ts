@@ -15,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('request-approvals')
 @Controller('request-approvals')
+@UseGuards(AuthGuard)
 export class RequestApprovalsController {
   constructor(
     private readonly requestApprovalsService: RequestApprovalsService,
@@ -25,7 +26,6 @@ export class RequestApprovalsController {
     return this.requestApprovalsService.findAll();
   }
 
-  @UseGuards(AuthGuard)
   @Get('currentToApprove')
   findCurrentToApprove(@Req() req) {
     return this.requestApprovalsService.findCurrentRequestToApprove(
@@ -38,7 +38,6 @@ export class RequestApprovalsController {
     return this.requestApprovalsService.findByRequestId(+id);
   }
 
-  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,

@@ -1,8 +1,10 @@
-import { Controller, Get, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Delete, UseGuards } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('requests')
 @Controller('requests')
+@UseGuards(AuthGuard)
 export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 

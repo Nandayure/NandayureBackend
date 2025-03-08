@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { TokenExpiredException } from 'src/core/exceptions/TokenExpiredException';
 //import { jwtConstants } from '../constants/jwt.contants';
 
 @Injectable()
@@ -30,7 +31,7 @@ export class AuthGuard implements CanActivate {
       });
       request.user = payload;
     } catch (error) {
-      throw new UnauthorizedException('Sesión expirada');
+      throw new TokenExpiredException();
     }
 
     return true;

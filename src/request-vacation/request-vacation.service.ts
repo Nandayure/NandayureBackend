@@ -246,7 +246,8 @@ export class RequestVacationService {
     mayor: Employee,
     EmployeeId: string,
   ) {
-    const isMayor = mayor.User.Roles.some((role) => role.id === 4)
+    const requester = await this.employeeRService.findRequester(EmployeeId);
+    const isMayor = requester.User.Roles.some((role) => role.id === 4)
       ? true
       : false;
 

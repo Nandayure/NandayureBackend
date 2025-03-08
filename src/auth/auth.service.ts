@@ -84,14 +84,10 @@ export class AuthService {
         surname1: userToLogin.Employee.Surname1,
         surname2: userToLogin.Employee.Surname2,
         email: userToLogin.Employee.Email,
-<<<<<<< HEAD
+        isBirthday,
         access_token: await this.jwtService.signAsync(payload, {
           expiresIn: '1d',
         }),
-=======
-        isBirthday,
-        access_token: await this.jwtService.signAsync(payload),
->>>>>>> 676d90e38759fcd133b8c0f04bd46189ea1f4c02
       };
     } catch (error) {
       if (error instanceof UnauthorizedException) {

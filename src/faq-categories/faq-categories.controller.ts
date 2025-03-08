@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { FaqCategoriesService } from './faq-categories.service';
 import { CreateFaqCategoryDto } from './dto/create-faq-category.dto';
 import { UpdateFaqCategoryDto } from './dto/update-faq-category.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('faq_categories')
 @Controller('faq-categories')
+@UseGuards(AuthGuard)
 export class FaqCategoriesController {
   constructor(private readonly faqCategoriesService: FaqCategoriesService) {}
 

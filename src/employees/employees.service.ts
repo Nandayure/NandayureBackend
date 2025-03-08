@@ -104,6 +104,17 @@ export class EmployeesService {
     });
   }
 
+  async findRequester(employeeId: string) {
+    return await this.employeeRepository.findOne({
+      where: { id: employeeId },
+      relations: {
+        User: {
+          Roles: true,
+        },
+      },
+    });
+  }
+
   async findOneByEmail(email: string) {
     return await this.employeeRepository.findOne({
       where: { Email: email },

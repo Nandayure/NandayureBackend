@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { OvertimesService } from './overtimes.service';
 import { CreateOvertimeDto } from './dto/create-overtime.dto';
 import { UpdateOvertimeDto } from './dto/update-overtime.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('overtimes')
 @Controller('overtimes')
+@UseGuards(AuthGuard)
 export class OvertimesController {
   constructor(private readonly overtimesService: OvertimesService) {}
 

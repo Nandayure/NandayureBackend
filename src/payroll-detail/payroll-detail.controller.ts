@@ -6,14 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PayrollDetailService } from './payroll-detail.service';
 import { CreatePayrollDetailDto } from './dto/create-payroll-detail.dto';
 import { UpdatePayrollDetailDto } from './dto/update-payroll-detail.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @ApiTags('payroll-detail')
 @Controller('payroll-detail')
+@UseGuards(AuthGuard)
 export class PayrollDetailController {
   constructor(private readonly payrollDetailService: PayrollDetailService) {}
 

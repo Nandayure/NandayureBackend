@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { HttpExceptionFilter } from './core/exceptions/HttpExceptionFilter';
+// import { HttpExceptionFilter } from './core/exceptions/HttpExceptionFilter';
+import { AllExceptionsFilter } from './core/exceptions/AllExceptionsFilter';
 //import { AllExceptionsFilter } from './core/exceptions/AllExceptionsFilter';
 
 async function bootstrap() {
@@ -18,8 +19,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  app.useGlobalFilters(new HttpExceptionFilter());
-  // app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
+  // app.useGlobalFilters(new HttpExceptionFilter());
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
   const config = new DocumentBuilder()
     .setTitle('HR department')
     .setDescription('Endpoints')

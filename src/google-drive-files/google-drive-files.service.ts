@@ -4,7 +4,6 @@ import {
   Inject,
   ConflictException,
   NotFoundException,
-  BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
 import { CreateGoogleDriveFileDto } from './dto/create-google-drive-file.dto';
@@ -96,7 +95,7 @@ export class GoogleDriveFilesService {
         fields: 'id',
       });
 
-      //await this.createSubFolders(file.data.id);
+      await this.createSubFolders(file.data.id);
 
       return file.data.id;
     } catch (e) {
@@ -155,9 +154,6 @@ export class GoogleDriveFilesService {
     }
   }
 
-  findAll() {
-    return `This action returns all googleDriveFiles`;
-  }
   async findMyAllFiles(id: string) {
     const userFolder = await this.driveFolderService.findOne(id);
     try {
@@ -170,12 +166,88 @@ export class GoogleDriveFilesService {
         q: `'${(await userFolder).FolderId}' in parents`,
         pageSize: 10,
         fields:
-          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink)',
+          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, mimeType)',
         supportsAllDrives: true,
         orderby: 'odifiedTime desc',
       });
       console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
       return res.data.files;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getMyFolders(id: string) {
+    try {
+      const userFolder = await this.driveFolderService.findOne(id);
+      if (!userFolder) {
+        throw new NotFoundException(
+          'El usuario no tiene un forder en Google Drive',
+        );
+      }
+      const res = await this.driveClient.files.list({
+        q: `'${userFolder.FolderId}' in parents and mimeType='application/vnd.google-apps.folder'`,
+
+        pageSize: 10,
+        // mimeType: 'application/vnd.google-apps.folder',
+        fields:
+          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink)',
+        supportsAllDrives: true,
+        orderBy: 'modifiedTime desc',
+      });
+      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+      return res.data.files;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getEmployeeFolders(employeeId: string) {
+    try {
+      console.log('Employee ID:', employeeId);
+      const userFolder = await this.driveFolderService.findOne(employeeId);
+      if (!userFolder) {
+        throw new NotFoundException(
+          'El usuario no tiene un forder en Google Drive',
+        );
+      }
+      const res = await this.driveClient.files.list({
+        q: `'${userFolder.FolderId}' in parents and mimeType='application/vnd.google-apps.folder'`,
+
+        pageSize: 10,
+        // mimeType: 'application/vnd.google-apps.folder',
+        fields:
+          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink)',
+        supportsAllDrives: true,
+        orderBy: 'modifiedTime desc',
+      });
+      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+      return res.data.files;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async createNewFolder(id: string, folderName: string) {
+    const userFolder = await this.driveFolderService.findOne(id);
+    try {
+      if (!userFolder) {
+        throw new NotFoundException(
+          'El usuario no tiene un forder en Google Drive',
+        );
+      }
+      const fileMetadata = {
+        name: folderName,
+        mimeType: 'application/vnd.google-apps.folder',
+        parents: [userFolder.FolderId],
+      };
+
+      const file = await this.driveClient.files.create({
+        requestBody: fileMetadata,
+        fields: 'id',
+      });
+
+      return file.data;
     } catch (e) {
       throw e;
     }
@@ -197,6 +269,46 @@ export class GoogleDriveFilesService {
         orderby: 'odifiedTime desc',
       });
       console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+      return res.data.files;
+    } catch (e) {
+      throw e;
+    }
+  }
+  async findAllFilesByFolder(userId: string, folderId: string) {
+    try {
+      // const userFolder = await this.driveFolderService.findOne(userId);
+      // if (!userFolder) {
+      //   throw new NotFoundException(
+      //     'El usuario no tiene un forder en Google Drive',
+      //   );
+      // }
+
+      // // Verificar si folderId pertenece a userFolder.id
+      // const folderMetadata = await this.driveClient.files.get({
+      //   fileId: folderId,
+      //   fields: 'parents',
+      //   supportsAllDrives: true,
+      // });
+
+      // console.log(folderMetadata.data.parents);
+      // if (
+      //   !folderMetadata.data.parents ||
+      //   !folderMetadata.data.parents.includes(userFolder.FolderId)
+      // ) {
+      //   throw new ForbiddenException(
+      //     'El folder no pertenece al usuario o no está dentro de su folder principal',
+      //   );
+      // }
+
+      const res = await this.driveClient.files.list({
+        q: `'${folderId}' in parents`,
+        pageSize: 10,
+        fields:
+          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType,parents)',
+        supportsAllDrives: true,
+        orderby: 'odifiedTime desc',
+      });
+
       return res.data.files;
     } catch (e) {
       throw e;
@@ -285,33 +397,35 @@ export class GoogleDriveFilesService {
     }
   }
 
-  async findOne(id: number) {
-    return `This action returns a #${id} googleDriveFile`;
-  }
+  async remove(fileId: string) {
+    const file = await this.driveClient.files.get({
+      fileId,
+      fields: 'owners, driveId, capabilities(canDelete, canTrash)',
+      supportsAllDrives: true,
+    });
 
-  // update(id: number, updateGoogleDriveFileDto: UpdateGoogleDriveFileDto) {
-  //   return `This action updates a #${id} googleDriveFile`;
-  // }
+    const canDelete = file.data.capabilities?.canDelete || false;
+    const canTrash = file.data.capabilities?.canTrash || false;
 
-  remove(id: number) {
-    return `This action removes a #${id} googleDriveFile`;
-  }
-
-  async listFiles() {
-    console.log('Listando archivos...');
-    try {
-      const res = await this.driveClient.files.list({
-        q: "'1n5yRIbHad04XUx3qh2ZrSIaDkeaXhHBN' in parents ",
-        pageSize: 10,
-        fields: 'nextPageToken, files(id, name, webViewLink, thumbnailLink)',
-        supportsAllDrives: true,
-        orderby: 'odifiedTime desc',
-      });
-      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
-      return res.data.files;
-    } catch (error) {
-      console.error('Error listing files:', error);
-      throw new Error('Failed to list files');
+    if (!canDelete && !canTrash) {
+      throw new Error(
+        'El archivo fue subido manualmente en Google Drive y no se puede eliminar desde la aplicación. Intente eliminarlo directamente desde Google Drive.',
+      );
     }
+
+    if (canDelete) {
+      await this.driveClient.files.delete({
+        fileId,
+        supportsAllDrives: true,
+      });
+    } else if (canTrash) {
+      await this.driveClient.files.update({
+        fileId,
+        requestBody: { trashed: true },
+        supportsAllDrives: true,
+      });
+    }
+
+    return { message: 'Archivo eliminado correctamente' };
   }
 }

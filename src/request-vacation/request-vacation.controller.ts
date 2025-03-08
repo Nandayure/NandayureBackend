@@ -16,12 +16,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('request-vacation')
 @Controller('request-vacation')
+@UseGuards(AuthGuard)
 export class RequestVacationController {
   constructor(
     private readonly requestVacationService: RequestVacationService,
   ) {}
 
-  @UseGuards(AuthGuard)
   @Post()
   create(
     @Req() req,

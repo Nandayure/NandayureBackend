@@ -6,13 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AttendanceStatusService } from './attendance-status.service';
 import { CreateAttendanceStatusDto } from './dto/create-attendance-status.dto';
 import { UpdateAttendanceStatusDto } from './dto/update-attendance-status.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('attendance-status')
 @Controller('attendance-status')
+@UseGuards(AuthGuard)
 export class AttendanceStatusController {
   constructor(
     private readonly attendanceStatusService: AttendanceStatusService,

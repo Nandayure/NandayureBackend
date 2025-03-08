@@ -6,14 +6,17 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { BudgetCodesService } from './budget-codes.service';
 import { CreateBudgetCodeDto } from './dto/create-budget-code.dto';
 import { UpdateBudgetCodeDto } from './dto/update-budget-code.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @ApiTags('budget-codes')
 @Controller('budget-codes')
+@UseGuards(AuthGuard)
 export class BudgetCodesController {
   constructor(private readonly budgetCodesService: BudgetCodesService) {}
 

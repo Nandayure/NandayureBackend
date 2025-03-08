@@ -17,11 +17,12 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @ApiTags('request-payment-confirmations')
 @Controller('request-payment-confirmations')
+@UseGuards(AuthGuard)
 export class RequestPaymentConfirmationsController {
   constructor(
     private readonly requestPaymentConfirmationsService: RequestPaymentConfirmationsService,
   ) {}
-  @UseGuards(AuthGuard)
+
   @Post()
   create(
     @Req() req,

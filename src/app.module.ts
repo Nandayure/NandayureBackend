@@ -38,6 +38,7 @@ import { GoogleDriveFilesModule } from './google-drive-files/google-drive-files.
 import { DriveFolderModule } from './drive-folder/drive-folder.module';
 import { FaqCategoriesModule } from './faq-categories/faq-categories.module';
 import { FaqsModule } from './faqs/faqs.module';
+import { AnaliticsModule } from './analitics/analitics.module';
 
 @Module({
   imports: [
@@ -82,6 +83,7 @@ import { FaqsModule } from './faqs/faqs.module';
     DriveFolderModule,
     FaqCategoriesModule,
     FaqsModule,
+    AnaliticsModule,
   ],
 
   controllers: [AppController],

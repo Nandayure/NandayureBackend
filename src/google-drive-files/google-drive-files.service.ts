@@ -2,7 +2,6 @@ import { Response } from 'express';
 import {
   Injectable,
   Inject,
-  ConflictException,
   NotFoundException,
   ForbiddenException,
 } from '@nestjs/common';
@@ -11,6 +10,7 @@ import { CreateGoogleDriveFileDto } from './dto/create-google-drive-file.dto';
 import { ConfigService } from '@nestjs/config';
 import { DriveFolderService } from 'src/drive-folder/drive-folder.service';
 import { Readable } from 'stream';
+
 //import { DriveFolderService } from 'src/drive-folder/drive-folder.service';
 //import { GoogleDriveService } from 'nestjs-googledrive-upload';
 //MUNICIPALITY_FOLDER_ID
@@ -37,15 +37,15 @@ export class GoogleDriveFilesService {
   ) {
     try {
       // console.log(file);
-      const userFolder = await this.driveFolderService.findOne(
-        createGoogleDriveFileDto.EmployeeId,
-      );
+      // const userFolder = await this.driveFolderService.findOne(
+      //   createGoogleDriveFileDto.EmployeeId,
+      // );
 
-      if (!userFolder) {
-        throw new ConflictException(
-          'El usuario no tiene un forder en Google Drive',
-        );
-      }
+      // if (!userFolder) {
+      //   throw new ConflictException(
+      //     'El usuario no tiene un forder en Google Drive',
+      //   );
+      // }
 
       // if (!userFolder) {
       //   const user = await this.employeesService.findOneById(
@@ -64,7 +64,7 @@ export class GoogleDriveFilesService {
         requestBody: {
           name: `${createGoogleDriveFileDto.FileName}.${file.mimetype.split('/')[1]}`,
           mimeType: file.mimetype,
-          parents: [userFolder.FolderId],
+          parents: [createGoogleDriveFileDto.FolderId],
         },
         media: {
           mimeType: file.mimetype,
@@ -274,14 +274,56 @@ export class GoogleDriveFilesService {
       throw e;
     }
   }
-  async findAllFilesByFolder(userId: string, folderId: string) {
+  async findAllFilesByFolder(folderId: string) {
     try {
-      // const userFolder = await this.driveFolderService.findOne(userId);
+      // const userFolder = await this.driveFolderService.findOne(
+      //   getFilesByFolderDto.userId,
+      // );
       // if (!userFolder) {
       //   throw new NotFoundException(
       //     'El usuario no tiene un forder en Google Drive',
       //   );
       // }
+
+      // // Verificar si folderId pertenece a userFolder.id
+      // const folderMetadata = await this.driveClient.files.get({
+      //   fileId: folderId,
+      //   fields: 'parents',
+      //   supportsAllDrives: true,
+      // });
+
+      // console.log(folderMetadata.data.parents);
+      // if (
+      //   !folderMetadata.data.parents ||
+      //   !folderMetadata.data.parents.includes(userFolder.FolderId)
+      // ) {
+      //   throw new ForbiddenException(
+      //     'El folder no pertenece al usuario o no está dentro de su folder principal',
+      //   );
+      // }
+
+      const res = await this.driveClient.files.list({
+        q: `'${folderId}' in parents`,
+        pageSize: 10,
+        fields:
+          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType,parents)',
+        supportsAllDrives: true,
+        orderby: 'odifiedTime desc',
+      });
+
+      return res.data.files;
+    } catch (e) {
+      throw e;
+    }
+  }
+  async findAllMyFilesByFolder(userId: string, folderId: string) {
+    try {
+      const userFolder = await this.driveFolderService.findOne(userId);
+      if (!userFolder) {
+        throw new NotFoundException(
+          'El usuario no tiene un forder en Google Drive',
+        );
+      }
 
       // // Verificar si folderId pertenece a userFolder.id
       // const folderMetadata = await this.driveClient.files.get({

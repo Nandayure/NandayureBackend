@@ -317,44 +317,39 @@ export class GoogleDriveFilesService {
     }
   }
   async findAllMyFilesByFolder(userId: string, folderId: string) {
-    try {
-      const userFolder = await this.driveFolderService.findOne(userId);
-      if (!userFolder) {
-        throw new NotFoundException(
-          'El usuario no tiene un forder en Google Drive',
-        );
-      }
-
-      // // Verificar si folderId pertenece a userFolder.id
-      // const folderMetadata = await this.driveClient.files.get({
-      //   fileId: folderId,
-      //   fields: 'parents',
-      //   supportsAllDrives: true,
-      // });
-
-      // console.log(folderMetadata.data.parents);
-      // if (
-      //   !folderMetadata.data.parents ||
-      //   !folderMetadata.data.parents.includes(userFolder.FolderId)
-      // ) {
-      //   throw new ForbiddenException(
-      //     'El folder no pertenece al usuario o no está dentro de su folder principal',
-      //   );
-      // }
-
-      const res = await this.driveClient.files.list({
-        q: `'${folderId}' in parents`,
-        pageSize: 10,
-        fields:
-          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType,parents)',
-        supportsAllDrives: true,
-        orderby: 'odifiedTime desc',
-      });
-
-      return res.data.files;
-    } catch (e) {
-      throw e;
+    const userFolder = await this.driveFolderService.findOne(userId);
+    if (!userFolder) {
+      throw new NotFoundException(
+        'El usuario no tiene un forder en Google Drive',
+      );
     }
+
+    // Verificar si folderId pertenece a userFolder.id
+    const folderMetadata = await this.driveClient.files.get({
+      fileId: folderId,
+      fields: 'parents',
+      supportsAllDrives: true,
+    });
+
+    if (
+      !folderMetadata.data.parents ||
+      !folderMetadata.data.parents.includes(userFolder.FolderId)
+    ) {
+      throw new ForbiddenException(
+        'El folder no pertenece al usuario o no está dentro de su folder principal',
+      );
+    }
+
+    const res = await this.driveClient.files.list({
+      q: `'${folderId}' in parents`,
+      pageSize: 10,
+      fields:
+        'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType,parents)',
+      supportsAllDrives: true,
+      orderby: 'odifiedTime desc',
+    });
+
+    return res.data.files;
   }
 
   async downloadFile(fileId: string, res: Response) {

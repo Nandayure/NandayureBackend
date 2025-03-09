@@ -1,47 +1,20 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AnaliticsService } from './analitics.service';
-import { CreateAnaliticDto } from './dto/create-analitic.dto';
-import { UpdateAnaliticDto } from './dto/update-analitic.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/auth/auth-roles/roles.decorator';
+import { Role } from 'src/auth/auth-roles/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('analitics')
 @ApiTags('analitics')
+// @Roles(Role.RRHH)
+// @UseGuards(RolesGuard, AuthGuard)
 export class AnaliticsController {
   constructor(private readonly analiticsService: AnaliticsService) {}
 
-  @Post()
-  create(@Body() createAnaliticDto: CreateAnaliticDto) {
-    return this.analiticsService.create(createAnaliticDto);
-  }
-
-  @Get()
-  findAll() {
-    return this.analiticsService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.analiticsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateAnaliticDto: UpdateAnaliticDto,
-  ) {
-    return this.analiticsService.update(+id, updateAnaliticDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.analiticsService.remove(+id);
+  @Get('requestsSummary')
+  getRequestsSummary() {
+    return this.analiticsService.getRequestsSummary();
   }
 }

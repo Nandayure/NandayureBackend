@@ -25,6 +25,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/auth-roles/roles.decorator';
 import { Role } from 'src/auth/auth-roles/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+
 @ApiTags('google-drive-files')
 @Controller('google-drive-files')
 @UseGuards(AuthGuard)
@@ -82,13 +83,21 @@ export class GoogleDriveFilesController {
     return this.googleDriveFilesService.findAllFilesByUser(employeeId);
   }
 
-  //Este es el que se usa luego de entrar en una carpeta para listar los archivos dentro de ella(Funciona tanto para la vista de yeilin como para la de un empleado ya que solo necesita el folderId)
+  //Este es el que se usa luego de entrar en una carpeta para listar los archivos dentro de ella(Funciona solo para la vista del usuario logueado que ve sus propios archivos)
   @Get('MyFilesByFolder/:folderId')
-  findAllByFolder(@Param('folderId') folderId: string, @Req() req) {
-    return this.googleDriveFilesService.findAllFilesByFolder(
+  findAllFilesByFolder(@Param('folderId') folderId: string, @Req() req) {
+    return this.googleDriveFilesService.findAllMyFilesByFolder(
       req.user.id,
       folderId,
     );
+  }
+
+  //Este es el que se usa luego de entrar en una carpeta para listar los archivos dentro de ella(Funciona solo para que yeilin pueda ver los archivos de un empleado)
+  @Roles(Role.RRHH)
+  @UseGuards(RolesGuard)
+  @Get('FilesByFolder/:folderId')
+  findAllByFolder(@Param('folderId') folderId: string) {
+    return this.googleDriveFilesService.findAllFilesByFolder(folderId);
   }
 
   //Este es el que se usa para descargar un archivo de los que se listaron con el de arriba y sin importar la vista solo necesita el fileId

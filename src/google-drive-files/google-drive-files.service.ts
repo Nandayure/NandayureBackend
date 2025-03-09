@@ -126,6 +126,12 @@ export class GoogleDriveFilesService {
           parents: [parentFolderId],
         },
         {
+          name: 'Expedientes digitales',
+          mimeType: 'application/vnd.google-apps.folder',
+          description: 'Carpeta de otros documentos',
+          parents: [parentFolderId],
+        },
+        {
           name: 'Otros',
           mimeType: 'application/vnd.google-apps.folder',
           description: 'Carpeta de otros documentos',

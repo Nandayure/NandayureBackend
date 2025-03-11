@@ -9,6 +9,6 @@ import { RequestsState } from './entities/requests-state.entity';
   imports: [TypeOrmModule.forFeature([RequestsState])],
   controllers: [RequestsStateController],
   providers: [RequestsStateService, RequestStateRepository],
-  exports: [RequestsStateService],
+  exports: [RequestsStateService, RequestStateRepository],
 })
 export class RequestsStateModule {}

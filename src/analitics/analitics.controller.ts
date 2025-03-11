@@ -5,7 +5,7 @@ import { Roles } from 'src/auth/auth-roles/roles.decorator';
 import { Role } from 'src/auth/auth-roles/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
-import { GetTopEmployeesWithMostRequestsDto } from './dto/getTopEmployeesWithMostRequests.dto';
+import { GetTopEmployeesMostRequestsDto } from './dto/GetTopEmployeesMostRequestsDto';
 
 @Controller('analitics')
 @ApiTags('analitics')
@@ -26,7 +26,7 @@ export class AnaliticsController {
   @Post('employeesWithMostRequests')
   getRequest(
     @Body()
-    getTopEmployeesWithMostRequestsDto: GetTopEmployeesWithMostRequestsDto,
+    getTopEmployeesWithMostRequestsDto: GetTopEmployeesMostRequestsDto,
   ) {
     return this.analiticsService.employeesWithMostRequests(
       getTopEmployeesWithMostRequestsDto,

@@ -5,7 +5,7 @@ import { plainToClass } from 'class-transformer';
 import { RequestStateRepository } from 'src/requests-state/repository/request-state.repository';
 import { RequestTypeRepository } from 'src/request-types/repository/request-types.repository';
 import { useAnalitics } from './helpers/useAnalitics';
-import { GetTopEmployeesWithMostRequestsDto } from './dto/getTopEmployeesWithMostRequests.dto';
+import { GetTopEmployeesMostRequestsDto } from './dto/GetTopEmployeesMostRequestsDto';
 
 @Injectable()
 export class AnaliticsService {
@@ -81,7 +81,7 @@ export class AnaliticsService {
   }
 
   async employeesWithMostRequests(
-    getTopEmployeesWithMostRequestsDto: GetTopEmployeesWithMostRequestsDto,
+    getTopEmployeesWithMostRequestsDto: GetTopEmployeesMostRequestsDto,
   ) {
     const { limit, month, year } = getTopEmployeesWithMostRequestsDto;
     return await this.requestRepository.getTopEmployeesWithMostRequests({

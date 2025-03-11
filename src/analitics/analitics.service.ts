@@ -2,10 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { RequestRepository } from 'src/requests/repository/request.repository';
 import { RequestsSummaryDto } from 'src/analitics/dto/RequestsSummaryDto';
 import { plainToClass } from 'class-transformer';
+import { RequestStateRepository } from 'src/requests-state/repository/request-state.repository';
+import { RequestTypeRepository } from 'src/request-types/repository/request-types.repository';
+import { useAnalitics } from './helpers/useAnalitics';
+import { GetTopEmployeesWithMostRequestsDto } from './dto/getTopEmployeesWithMostRequests.dto';
 
 @Injectable()
 export class AnaliticsService {
-  constructor(private readonly requestRepository: RequestRepository) {}
+  private analiticsHelper;
+  constructor(
+    private readonly requestRepository: RequestRepository,
+    private readonly requestStateRepository: RequestStateRepository,
+    private readonly requestTypeRepository: RequestTypeRepository,
+  ) {
+    this.analiticsHelper = useAnalitics(
+      this.requestStateRepository,
+      this.requestTypeRepository,
+    );
+  }
 
   async getRequestsSummary(): Promise<RequestsSummaryDto> {
     // Obtener total de solicitudes
@@ -20,27 +34,36 @@ export class AnaliticsService {
       await this.requestRepository.getRequestStatusCounts();
 
     // Mapear los datos obtenidos
-    const vacationRequests = this.mapRequestType(
+    const vacationRequests = await this.analiticsHelper.mapRequestType(
       requestTypeCounts,
       1,
       totalRequests,
     );
-    const salaryCertificateRequests = this.mapRequestType(
+    const salaryCertificateRequests = await this.analiticsHelper.mapRequestType(
       requestTypeCounts,
       2,
       totalRequests,
     );
-    const paymentConfirmationRequests = this.mapRequestType(
-      requestTypeCounts,
+    const paymentConfirmationRequests =
+      await this.analiticsHelper.mapRequestType(
+        requestTypeCounts,
+        3,
+        totalRequests,
+      );
+
+    const totalPending = await this.analiticsHelper.mapRequestStatus(
+      requestStatusCounts,
+      1,
+    );
+    const totalApproved = await this.analiticsHelper.mapRequestStatus(
+      requestStatusCounts,
+      2,
+    );
+    const totalRejected = await this.analiticsHelper.mapRequestStatus(
+      requestStatusCounts,
       3,
-      totalRequests,
     );
 
-    const totalPending = this.mapRequestStatus(requestStatusCounts, 1);
-    const totalApproved = this.mapRequestStatus(requestStatusCounts, 2);
-    const totalRejected = this.mapRequestStatus(requestStatusCounts, 3);
-
-    // Retornar DTO
     return plainToClass(
       RequestsSummaryDto,
       {
@@ -57,34 +80,19 @@ export class AnaliticsService {
     );
   }
 
-  private mapRequestType(data: any[], typeId: number, total: number) {
-    const entry = data.find((d) => d.typeId === typeId);
-    return {
-      name: this.getRequestTypeName(typeId),
-      total: entry ? parseInt(entry.total, 10) : 0,
-      percentage: entry ? (parseInt(entry.total, 10) / total) * 100 : 0,
-    };
+  async employeesWithMostRequests(
+    getTopEmployeesWithMostRequestsDto: GetTopEmployeesWithMostRequestsDto,
+  ) {
+    const { limit, month, year } = getTopEmployeesWithMostRequestsDto;
+    return await this.requestRepository.getTopEmployeesWithMostRequests({
+      limit,
+      month,
+      year,
+    });
   }
 
-  private mapRequestStatus(data: any[], statusId: number) {
-    const entry = data.find((d) => d.statusId === statusId);
-    return {
-      status: this.getRequestStatusName(statusId),
-      total: entry ? parseInt(entry.total, 10) : 0,
-    };
-  }
-
-  private getRequestTypeName(typeId: number): string {
-    const types = {
-      1: 'Vacaciones',
-      2: 'Constancia salarial',
-      3: 'Boleta de pago',
-    };
-    return types[typeId] || 'Unknown';
-  }
-
-  private getRequestStatusName(statusId: number): string {
-    const statuses = { 1: 'Pendiente', 2: 'Aprovada', 3: 'Rechazada' };
-    return statuses[statusId] || 'Unknown';
+  async avaiableMonthsAndYears() {
+    const response = await this.requestRepository.getDates();
+    return response;
   }
 }

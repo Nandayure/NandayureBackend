@@ -7,6 +7,6 @@ import { RequestTypeRepository } from './repository/request-types.repository';
 @Module({
   imports: [TypeOrmModule.forFeature([RequestType])],
   providers: [RequestTypesService, RequestTypeRepository],
-  exports: [RequestTypesService],
+  exports: [RequestTypesService, RequestTypeRepository],
 })
 export class RequestTypesModule {}

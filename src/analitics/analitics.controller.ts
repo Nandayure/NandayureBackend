@@ -1,4 +1,4 @@
-import { Body, Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AnaliticsService } from './analitics.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/auth-roles/roles.decorator';
@@ -23,7 +23,7 @@ export class AnaliticsController {
   test() {
     return this.analiticsService.avaiableMonthsAndYears();
   }
-  @Get('employeesWithMostRequests')
+  @Post('employeesWithMostRequests')
   getRequest(
     @Body()
     getTopEmployeesWithMostRequestsDto: GetTopEmployeesWithMostRequestsDto,

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 //import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,7 +18,7 @@ import { TokenGuard } from './guards/token.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   async Login(@Body() loginDto: LoginDto) {
@@ -49,6 +49,19 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto.Email);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('check-email')
+  async checkEmail(@Query('email') email: string) {
+    const exists = await this.authService.emailExists(email);
+    return { exists };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('check-id')
+  async checkId(@Query('id') id: string) {
+    const exists = await this.authService.idExists(id);
+    return { exists };
+  }
   //Crear endpoind para cambiar contraseña.
 
   // @Roles(Role.Admin)

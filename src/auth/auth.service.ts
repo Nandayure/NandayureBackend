@@ -26,7 +26,7 @@ export class AuthService {
     private readonly mailClient: MailClientService,
     private readonly configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) { }
 
   async login({ EmployeeId, Password }: LoginDto) {
     try {
@@ -168,5 +168,23 @@ export class AuthService {
     }
 
     return this.userService.updatePassword(EmployeeId, newPassword);
+  }
+
+  async emailExists(email: string) {
+    try {
+      const user = await this.userService.findOneByEmail(email);
+      return !!user;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async idExists(id: string) {
+    try {
+      const user = await this.userService.findOneById(id);
+      return !!user;
+    } catch (error) {
+      return false;
+    }
   }
 }

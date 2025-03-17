@@ -80,6 +80,17 @@ export class RequestRepository
       .getRawMany();
   }
 
+  async getPeakRequestTimes() {
+    return await this.requestGenericRepository
+      .createQueryBuilder('request')
+      .select('HOUR(request.date)', 'hour')
+      .addSelect('DAYOFWEEK(request.date)', 'dayOfWeek')
+      .addSelect('COUNT(request.id)', 'totalRequests')
+      .groupBy('HOUR(request.date), DAYOFWEEK(request.date)')
+      .orderBy('totalRequests', 'DESC')
+      .getRawMany();
+  }
+
   async getDates() {
     const response = await this.requestGenericRepository
       .createQueryBuilder('request')
@@ -100,18 +111,6 @@ export class RequestRepository
     console.log(formattedResult);
     return formattedResult;
   }
-  // async getAvailableYearsWithMonths() {
-  //   return await this.requestGenericRepository
-  //     .createQueryBuilder('request')
-  //     .select('YEAR(request.date)', 'year')
-  //     .addSelect(
-  //       'GROUP_CONCAT(DISTINCT MONTH(request.date) ORDER BY MONTH(request.date))',
-  //       'months',
-  //     ) // 🔹 Agrupa los meses por año
-  //     .groupBy('YEAR(request.date)')
-  //     .orderBy('year', 'DESC')
-  //     .getRawMany<{ year: number; months: string }>(); // 🔹 `months` será una string con valores separados por comas
-  // }
 
   async getAvailableYearsWithMonths() {
     const rawData = await this.requestGenericRepository

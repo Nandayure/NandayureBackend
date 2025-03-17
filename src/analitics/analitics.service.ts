@@ -95,4 +95,8 @@ export class AnaliticsService {
     const response = await this.requestRepository.getDates();
     return response;
   }
+
+  async getPeakRequestTimes() {
+    return await this.requestRepository.getPeakRequestTimes();
+  }
 }

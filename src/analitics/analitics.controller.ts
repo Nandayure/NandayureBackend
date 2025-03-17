@@ -32,4 +32,9 @@ export class AnaliticsController {
       getTopEmployeesWithMostRequestsDto,
     );
   }
+
+  @Get('peak-request-times')
+  async getPeakRequestTimes() {
+    return this.analiticsService.getPeakRequestTimes();
+  }
 }

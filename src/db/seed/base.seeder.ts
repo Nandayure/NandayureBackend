@@ -11,7 +11,7 @@ import JobPositionSeeder from 'src/job-positions/seed/jobPosition.seeder';
 import EmployeeSeeder from 'src/employees/seeds/employee.seeder';
 import UserSeeder from 'src/users/seed/users.seeder';
 import type_financial_institutionSeeder from 'src/type-financial-institutions/seed/typeFinantialInstitution.seeder';
-import FinancialInstitutionSeeder from 'src/financial-institutions/seed/financialInstitution.seeder';
+// import FinancialInstitutionSeeder from 'src/financial-institutions/seed/financialInstitution.seeder';
 import StudyCategorySeeder from 'src/studies-category/seed/studyCategory.seeder';
 import StudySeeder from 'src/studies/seed/study.seeder';
 import OvertimeSeeder from 'src/overtimes/seed/overtimes.seeder';
@@ -24,7 +24,7 @@ export default class BaseSeeder implements Seeder {
   public async run(dataSource: DataSource): Promise<void> {
     const municipalitySedder = new MunicipalitySeeder();
     const roleSedder = new RoleSeeder();
-    const financialInstitutionSeeder = new FinancialInstitutionSeeder();
+    // const financialInstitutionSeeder = new FinancialInstitutionSeeder();
     const genderSeeder = new GenderSeeder();
     const maritalStatusSeeder = new MaritalStatusSeeder();
     const budgetCodeSeeder = new BudgetCodeSeeder();
@@ -44,7 +44,7 @@ export default class BaseSeeder implements Seeder {
 
     await municipalitySedder.run(dataSource);
     await typeInstitutionSeeder.run(dataSource);
-    await financialInstitutionSeeder.run(dataSource);
+    // await financialInstitutionSeeder.run(dataSource);
     await roleSedder.run(dataSource);
     await genderSeeder.run(dataSource);
     await maritalStatusSeeder.run(dataSource);
@@ -66,7 +66,7 @@ export default class BaseSeeder implements Seeder {
     const departmentRepository = dataSource.getRepository('Department');
     await departmentRepository.update(
       { name: 'RECURSOS HUMANOS' },
-      { departmentHeadId: '504950876' },
+      { departmentHeadId: '504510677' },
     );
   }
 }

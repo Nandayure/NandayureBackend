@@ -11,29 +11,36 @@ export default class UserSeeder implements Seeder {
     dataSource: DataSource,
     //factoryManager: SeederFactoryManager,
   ): Promise<void> {
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
-    await dataSource.query('TRUNCATE `user`;');
-    await dataSource.query('TRUNCATE `user_roles`;');
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
+    // await dataSource.query('TRUNCATE `user`;');
+    // await dataSource.query('TRUNCATE `user_roles`;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
 
     const Userrepository = dataSource.getRepository(User);
     const Rolerepository = dataSource.getRepository(Role);
 
     const defaultPassword = await bcrypt.hash('#Desarrollo', 10);
 
-    const adminRole = await Rolerepository.findOneBy({ RoleName: 'RH' });
     const userRole = await Rolerepository.findOneBy({ RoleName: 'USER' });
-    // const mayorRole = await Rolerepository.findOneBy({ RoleName: 'VA' });
+    const departmentHeadRole = await Rolerepository.findOneBy({
+      RoleName: 'DEPARTMENT_HEAD',
+    });
+    const adminRole = await Rolerepository.findOneBy({ RoleName: 'RH' });
 
-    const data: DefaultUserDto[] = defaultEmployeesData.map((employee) => ({
-      id: employee.id,
+    // const data: DefaultUserDto[] = defaultEmployeesData.map((employee) => ({
+    //   id: employee.id,
+    //   Password: defaultPassword,
+    //   Roles: [userRole],
+    // }));
+
+    const data: DefaultUserDto = {
+      id: defaultEmployeesData.id,
       Password: defaultPassword,
-      Roles: [userRole],
-    }));
-
-    for (let i = 0; i <= 4; i++) {
-      data[i].Roles = [...data[i].Roles, adminRole];
-    }
+      Roles: [userRole, departmentHeadRole, adminRole],
+    };
+    // for (let i = 0; i <= 4; i++) {
+    //   data[i].Roles = [...data[i].Roles, adminRole];
+    // }
 
     await Userrepository.save(data);
   }

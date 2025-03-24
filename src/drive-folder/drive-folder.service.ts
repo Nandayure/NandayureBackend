@@ -14,6 +14,7 @@ export class DriveFolderService {
       );
 
       if (existFolder) {
+        console.log('La carpeta ya existe', existFolder.FolderId);
         return {
           message: 'La carpeta ya existe',
           folder: existFolder.FolderId,
@@ -21,8 +22,10 @@ export class DriveFolderService {
       }
 
       const newFolder = this.driveFolderRepository.create(createDriveFolderDto);
-
-      return this.driveFolderRepository.save(newFolder);
+      console.log('Nueva carpeta', newFolder);
+      const saved = await this.driveFolderRepository.save(newFolder);
+      console.log('Carpeta guardada', saved);
+      return saved;
     } catch (error) {
       throw error;
     }

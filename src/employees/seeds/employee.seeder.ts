@@ -12,14 +12,13 @@ export default class EmployeeSeeder implements Seeder {
     const app = await NestFactory.createApplicationContext(AppModule);
     const googleDriveService = app.get(GoogleDriveFilesService);
 
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
-
-    await dataSource.query('TRUNCATE `employee`;');
-    await dataSource.query(
-      'TRUNCATE `employee_financial_institutions_financial_institution`;',
-    );
-    await dataSource.query('TRUNCATE `employee_studies`;');
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
+    // await dataSource.query('TRUNCATE `employee`;');
+    // await dataSource.query(
+    //   'TRUNCATE `employee_financial_institutions_financial_institution`;',
+    // );
+    // await dataSource.query('TRUNCATE `employee_studies`;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
     // const repositoryInstitutions =
     //   dataSource.getRepository(FinancialInstitution);
 
@@ -38,7 +37,7 @@ export default class EmployeeSeeder implements Seeder {
 
     await googleDriveService.createMainFolder(
       defaultEmployeesData.id,
-      `${defaultEmployeesData.Name} ${defaultEmployeesData.Surname1} TEST`,
+      `${defaultEmployeesData.Name} ${defaultEmployeesData.Surname1}`,
     );
   }
 }

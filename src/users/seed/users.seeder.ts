@@ -11,10 +11,10 @@ export default class UserSeeder implements Seeder {
     dataSource: DataSource,
     //factoryManager: SeederFactoryManager,
   ): Promise<void> {
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
-    await dataSource.query('TRUNCATE `user`;');
-    await dataSource.query('TRUNCATE `user_roles`;');
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
+    // await dataSource.query('TRUNCATE `user`;');
+    // await dataSource.query('TRUNCATE `user_roles`;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
 
     const Userrepository = dataSource.getRepository(User);
     const Rolerepository = dataSource.getRepository(Role);

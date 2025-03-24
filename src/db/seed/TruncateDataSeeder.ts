@@ -1,0 +1,35 @@
+import { DataSource } from 'typeorm';
+import { Seeder } from 'typeorm-extension';
+
+export default class TruncateDataSeeder implements Seeder {
+  public async run(dataSource: DataSource): Promise<void> {
+    await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
+    await dataSource.query('TRUNCATE `municipality`;');
+    await dataSource.query('TRUNCATE `type_financial_institution`;');
+    await dataSource.query('TRUNCATE `financial_institution`;');
+    await dataSource.query('TRUNCATE `role`;');
+    await dataSource.query('TRUNCATE `gender`;');
+    await dataSource.query('TRUNCATE `marital_status`;');
+    await dataSource.query('TRUNCATE `budget_code`;');
+    await dataSource.query('TRUNCATE `department_program`;');
+    await dataSource.query('TRUNCATE `department`;');
+    await dataSource.query('TRUNCATE `job_position`;');
+    await dataSource.query('TRUNCATE `studies_category`;');
+    await dataSource.query('TRUNCATE `study`;');
+    await dataSource.query('TRUNCATE `employee`;');
+    await dataSource.query(
+      'TRUNCATE `employee_financial_institutions_financial_institution`;',
+    );
+    await dataSource.query('TRUNCATE `employee_studies`;');
+    await dataSource.query('TRUNCATE `user`;');
+    await dataSource.query('TRUNCATE `drive_folder`;');
+    await dataSource.query('TRUNCATE `user_roles`;');
+    await dataSource.query('TRUNCATE `overtime`;');
+    await dataSource.query('TRUNCATE `annuity`;');
+    await dataSource.query('TRUNCATE `labor_code_regulation`;');
+    await dataSource.query('TRUNCATE `requests_state`;');
+    await dataSource.query('TRUNCATE `request_type`;');
+    await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
+    console.log('📌 Truncate');
+  }
+}

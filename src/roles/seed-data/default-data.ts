@@ -17,4 +17,8 @@ export const defaultRoleData: CreateRoleDto[] = [
     RoleName: 'VA',
     Description: 'Rol de usuario Alcalde o Vicealcalde',
   },
+  {
+    RoleName: 'DEPARTMENT_HEAD',
+    Description: 'Jefe de departamento',
+  },
 ];

@@ -19,9 +19,12 @@ import AnnuitySeeder from 'src/annuities/seed/annuity.seeder';
 import LaborCodeRegulationSeeder from 'src/labor-code-regulations/seed/roles.seeder';
 import RequestsStateSeeder from 'src/requests-state/seed/requestState.seeder';
 import RequestTypeSeeder from 'src/request-types/seed/RequestType.seeder';
+import TruncateDataSeeder from './TruncateDataSeeder';
+// import TruncateSeeder from './truncate.seeder';
 
 export default class BaseSeeder implements Seeder {
   public async run(dataSource: DataSource): Promise<void> {
+    const truncateSeeder = new TruncateDataSeeder();
     const municipalitySedder = new MunicipalitySeeder();
     const roleSedder = new RoleSeeder();
     const financialInstitutionSeeder = new FinancialInstitutionSeeder();
@@ -42,6 +45,7 @@ export default class BaseSeeder implements Seeder {
     const requestsStateSeeder = new RequestsStateSeeder();
     const requestTypeSeeder = new RequestTypeSeeder();
 
+    await truncateSeeder.run(dataSource);
     await municipalitySedder.run(dataSource);
     await typeInstitutionSeeder.run(dataSource);
     await financialInstitutionSeeder.run(dataSource);
@@ -66,7 +70,7 @@ export default class BaseSeeder implements Seeder {
     const departmentRepository = dataSource.getRepository('Department');
     await departmentRepository.update(
       { name: 'RECURSOS HUMANOS' },
-      { departmentHeadId: '504950876' },
+      { departmentHeadId: '504510677' },
     );
   }
 }

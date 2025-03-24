@@ -5,7 +5,7 @@ import { defaultMunicipalityData } from '../seed-data/default-data';
 
 export default class MunicipalitySeeder implements Seeder {
   public async run(dataSource: DataSource): Promise<void> {
-    await dataSource.query('TRUNCATE `municipality`;');
+    // await dataSource.query('TRUNCATE `municipality`;');
     const repository = dataSource.getRepository(Municipality);
 
     await repository.insert([defaultMunicipalityData]);

@@ -8,9 +8,9 @@ export default class StudyCategorySeeder implements Seeder {
     dataSource: DataSource,
     //factoryManager: SeederFactoryManager,
   ): Promise<void> {
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
-    await dataSource.query('TRUNCATE `studies_category`;');
-    await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 0;');
+    // await dataSource.query('TRUNCATE `studies_category`;');
+    // await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');
     const repository = dataSource.getRepository(StudiesCategory);
 
     await repository.insert(defaultStudyCategoryData);

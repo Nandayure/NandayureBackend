@@ -97,11 +97,6 @@ export class GoogleDriveFilesService {
 
       await this.createSubFolders(file.data.id);
 
-      await this.driveFolderService.create({
-        id: EmployeeId,
-        FolderId: file.data.id,
-      });
-
       return file.data.id;
     } catch (e) {
       throw new Error(`Failed to create folder:  Reason: ${e.message}`);

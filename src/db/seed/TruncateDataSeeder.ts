@@ -27,6 +27,8 @@ export default class TruncateDataSeeder implements Seeder {
     await dataSource.query('TRUNCATE `overtime`;');
     await dataSource.query('TRUNCATE `annuity`;');
     await dataSource.query('TRUNCATE `labor_code_regulation`;');
+    await dataSource.query('TRUNCATE `request_approval`;');
+    await dataSource.query('TRUNCATE `request`;');
     await dataSource.query('TRUNCATE `requests_state`;');
     await dataSource.query('TRUNCATE `request_type`;');
     await dataSource.query('SET FOREIGN_KEY_CHECKS = 1;');

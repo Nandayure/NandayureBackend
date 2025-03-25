@@ -48,12 +48,13 @@ export class EmployeesService {
       );
       const employeeWholeName = `${created.Name} ${created.Surname1}`;
 
+      console.log('entra');
       const folder = await this.googleDriveFilesService.createMainFolder(
         newEmployee.id,
         employeeWholeName,
       );
 
-      console.log(folder);
+      // console.log(folder);
       const newDriveFolder = this.driveFolderRepository.create({
         id: created.id,
         FolderId: folder,

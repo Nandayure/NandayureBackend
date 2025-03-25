@@ -29,7 +29,7 @@ export const defaultEmployeesData: defaultEmployee =
     AvailableVacationDays: 15,
     MaritalStatusId: 2,
     GenderId: 1,
-    JobPositionId: 1,
+    JobPositionId: 3,
   };
 // {
 //   id: '118860626',

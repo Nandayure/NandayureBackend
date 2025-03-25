@@ -54,7 +54,7 @@ export class EmployeesService {
         employeeWholeName,
       );
 
-      console.log(folder);
+      // console.log(folder);
       const newDriveFolder = this.driveFolderRepository.create({
         id: created.id,
         FolderId: folder,

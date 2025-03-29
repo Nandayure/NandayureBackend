@@ -39,6 +39,7 @@ import { DriveFolderModule } from './drive-folder/drive-folder.module';
 import { FaqCategoriesModule } from './faq-categories/faq-categories.module';
 import { FaqsModule } from './faqs/faqs.module';
 import { AnaliticsModule } from './analitics/analitics.module';
+import { HolidaysModule } from './holidays/holidays.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { AnaliticsModule } from './analitics/analitics.module';
     FaqCategoriesModule,
     FaqsModule,
     AnaliticsModule,
+    HolidaysModule,
   ],
 
   controllers: [AppController],

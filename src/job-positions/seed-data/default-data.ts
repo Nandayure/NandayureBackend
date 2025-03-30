@@ -22,7 +22,7 @@ export const defaultJobPositionsData: CreateJobPositionDto[] = [
     baseSalary: 4500.0,
     globalSalary: 5000.0,
     extrafees: 500.0,
-    DepartmentId: 1,
+    DepartmentId: 3,
   },
   {
     Name: 'Secret. Mun',

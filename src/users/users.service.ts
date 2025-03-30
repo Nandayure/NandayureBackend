@@ -36,6 +36,7 @@ export class UsersService {
         Password: hashedPassword,
         Roles: [initialRole],
       });
+      //usar una cola
       await this.mailClient.sendWelcomeMail({
         to: createUserDto.Email,
         subject: 'Bienvenido',
@@ -46,7 +47,6 @@ export class UsersService {
 
       return await queryRunner.manager.save(user);
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException({
         message: 'Error al crear el usuario: ' + error.message,
       });

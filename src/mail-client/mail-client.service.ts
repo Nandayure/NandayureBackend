@@ -12,7 +12,8 @@ export class MailClientService {
   constructor(private readonly mailService: MailerService) {}
 
   async sendWelcomeMail(createMailClientDto: CreateMailClientDto) {
-    this.mailService.sendMail({
+    // try { usar una cola porque este correo es muy importante y no se puede perder
+    await this.mailService.sendMail({
       from: 'RH-Nandayure',
       to: createMailClientDto.to,
       subject: createMailClientDto.subject,
@@ -33,37 +34,45 @@ export class MailClientService {
   }
 
   async sendRecoverPasswordMail(createMailClientDto: CreateMailClientDto) {
-    this.mailService.sendMail({
-      from: 'RH-Nandayure',
-      to: createMailClientDto.to,
-      subject: createMailClientDto.subject,
-      text: createMailClientDto?.message,
-      html: await RecoverPasswordMail(createMailClientDto.RecoverPasswordURL),
-      attachments: [
-        {
-          filename: 'MuniLogo',
-          path: './src/mail-client/assets/MuniLogo.jpeg',
-          cid: 'logoImage',
-        },
-      ],
-    });
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: createMailClientDto.to,
+        subject: createMailClientDto.subject,
+        text: createMailClientDto?.message,
+        html: await RecoverPasswordMail(createMailClientDto.RecoverPasswordURL),
+        attachments: [
+          {
+            filename: 'MuniLogo',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('❌ Error al enviar RequestResolutionMail:', error);
+    }
   }
 
   async sendRequestConfirmationMail(mail: string, requestType: string) {
-    this.mailService.sendMail({
-      from: 'RH-Nandayure',
-      to: mail,
-      subject: `Solicitud de ${requestType} enviada`,
-      text: 'Su solicitud ha sido enviada con éxito, pronto recibirá una respuesta',
-      html: await RequestConfirmationMail(requestType),
-      attachments: [
-        {
-          filename: 'MuniLogo',
-          path: './src/mail-client/assets/MuniLogo.jpeg',
-          cid: 'logoImage',
-        },
-      ],
-    });
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: mail,
+        subject: `Solicitud de ${requestType} enviada`,
+        text: 'Su solicitud ha sido enviada con éxito, pronto recibirá una respuesta',
+        html: await RequestConfirmationMail(requestType),
+        attachments: [
+          {
+            filename: 'MuniLogo',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('❌ Error al enviar RequestResolutionMail:', error);
+    }
   }
 
   async sendApproverNotificationMail(
@@ -72,24 +81,28 @@ export class MailClientService {
     requesterName: string,
     requestType: string,
   ) {
-    this.mailService.sendMail({
-      from: 'RH-Nandayure',
-      to: approverMail,
-      subject: `Nueva solicitud de ${requestType}`,
-      text: `Se ha creado una nueva solicitud a nombre de ${requesterName}   numero de cédula: ${requesterId} que necesita su aprobación`,
-      html: await ApproverNotificationMail(
-        requesterId,
-        requesterName,
-        requestType,
-      ),
-      attachments: [
-        {
-          filename: 'MuniLogo',
-          path: './src/mail-client/assets/MuniLogo.jpeg',
-          cid: 'logoImage',
-        },
-      ],
-    });
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: approverMail,
+        subject: `Nueva solicitud de ${requestType}`,
+        text: `Se ha creado una nueva solicitud a nombre de ${requesterName}   numero de cédula: ${requesterId} que necesita su aprobación`,
+        html: await ApproverNotificationMail(
+          requesterId,
+          requesterName,
+          requestType,
+        ),
+        attachments: [
+          {
+            filename: 'MuniLogo',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('❌ Error al enviar RequestResolutionMail:', error);
+    }
   }
 
   async sendRequestResolution(
@@ -97,19 +110,23 @@ export class MailClientService {
     requestType: string,
     approved: boolean,
   ) {
-    this.mailService.sendMail({
-      from: 'RH-Nandayure',
-      to: requesterEmail,
-      subject: `Respuesta de solicitud de ${requestType}`,
-      html: await RequestResolutionMail(approved, requestType),
-      attachments: [
-        {
-          filename: 'MuniLogo',
-          path: './src/mail-client/assets/MuniLogo.jpeg',
-          cid: 'logoImage',
-        },
-      ],
-    });
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: requesterEmail,
+        subject: `Respuesta de solicitud de ${requestType}`,
+        html: await RequestResolutionMail(approved, requestType),
+        attachments: [
+          {
+            filename: 'MuniLogo',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('❌ Error al enviar RequestResolutionMail:', error);
+    }
   }
 }
 

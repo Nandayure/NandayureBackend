@@ -61,7 +61,7 @@ export class MaritalStatusService {
         error: 'No existe el el estado civil con id: ' + id,
       });
     }
-    console.log('maritalStatusToEdit', maritalStatusToEdit);
+
     const maritalStatusUpdated = await this.maritarStatusRepository.save({
       ...maritalStatusToEdit,
       ...updateMaritalStatusDto,

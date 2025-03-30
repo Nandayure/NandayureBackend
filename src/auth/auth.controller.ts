@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 //import { Request } from 'express';
 import { AuthService } from './auth.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -18,7 +27,7 @@ import { TokenGuard } from './guards/token.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   async Login(@Body() loginDto: LoginDto) {
@@ -71,7 +80,6 @@ export class AuthController {
   // async SayHi(@Req() request: Request) {
   //   //request trae el payload desencriptado de el guard
   //   const user = (request as any).user; //buscar la forma de agregar tipo aqui y en el guard
-  //   console.log(user);
   //   return;
   // }
 

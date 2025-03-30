@@ -108,7 +108,6 @@ export class RequestRepository
       months: entry.months.split(',').map(Number), // 🔹 Convierte la string "3,4" en [3,4]
     }));
 
-    console.log(formattedResult);
     return formattedResult;
   }
 

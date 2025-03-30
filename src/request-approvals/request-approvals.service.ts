@@ -99,6 +99,7 @@ export class RequestApprovalsService {
         updated.requesterId,
       );
       //Case request is rejected
+
       if (mailType === false) {
         this.mailClient.sendRequestResolution(
           requester.Email,
@@ -118,6 +119,7 @@ export class RequestApprovalsService {
         const nextApprover = await this.employeeRepository.findOneById(
           nextStep.approverId,
         );
+
         this.mailClient.sendApproverNotificationMail(
           nextApprover.Email,
           requester.id,
@@ -125,6 +127,7 @@ export class RequestApprovalsService {
           request.RequestType.name,
         );
       }
+
       return updated;
     } catch (e) {
       await queryRunner.rollbackTransaction();
@@ -180,7 +183,6 @@ export class RequestApprovalsService {
       },
       order: { processNumber: 'ASC' },
     });
-    console.log('nextStep', nextStep);
 
     if (updated.approved) {
       if (nextStep) {
@@ -198,7 +200,6 @@ export class RequestApprovalsService {
           employee.AvailableVacationDays -=
             request.RequestVacation.daysRequested;
           await queryRunner.manager.save(employee);
-          console.log(employee);
         }
       }
     } else {

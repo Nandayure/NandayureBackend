@@ -6,7 +6,8 @@ import { HolidayRepositoryInterface } from './holiday.interface';
 
 export class HolidayRepository
   extends BaseAbstractRepostitory<Holiday>
-  implements HolidayRepositoryInterface {
+  implements HolidayRepositoryInterface
+{
   constructor(
     @InjectRepository(Holiday)
     private readonly holidayGenericRepository: Repository<Holiday>,

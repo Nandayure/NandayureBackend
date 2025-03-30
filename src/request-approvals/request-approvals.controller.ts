@@ -45,7 +45,6 @@ export class RequestApprovalsController {
     @Body()
     updateRequestApprovalDto: UpdateRequestApprovalDto,
   ) {
-    console.log(req.user.id);
     return this.requestApprovalsService.update(
       +id,
       updateRequestApprovalDto,

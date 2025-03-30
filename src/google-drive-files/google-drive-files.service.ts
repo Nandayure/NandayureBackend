@@ -36,7 +36,6 @@ export class GoogleDriveFilesService {
     file: Express.Multer.File,
   ) {
     try {
-      // console.log(file);
       // const userFolder = await this.driveFolderService.findOne(
       //   createGoogleDriveFileDto.EmployeeId,
       // );
@@ -146,14 +145,11 @@ export class GoogleDriveFilesService {
             requestBody: folder,
             fields: 'id, name',
           });
-          console.log(
-            `Carpeta creada: ${response.data.name} (ID: ${response.data.id})`,
-          );
+
           return response.data.id; // Devuelve el ID de la carpeta creada
         }),
       );
 
-      console.log('Todas las carpetas creadas con éxito:', files);
       return files; // Devuelve los IDs de las carpetas creadas
     } catch (e) {
       throw new Error(`Failed to create folder:  Reason: ${e.message}`);
@@ -176,7 +172,7 @@ export class GoogleDriveFilesService {
         supportsAllDrives: true,
         orderby: 'odifiedTime desc',
       });
-      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+
       return res.data.files;
     } catch (e) {
       throw e;
@@ -201,7 +197,7 @@ export class GoogleDriveFilesService {
         supportsAllDrives: true,
         orderBy: 'modifiedTime desc',
       });
-      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+
       return res.data.files;
     } catch (e) {
       throw e;
@@ -210,7 +206,6 @@ export class GoogleDriveFilesService {
 
   async getEmployeeFolders(employeeId: string) {
     try {
-      console.log('Employee ID:', employeeId);
       const userFolder = await this.driveFolderService.findOne(employeeId);
       if (!userFolder) {
         throw new NotFoundException(
@@ -227,7 +222,7 @@ export class GoogleDriveFilesService {
         supportsAllDrives: true,
         orderBy: 'modifiedTime desc',
       });
-      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+
       return res.data.files;
     } catch (e) {
       throw e;
@@ -274,7 +269,7 @@ export class GoogleDriveFilesService {
         supportsAllDrives: true,
         orderby: 'odifiedTime desc',
       });
-      console.log('Respuesta de la API:', res.data); // Imprimir la respuesta completa
+
       return res.data.files;
     } catch (e) {
       throw e;
@@ -298,7 +293,6 @@ export class GoogleDriveFilesService {
       //   supportsAllDrives: true,
       // });
 
-      // console.log(folderMetadata.data.parents);
       // if (
       //   !folderMetadata.data.parents ||
       //   !folderMetadata.data.parents.includes(userFolder.FolderId)
@@ -422,7 +416,6 @@ export class GoogleDriveFilesService {
           `inline; filename="${fileName}${fileExtension}"`,
         );
 
-        console.log('Descargando archivo binario:', fileName);
         fileResponse.data.pipe(res);
       }
     } catch (e) {

@@ -45,7 +45,7 @@ export class GoogleDriveFilesController {
     if (!file) {
       throw new ConflictException('No se ha subido ningún archivo');
     }
-    //console.log(file);
+
     const resultado = await this.googleDriveFilesService.createFile(
       createGoogleDriveFileDto,
       file,

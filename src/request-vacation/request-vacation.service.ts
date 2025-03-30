@@ -275,7 +275,6 @@ export class RequestVacationService {
         'La solicitud fue aprobada automáticamente por el sistema en el proceso 3 ya que el solicitante tiene rol de Alcalde o Vicealcalde';
       approvals[2].ApprovedDate = new Date();
     }
-    console.log(mayor);
 
     // Find the first approval index not approved
     const firstNoApprovedIndex = approvals.findIndex(

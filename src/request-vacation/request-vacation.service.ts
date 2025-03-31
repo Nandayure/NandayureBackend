@@ -17,6 +17,7 @@ import { Department } from 'src/departments/entities/department.entity';
 import { Employee } from 'src/employees/entities/employee.entity';
 import { RequestsService } from 'src/requests/requests.service';
 import { RolesService } from 'src/roles/roles.service';
+import { HolidaysService } from 'src/holidays/holidays.service';
 
 @Injectable()
 export class RequestVacationService {
@@ -28,10 +29,43 @@ export class RequestVacationService {
     private readonly dataSource: DataSource,
     private readonly departmentService: DepartmentsService,
     private readonly mailClient: MailClientService,
+    private readonly holidayService: HolidaysService,
     private readonly roleService: RolesService,
   ) {}
 
+  async getAvailableDaysBetweenTwoDates(entryDate: Date, departureDate: Date) {
+    const start = new Date(entryDate); // Fecha de inicio
+    const end = new Date(departureDate); // Fecha de fin
+
+    let totalDays = 0; // Contador de días hábiles
+
+    while (start <= end) {
+      const dayOfWeek = start.getDay(); // Obtener el día de la semana (0-6, donde 0 es domingo y 6 es sábado)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        // Contar solo días hábiles (lunes a viernes y no festivos)
+        const isHoliday = await this.holidayService.isHoliday(start); // Verificar si es un día festivo
+        if (!isHoliday) {
+          totalDays++; // Incrementar el contador de días hábiles
+        }
+      }
+
+      start.setDate(start.getDate() + 1); // Avanzar al siguiente día
+    }
+
+    return totalDays; // Retornar el total de días hábiles
+  }
+
+  async calculateAvaiableDays(startDate: Date, endDate: Date) {
+    const totalDays = await this.getAvailableDaysBetweenTwoDates(
+      startDate,
+      endDate,
+    );
+
+    return { totalDays: totalDays };
+  }
+
   //this method is used to create a new vacation request, the request is related to the vacation request and the approvals
+
   async create(
     createRequestVacationDto: CreateRequestVacationDto,
     EmployeeId: string,

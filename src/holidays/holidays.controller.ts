@@ -18,7 +18,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 @Controller('holidays')
 @UseGuards(AuthGuard)
 export class HolidaysController {
-  constructor(private readonly holidaysService: HolidaysService) { }
+  constructor(private readonly holidaysService: HolidaysService) {}
 
   @Post()
   create(@Body() createHolidayDto: CreateHolidayDto) {

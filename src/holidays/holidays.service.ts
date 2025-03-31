@@ -1,41 +1,51 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
 import { HolidayRepository } from './repository/holiday.repository';
 
 @Injectable()
 export class HolidaysService {
-  constructor(private readonly holidayRepository: HolidayRepository) { }
+  constructor(private readonly holidayRepository: HolidayRepository) {}
+
+  async validateNewHoliday(createHolidayDto: CreateHolidayDto) {
+    const { specificDate, recurringDay, recurringMonth, isRecurringYearly } =
+      createHolidayDto;
+
+    if (isRecurringYearly) {
+      const holiday = await this.holidayRepository.findOne({
+        where: { recurringDay, recurringMonth, isRecurringYearly: true },
+      });
+      if (holiday) {
+        throw new ConflictException(
+          'Ya existe un día feriado recurrente con la misma fecha',
+        );
+      }
+    } else {
+      const dateObject = new Date(specificDate);
+      const holiday = await this.holidayRepository.findOne({
+        where: { specificDate: dateObject, isRecurringYearly: false },
+      });
+      if (holiday) {
+        throw new ConflictException(
+          'Ya existe un día feriado específico con la misma fecha',
+        );
+      }
+    }
+  }
 
   async create(createHolidayDto: CreateHolidayDto) {
-    try {
-      // Convertir date string a Date para la búsqueda
-      const dateObject = new Date(createHolidayDto.date);
+    await this.validateNewHoliday(createHolidayDto);
 
-      const holidayExists = await this.holidayRepository.findOne({
-        where: {
-          name: createHolidayDto.name,
-          date: dateObject
-        },
-      });
+    const newHoliday = this.holidayRepository.create({
+      ...createHolidayDto,
+      createdAt: new Date(),
+    });
 
-      if (holidayExists) {
-        return { message: 'El día feriado ya existe: ' + holidayExists.name };
-      }
-
-      const newHoliday = this.holidayRepository.create({
-        ...createHolidayDto,
-        date: dateObject, 
-        createdAt: new Date(),
-      });
-
-      return this.holidayRepository.save(newHoliday);
-    } catch (error) {
-      console.error('Error:', error);
-      throw new InternalServerErrorException({
-        message: 'Error al crear el nuevo día feriado: ' + error.message,
-      });
-    }
+    return this.holidayRepository.save(newHoliday);
   }
 
   async findAll() {
@@ -46,6 +56,27 @@ export class HolidaysService {
     return await this.holidayRepository.findOneById(id);
   }
 
+  async isHoliday(date: Date) {
+    const holidays = await this.holidayRepository.findAll({
+      where: {
+        isActive: true,
+        isRecurringYearly: true,
+        recurringDay: date.getDay(),
+        recurringMonth: date.getMonth() + 1,
+      },
+    });
+
+    if (holidays.length > 0) {
+      return true;
+    }
+
+    const specificHoliday = await this.holidayRepository.findOne({
+      where: { specificDate: date, isRecurringYearly: false },
+    });
+
+    return specificHoliday ? true : false;
+  }
+
   async update(id: number, updateHolidayDto: UpdateHolidayDto) {
     try {
       const holidayToUpdate = await this.holidayRepository.findOneById(id);
@@ -54,10 +85,6 @@ export class HolidaysService {
       }
 
       const updatedData: any = { ...updateHolidayDto };
-      
-      if (updateHolidayDto.date) {
-        updatedData.date = new Date(updateHolidayDto.date);
-      }
 
       const updatedHoliday = await this.holidayRepository.save({
         ...holidayToUpdate,

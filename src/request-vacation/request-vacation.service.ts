@@ -76,10 +76,15 @@ export class RequestVacationService {
     await queryRunner.startTransaction();
 
     try {
+      const daysRequested = await this.getAvailableDaysBetweenTwoDates(
+        createRequestVacationDto.entryDate,
+        createRequestVacationDto.departureDate,
+      );
+
       // 2. Validate if the employee exists and if have enough days to request
       await this.employeeRService.validateAvaiableVacationsDays(
         EmployeeId,
-        createRequestVacationDto.daysRequested,
+        daysRequested,
       );
 
       //Validate if the employee has a pending request
@@ -117,7 +122,9 @@ export class RequestVacationService {
       // 7. Create the vacation request
       const newVacationRequest = this.requestVacationRepository.create({
         ...createRequestVacationDto,
-        RequestId: request.id, //Assign the request id to the vacation request
+        RequestId: request.id,
+        daysRequested: daysRequested,
+        //Assign the request id to the vacation request
       });
 
       // 8. Create the approval process

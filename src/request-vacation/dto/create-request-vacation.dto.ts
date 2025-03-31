@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNotEmpty } from 'class-validator';
+import { IsDateString, IsNotEmpty } from 'class-validator';
 
 export class CreateRequestVacationDto {
-  @ApiProperty()
-  @IsInt()
-  @IsNotEmpty()
-  daysRequested: number;
+  // @ApiProperty()
+  // @IsInt()
+  // @IsNotEmpty()
+  // daysRequested: number;
 
   @ApiProperty()
   @IsNotEmpty()

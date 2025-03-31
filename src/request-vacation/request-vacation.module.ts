@@ -10,6 +10,7 @@ import { DepartmentsModule } from 'src/departments/departments.module';
 import { RequestApprovalsModule } from 'src/request-approvals/request-approvals.module';
 import { MailClientModule } from 'src/mail-client/mail-client.module';
 import { RolesModule } from 'src/roles/roles.module';
+import { HolidaysModule } from 'src/holidays/holidays.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RolesModule } from 'src/roles/roles.module';
     DepartmentsModule,
     MailClientModule,
     RolesModule,
+    HolidaysModule,
   ],
   controllers: [RequestVacationController],
   providers: [RequestVacationService, requestVacationRepository],

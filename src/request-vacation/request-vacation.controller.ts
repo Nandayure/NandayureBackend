@@ -14,6 +14,8 @@ import { CreateRequestVacationDto } from './dto/create-request-vacation.dto';
 import { UpdateRequestVacationDto } from './dto/update-request-vacation.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { GetAvailableDaysDto } from './dto/get-avaible-days.dto';
+
 @ApiTags('request-vacation')
 @Controller('request-vacation')
 @UseGuards(AuthGuard)
@@ -30,6 +32,14 @@ export class RequestVacationController {
     return this.requestVacationService.create(
       createRequestVacationDto,
       req.user.id,
+    );
+  }
+
+  @Post('calculateRequestDays')
+  calculate(@Body() getAvailableDaysDto: GetAvailableDaysDto) {
+    return this.requestVacationService.calculateAvaiableDays(
+      getAvailableDaysDto.startDate,
+      getAvailableDaysDto.endDate,
     );
   }
 

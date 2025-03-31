@@ -64,8 +64,6 @@ export class GendersService {
         relations: ['employees'], // Corrige "Employees" si la relación se define como "employees"
       });
 
-      console.log('genreToRemove', genreToRemove.employees);
-
       if (!genreToRemove) {
         throw new NotFoundException('No existe el id del genero: ' + id);
       }

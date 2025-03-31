@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('holidays')
 export class Holiday {
@@ -8,8 +14,16 @@ export class Holiday {
   @Column({ type: 'varchar', length: 100 })
   name: string;
 
-  @Column({ type: 'date' })
-  date: Date;
+  // Para feriados no recurrentes (fecha específica con año)
+  @Column({ type: 'date', nullable: true })
+  specificDate: Date | null;
+
+  // Para feriados recurrentes (mes y día sin importar año)
+  @Column({ type: 'int', nullable: true })
+  recurringMonth: number | null;
+
+  @Column({ type: 'int', nullable: true })
+  recurringDay: number | null;
 
   @Column({ default: true })
   isActive: boolean;

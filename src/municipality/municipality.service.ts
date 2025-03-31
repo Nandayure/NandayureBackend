@@ -18,9 +18,7 @@ export class MunicipalityService {
 
   async getAll() {
     try {
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
   }
 
   async findOne(id: number) {

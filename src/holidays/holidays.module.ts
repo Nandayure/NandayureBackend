@@ -5,11 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Holiday } from './entities/holiday.entity';
 import { HolidayRepository } from './repository/holiday.repository';
 
-
 @Module({
   imports: [TypeOrmModule.forFeature([Holiday])],
   controllers: [HolidaysController],
   providers: [HolidaysService, HolidayRepository],
   exports: [HolidaysService],
 })
-export class HolidaysModule { }
+export class HolidaysModule {}

@@ -26,7 +26,7 @@ export class AuthService {
     private readonly mailClient: MailClientService,
     private readonly configService: ConfigService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) { }
+  ) {}
 
   async login({ EmployeeId, Password }: LoginDto) {
     try {
@@ -147,7 +147,7 @@ export class AuthService {
         await this.configService.get('ResetPasswordURL');
       const url = `${FrontendRecoverURL}?token=${token}`;
 
-      await this.mailClient.sendRecoverPasswordMail({
+      this.mailClient.sendRecoverPasswordMail({
         to: Email,
         subject: 'Recuperación de constraseña',
         RecoverPasswordURL: url,

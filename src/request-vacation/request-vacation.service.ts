@@ -17,6 +17,7 @@ import { Department } from 'src/departments/entities/department.entity';
 import { Employee } from 'src/employees/entities/employee.entity';
 import { RequestsService } from 'src/requests/requests.service';
 import { RolesService } from 'src/roles/roles.service';
+import { HolidaysService } from 'src/holidays/holidays.service';
 
 @Injectable()
 export class RequestVacationService {
@@ -28,10 +29,43 @@ export class RequestVacationService {
     private readonly dataSource: DataSource,
     private readonly departmentService: DepartmentsService,
     private readonly mailClient: MailClientService,
+    private readonly holidayService: HolidaysService,
     private readonly roleService: RolesService,
   ) {}
 
+  async getAvailableDaysBetweenTwoDates(entryDate: Date, departureDate: Date) {
+    const start = new Date(entryDate); // Fecha de inicio
+    const end = new Date(departureDate); // Fecha de fin
+
+    let totalDays = 0; // Contador de días hábiles
+
+    while (start <= end) {
+      const dayOfWeek = start.getDay(); // Obtener el día de la semana (0-6, donde 0 es domingo y 6 es sábado)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        // Contar solo días hábiles (lunes a viernes y no festivos)
+        const isHoliday = await this.holidayService.isHoliday(start); // Verificar si es un día festivo
+        if (!isHoliday) {
+          totalDays++; // Incrementar el contador de días hábiles
+        }
+      }
+
+      start.setDate(start.getDate() + 1); // Avanzar al siguiente día
+    }
+
+    return totalDays; // Retornar el total de días hábiles
+  }
+
+  async calculateAvaiableDays(startDate: Date, endDate: Date) {
+    const totalDays = await this.getAvailableDaysBetweenTwoDates(
+      startDate,
+      endDate,
+    );
+
+    return { totalDays: totalDays };
+  }
+
   //this method is used to create a new vacation request, the request is related to the vacation request and the approvals
+
   async create(
     createRequestVacationDto: CreateRequestVacationDto,
     EmployeeId: string,
@@ -42,10 +76,15 @@ export class RequestVacationService {
     await queryRunner.startTransaction();
 
     try {
+      const daysRequested = await this.getAvailableDaysBetweenTwoDates(
+        createRequestVacationDto.entryDate,
+        createRequestVacationDto.departureDate,
+      );
+
       // 2. Validate if the employee exists and if have enough days to request
       await this.employeeRService.validateAvaiableVacationsDays(
         EmployeeId,
-        createRequestVacationDto.daysRequested,
+        daysRequested,
       );
 
       //Validate if the employee has a pending request
@@ -83,7 +122,9 @@ export class RequestVacationService {
       // 7. Create the vacation request
       const newVacationRequest = this.requestVacationRepository.create({
         ...createRequestVacationDto,
-        RequestId: request.id, //Assign the request id to the vacation request
+        RequestId: request.id,
+        daysRequested: daysRequested,
+        //Assign the request id to the vacation request
       });
 
       // 8. Create the approval process
@@ -275,7 +316,6 @@ export class RequestVacationService {
         'La solicitud fue aprobada automáticamente por el sistema en el proceso 3 ya que el solicitante tiene rol de Alcalde o Vicealcalde';
       approvals[2].ApprovedDate = new Date();
     }
-    console.log(mayor);
 
     // Find the first approval index not approved
     const firstNoApprovedIndex = approvals.findIndex(

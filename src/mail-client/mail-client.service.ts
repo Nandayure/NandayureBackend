@@ -12,25 +12,28 @@ export class MailClientService {
   constructor(private readonly mailService: MailerService) {}
 
   async sendWelcomeMail(createMailClientDto: CreateMailClientDto) {
-    // try { usar una cola porque este correo es muy importante y no se puede perder
-    await this.mailService.sendMail({
-      from: 'RH-Nandayure',
-      to: createMailClientDto.to,
-      subject: createMailClientDto.subject,
-      text: createMailClientDto.message,
-      html: await WelcomeMail(
-        createMailClientDto.EmployeeId,
-        createMailClientDto.Password,
-        createMailClientDto.LoginURL,
-      ),
-      attachments: [
-        {
-          filename: 'MuniLogo',
-          path: './src/mail-client/assets/MuniLogo.jpeg',
-          cid: 'logoImage',
-        },
-      ],
-    });
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: createMailClientDto.to,
+        subject: createMailClientDto.subject,
+        text: createMailClientDto.message,
+        html: await WelcomeMail(
+          createMailClientDto.EmployeeId,
+          createMailClientDto.Password,
+          createMailClientDto.LoginURL,
+        ),
+        attachments: [
+          {
+            filename: 'MuniLogo',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      throw new Error('Error al enviar el correo electrónico');
+    }
   }
 
   async sendRecoverPasswordMail(createMailClientDto: CreateMailClientDto) {
@@ -50,7 +53,7 @@ export class MailClientService {
         ],
       });
     } catch (error) {
-      console.error('❌ Error al enviar RequestResolutionMail:', error);
+      throw new Error('Error al enviar el correo electrónico');
     }
   }
 

@@ -36,8 +36,8 @@ export class UsersService {
         Password: hashedPassword,
         Roles: [initialRole],
       });
-      //usar una cola
-      await this.mailClient.sendWelcomeMail({
+
+      this.mailClient.sendWelcomeMail({
         to: createUserDto.Email,
         subject: 'Bienvenido',
         LoginURL: await this.configService.get('FrontEndLoginURL'),

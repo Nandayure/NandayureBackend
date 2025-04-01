@@ -81,6 +81,10 @@ export class RequestVacationService {
         createRequestVacationDto.departureDate,
       );
 
+      if (daysRequested <= 0) {
+        throw new ConflictException('No se pueden solicitar días negativos');
+      }
+
       // 2. Validate if the employee exists and if have enough days to request
       await this.employeeRService.validateAvaiableVacationsDays(
         EmployeeId,

@@ -131,6 +131,7 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...clave privada...\n-----END P
 > - En **producción**, es recomendable usar un proveedor real como **Gmail** (usando App Passwords o OAuth2) o **Google Workspace** para asegurar la entrega de correos.
 >
 > - Asegurate de que la clave privada (`GOOGLE_PRIVATE_KEY`) mantenga los saltos de línea con `\n` escapados, como en el ejemplo, para evitar errores de autenticación.
+> - 
 > 🧠 **Nota importante sobre cuentas de Google:**
 >
 > Para el correcto funcionamiento del sistema, se recomienda crear una cuenta de Google exclusiva del proyecto institucional (ej. `sistemarrhh.nandayure@gmail.com`).  
@@ -150,6 +151,9 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...clave privada...\n-----END P
 
 1. Crear una cuenta en [Mailtrap.io](https://mailtrap.io/).
 2. Iniciar sesión y crear un nuevo inbox.
+<br>
+<img width="933" alt="ASDF" src="https://github.com/user-attachments/assets/91b0f693-fac9-48df-8707-6bffc4352e98" />
+<br>
 3. Elegir el inbox creado.
 4. Elegir la integración con **SMTP** y copiar:
    - `EMAIL_HOST`

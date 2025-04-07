@@ -2,7 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { RequestRepository } from './repository/request.repository';
 import { RequestsStateService } from 'src/requests-state/requests-state.service';
 import { EmployeesService } from 'src/employees/employees.service';
+import { buildRequestQuery } from './utils/build-request.query.util';
 import { QueryRunner } from 'typeorm';
+import { GetRequestsQueryDto } from './dto/get-requests-query.dto';
 
 @Injectable()
 export class RequestsService {
@@ -27,21 +29,32 @@ export class RequestsService {
     return await queryRunner.manager.save(request);
   }
 
-  async findAll() {
-    return await this.requestRepository.findAll({
-      relations: {
-        RequestApprovals: true,
-        RequestVacation: true,
-        RequestSalaryCertificate: true,
-        RequestPaymentConfirmation: true,
-        Employee: true,
-      },
-    });
-  }
+  async findAll(query: GetRequestsQueryDto) {
+    const { options, page, limit } = buildRequestQuery(query);
 
-  async findOne(id: number) {
-    return await this.requestRepository.findOneById(id);
+    const [data, totalItems] =
+      await this.requestRepository.findAllWithCount(options);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      data,
+      page,
+      limit,
+      totalItems,
+      totalPages,
+    };
   }
+  // return await this.requestRepository.findAll({
+  //   relations: {
+  //     RequestApprovals: true,
+  //     RequestVacation: true,
+  //     RequestSalaryCertificate: true,
+  //     RequestPaymentConfirmation: true,
+  //     Employee: true,
+  //   },
+  // });
+  // }
 
   async findPendingRequestsByRequester(requesterId: string) {
     return await this.requestRepository.findAll({
@@ -49,16 +62,24 @@ export class RequestsService {
     });
   }
 
-  async findAllRequestByEmployee(EmployeeId: string) {
-    return await this.requestRepository.findAll({
-      where: { EmployeeId: EmployeeId },
-      relations: {
-        RequestApprovals: true,
-        RequestVacation: true,
-        RequestSalaryCertificate: true,
-        RequestPaymentConfirmation: true,
-      },
-    });
+  async findAllRequestByEmployee(
+    EmployeeId: string,
+    query: GetRequestsQueryDto,
+  ) {
+    const { options, page, limit } = buildRequestQuery(query, EmployeeId);
+
+    const [data, totalItems] =
+      await this.requestRepository.findAllWithCount(options);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      data,
+      page,
+      limit,
+      totalItems,
+      totalPages,
+    };
   }
 
   async remove(id: number) {

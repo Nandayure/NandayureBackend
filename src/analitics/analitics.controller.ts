@@ -9,7 +9,7 @@ import { GetTopEmployeesMostRequestsDto } from './dto/GetTopEmployeesMostRequest
 
 @Controller('analitics')
 @ApiTags('analitics')
-@Roles(Role.RRHH, Role.Mayor)
+@Roles(Role.RRHH || Role.Mayor)
 @UseGuards(RolesGuard, AuthGuard)
 export class AnaliticsController {
   constructor(private readonly analiticsService: AnaliticsService) {}

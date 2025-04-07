@@ -16,6 +16,7 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 @ApiTags('employees')
 @Controller('employees')
 @UseGuards(AuthGuard)
+@Controller('employees')
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
@@ -24,14 +25,19 @@ export class EmployeesController {
     return this.employeesService.create(createEmployeeDto);
   }
 
+  @Get('deleted')
+  findDeleted() {
+    return this.employeesService.getEmployeesDeleted();
+  }
+
+  @Patch('restore/:id')
+  restore(@Param('id') id: string) {
+    return this.employeesService.restore(id);
+  }
+
   @Get()
   findAll() {
     return this.employeesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.employeesService.findOneById(id);
   }
 
   @Patch(':id')
@@ -44,6 +50,11 @@ export class EmployeesController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return id;
+    return this.employeesService.delete(id);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.employeesService.findOneById(id);
   }
 }

@@ -123,4 +123,20 @@ export class UsersService {
       });
     }
   }
+
+  async restore(id: string) {
+    const user = await this.userRepository.restore(id);
+    if (!user) {
+      throw new NotFoundException('Error al restaurar el usuario');
+    }
+  }
+
+  async UpdateUserStatus(id: string, status: boolean) {
+    const user = await this.userRepository.findOneById(id);
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    user.enabled = status;
+    return await this.userRepository.save(user);
+  }
 }

@@ -10,7 +10,7 @@ import { UsersService } from 'src/users/users.service';
 import { EmployeeRepository } from './repository/employee.repository';
 import { MaritalStatusService } from 'src/marital-status/marital-status.service';
 import { GendersService } from 'src/genders/genders.service';
-import { DataSource } from 'typeorm';
+import { DataSource, IsNull, Not } from 'typeorm';
 import { JobPositionsService } from 'src/job-positions/job-positions.service';
 import { GoogleDriveFilesService } from 'src/google-drive-files/google-drive-files.service';
 import { DriveFolderRepository } from 'src/drive-folder/repository/drive-folder.repository';
@@ -255,5 +255,41 @@ export class EmployeesService {
       throw new ConflictException('No existe un empleado con ese id');
     }
     return employeeWithDepartment.JobPosition.Department;
+  }
+
+  async delete(id: string) {
+    const employeeToDelete = await this.employeeRepository.findOne({
+      where: { id },
+      relations: ['User'], // 🧠 ¡esto es clave!
+    });
+    if (!employeeToDelete) {
+      throw new NotFoundException('El usuario no existe o ya fue elmininado');
+    }
+    return this.employeeRepository.softDelete(employeeToDelete);
+  }
+
+  async getEmployeesDeleted() {
+    const deletedEmployees = await this.employeeRepository.findDeleted();
+
+    console.log('deletedEmployees', deletedEmployees);
+    if (deletedEmployees.length === 0) {
+      throw new NotFoundException('No hay empleados eliminados');
+    }
+    return deletedEmployees;
+  }
+
+  async restore(id: string) {
+    const employeeToRestore = await this.employeeRepository.findOne({
+      where: { id, deletedAt: Not(IsNull()) },
+      withDeleted: true,
+      relations: ['User'],
+    });
+    if (!employeeToRestore) {
+      throw new NotFoundException('El empleado no está eliminado');
+    }
+    await this.employeeRepository.restore(employeeToRestore.id);
+    await this.userService.restore(employeeToRestore.User.id);
+
+    return { message: 'Empleado restaurado correctamente' };
   }
 }

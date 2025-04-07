@@ -58,6 +58,9 @@ export class RequestsService {
   // });
   // }
 
+  async findOne(id: number) {
+    return await this.requestRepository.findOneById(id);
+  }
   async findPendingRequestsByRequester(requesterId: string) {
     return await this.requestRepository.findAll({
       where: { EmployeeId: requesterId, RequestStateId: 1, RequestTypeId: 1 },

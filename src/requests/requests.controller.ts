@@ -35,6 +35,10 @@ export class RequestsController {
     return this.requestsService.findAllRequestByEmployee(EmployeeId, query);
   }
 
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.requestsService.findOne(+id);
+  }
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.requestsService.remove(+id);

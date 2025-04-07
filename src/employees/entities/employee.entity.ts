@@ -72,10 +72,12 @@ export class Employee {
 
   //agregar salario==============================================
 
-  @OneToOne(() => User, (user) => user.Employee)
+  @OneToOne(() => User, (user) => user.Employee, { cascade: ['soft-remove'] })
   User: User;
 
-  @OneToOne(() => DriveFolder, (DriveFolder) => DriveFolder.Employee)
+  @OneToOne(() => DriveFolder, (DriveFolder) => DriveFolder.Employee, {
+    cascade: ['soft-remove'],
+  })
   DriveFolder: DriveFolder;
 
   @ManyToOne(() => MaritalStatus, (maritalStatus) => maritalStatus.employees)

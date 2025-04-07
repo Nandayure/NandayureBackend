@@ -140,6 +140,16 @@ export class AuthService {
         jti: uuidv4(),
       };
 
+      if (!userToEdit) {
+        throw new NotFoundException('Correo electronico no encontrado!');
+      }
+
+      if (!userToEdit.enabled) {
+        throw new UnauthorizedException(
+          'Usuario inactivo, contacte al administrador de Recurso Humano',
+        );
+      }
+
       const token = await this.jwtService.signAsync(payload, {
         expiresIn: '10m',
       });
@@ -186,5 +196,15 @@ export class AuthService {
     } catch (error) {
       return false;
     }
+  }
+
+  async changeUserStatus(id: string, status: boolean) {
+    const userToEdit = await this.userService.findOneById(id);
+
+    if (!userToEdit) {
+      throw new NotFoundException('Usurio no encontrado!');
+    }
+
+    return this.userService.UpdateUserStatus(id, status);
   }
 }

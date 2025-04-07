@@ -14,4 +14,8 @@ export class UserRepository
   ) {
     super(userGenericRepository);
   } // Puedes agregar aquí métodos específicos para User si es necesario
+
+  async restore(id: string) {
+    return await this.userGenericRepository.restore(id);
+  }
 }

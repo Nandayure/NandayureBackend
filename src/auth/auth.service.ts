@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
+import { ChangeUserStatusDto } from './dto/change-user-status-dto';
 //import { SendmailerService } from 'src/sendmailer/sendmailer.service';
 
 @Injectable()
@@ -198,7 +199,8 @@ export class AuthService {
     }
   }
 
-  async changeUserStatus(id: string, status: boolean) {
+  async changeUserStatus(changeUserStatusDto: ChangeUserStatusDto) {
+    const { id, status } = changeUserStatusDto;
     const userToEdit = await this.userService.findOneById(id);
 
     if (!userToEdit) {

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Patch,
   Post,
   Put,
   Query,
@@ -17,6 +18,10 @@ import { ChangePasswordDto } from './dto/change-password-dto';
 import { ForgotPasswordDto } from './dto/forgot-password-dto';
 import { ResetPasswordDto } from './dto/reset-password-dto';
 import { TokenGuard } from './guards/token.guard';
+import { Roles } from 'src/auth/auth-roles/roles.decorator';
+import { Role } from 'src/auth/auth-roles/role.enum';
+import { ChangeUserStatusDto } from './dto/change-user-status-dto';
+import { RolesGuard } from './guards/roles.guard';
 // import { RegisterDto } from './dto/register-dto';
 // import { AuthGuard } from './guards/auth.guard';
 // import { RolesGuard } from './guards/roles.guard';
@@ -71,6 +76,13 @@ export class AuthController {
     const exists = await this.authService.idExists(id);
     return { exists };
   }
+  @Roles(Role.RRHH)
+  @UseGuards(RolesGuard)
+  @Patch('changeUserStatus')
+  async changeUserStatus(@Body() changeUserStatusDto: ChangeUserStatusDto) {
+    return await this.authService.changeUserStatus(changeUserStatusDto);
+  }
+
   //Crear endpoind para cambiar contraseña.
 
   // @Roles(Role.Admin)

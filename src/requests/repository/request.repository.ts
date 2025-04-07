@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
 import { Request } from '../entities/request.entity';
 import { BaseAbstractRepostitory } from 'src/core/generic-repository/repository/base.repository';
 import { RequestRepositoryInterface } from './request.interface';
@@ -148,5 +148,9 @@ export class RequestRepository
       )
       .groupBy('request.RequestTypeId')
       .getRawMany();
+  }
+
+  async findAllWithCount(options: FindManyOptions<Request>) {
+    return this.requestGenericRepository.findAndCount(options);
   }
 }

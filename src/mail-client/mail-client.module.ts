@@ -17,6 +17,9 @@ import { MailClientService } from './mail-client.service';
             pass: configService.get<string>('EMAIL_PASSWORD'),
           },
         },
+        defaults: {
+          from: `"Sistema de RRHH Nandayure" <${configService.get<string>('EMAIL_USERNAME')}>`,
+        },
       }),
     }),
   ],

@@ -43,6 +43,8 @@ export class RequestsService {
       limit,
       totalItems,
       totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
     };
   }
   // return await this.requestRepository.findAll({
@@ -79,6 +81,8 @@ export class RequestsService {
       limit,
       totalItems,
       totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
     };
   }
 

@@ -31,6 +31,7 @@ import { RolesGuard } from './guards/roles.guard';
 
 @ApiTags('auth')
 @Controller('auth')
+@UseGuards(AuthGuard)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -39,7 +40,6 @@ export class AuthController {
     return await this.authService.login(loginDto);
   }
 
-  @UseGuards(AuthGuard)
   @Post('change-password')
   async Register(@Req() req, @Body() changePasswordDto: ChangePasswordDto) {
     return await this.authService.changePassword(
@@ -49,7 +49,7 @@ export class AuthController {
     );
   }
 
-  @UseGuards(AuthGuard, TokenGuard)
+  @UseGuards(TokenGuard)
   @Put('reset-password')
   async resetPassword(@Req() req, @Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(
@@ -63,14 +63,12 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto.Email);
   }
 
-  @UseGuards(AuthGuard)
   @Get('check-email')
   async checkEmail(@Query('email') email: string) {
     const exists = await this.authService.emailExists(email);
     return { exists };
   }
 
-  @UseGuards(AuthGuard)
   @Get('check-id')
   async checkId(@Query('id') id: string) {
     const exists = await this.authService.idExists(id);

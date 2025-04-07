@@ -5,6 +5,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -26,13 +27,9 @@ export class RequestsController {
     return this.requestsService.findAll(query);
   }
 
-  //crear paginacion y filtros
-  @Get('/:EmployeeId')
-  findAllRequest(
-    @Param('EmployeeId') EmployeeId: string,
-    @Query() query: GetRequestsQueryDto,
-  ) {
-    return this.requestsService.findAllRequestByEmployee(EmployeeId, query);
+  @Get()
+  findAllRequest(@Req() req, @Query() query: GetRequestsQueryDto) {
+    return this.requestsService.findAllRequestByEmployee(req.user.id, query);
   }
 
   // @Get(':id')

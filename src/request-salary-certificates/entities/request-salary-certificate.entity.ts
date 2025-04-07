@@ -15,6 +15,9 @@ export class RequestSalaryCertificate {
   @Column({ nullable: true })
   reason: string;
 
+  @Column({ nullable: true })
+  date: Date;
+
   @Column({ unique: true })
   RequestId: number;
 

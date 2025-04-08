@@ -76,8 +76,9 @@ export class AuthController {
     const exists = await this.authService.idExists(id);
     return { exists };
   }
-  @Roles(Role.RRHH)
+
   @UseGuards(RolesGuard)
+  @Roles(Role.RRHH)
   @Patch('changeUserStatus')
   async changeUserStatus(@Body() changeUserStatusDto: ChangeUserStatusDto) {
     return await this.authService.changeUserStatus(changeUserStatusDto);

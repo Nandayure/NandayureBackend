@@ -51,6 +51,7 @@ export function buildRequestQuery(
       RequestVacation: true,
       RequestSalaryCertificate: true,
       RequestPaymentConfirmation: true,
+      Employee: true,
     },
     take,
     skip,

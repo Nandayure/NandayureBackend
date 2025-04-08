@@ -27,7 +27,7 @@ export class RequestsController {
     return this.requestsService.findAll(query);
   }
 
-  @Get()
+  @Get('ByEmployee')
   findAllRequest(@Req() req, @Query() query: GetRequestsQueryDto) {
     return this.requestsService.findAllRequestByEmployee(req.user.id, query);
   }

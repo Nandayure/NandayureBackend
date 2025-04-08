@@ -10,12 +10,12 @@ export class CreateRequestVacationDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
-  departureDate: Date;
+  entryDate: Date;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
-  entryDate: Date;
+  departureDate: Date;
 
   RequestId?: number;
 }

@@ -63,12 +63,6 @@ export class Employee {
   @Column()
   MaritalStatusId: number;
 
-  //por el momento es opcional
-  @Column({ nullable: true })
-  EmbargoId: number;
-
-  //agregar salario==============================================
-
   @OneToOne(() => User, (user) => user.Employee, { cascade: ['soft-remove'] })
   User: User;
 

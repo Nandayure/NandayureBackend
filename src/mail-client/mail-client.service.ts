@@ -6,6 +6,7 @@ import { RecoverPasswordMail } from './templates/RecoverPasswordMail';
 import { RequestConfirmationMail } from './templates/RequestConfirmationMail';
 import { ApproverNotificationMail } from './templates/ApproverNotificationMail';
 import { RequestResolutionMail } from './templates/RequestResolutionMail';
+import { CancelationRequestMailToApprover } from './templates/CancelationRequestMailToApprover';
 
 @Injectable()
 export class MailClientService {
@@ -33,6 +34,39 @@ export class MailClientService {
       });
     } catch (error) {
       throw new Error('Error al enviar el correo electrónico');
+    }
+  }
+
+  async sendCancelationRequestToApproverMail(
+    approverMail: string,
+    requesterId: string,
+    requesterName: string,
+    requestType: string,
+    requesterEmail: string,
+    cancelationReason: string,
+  ) {
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: approverMail,
+        subject: `Solicitud Cancelada: ${requestType}`,
+        html: await CancelationRequestMailToApprover(
+          requesterId,
+          requesterName,
+          requestType,
+          requesterEmail,
+          cancelationReason,
+        ),
+        attachments: [
+          {
+            filename: 'MuniLogo.jpeg',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      throw new Error('Error al enviar el correo de cancelación');
     }
   }
 

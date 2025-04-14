@@ -292,4 +292,21 @@ export class EmployeesService {
 
     return { message: 'Empleado restaurado correctamente' };
   }
+
+  async getBasicInfoEmployee(id: string) {
+    const employees = await this.employeeRepository.findOne({
+      where: { id },
+      select: {
+        id: true,
+        Name: true,
+        Surname1: true,
+        Surname2: true,
+        Email: true,
+      },
+    });
+    if (!employees) {
+      throw new NotFoundException('No hay empleados registrados');
+    }
+    return employees;
+  }
 }

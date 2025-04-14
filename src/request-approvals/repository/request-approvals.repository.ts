@@ -14,4 +14,28 @@ export class RequestApprovalRepository
   ) {
     super(requestApprovalGenericRepository);
   }
+
+  async findCurrentRequestToApproveWithoutCancelled(approverId: string) {
+    return await this.requestApprovalGenericRepository
+      .createQueryBuilder('approval')
+      .innerJoinAndSelect('approval.Request', 'request')
+      .leftJoinAndSelect('request.RequestType', 'requestType')
+      .leftJoinAndSelect(
+        'request.RequestSalaryCertificate',
+        'salaryCertificate',
+      )
+      .leftJoinAndSelect(
+        'request.RequestPaymentConfirmation',
+        'paymentConfirmation',
+      )
+      .leftJoinAndSelect('request.RequestVacation', 'vacation')
+      .leftJoinAndSelect('request.Employee', 'employee')
+      .where('approval.approverId = :approverId', { approverId })
+      .andWhere('approval.approved IS NULL')
+      .andWhere('approval.current = true')
+      .andWhere('request.RequestStatus != :excludedState', {
+        excludedState: 4,
+      })
+      .getMany();
+  }
 }

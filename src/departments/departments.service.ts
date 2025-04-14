@@ -53,29 +53,35 @@ export class DepartmentsService {
   }
 
   async remove(id: number) {
-    try {
-      const departmentToRemove = await this.departmentRepository.findOne({
-        where: { id },
-        relations: {
-          departmentProgram: true,
-          JobPosition: true,
-          departmentHead: true,
-        },
-      });
+    const departmentToRemove = await this.departmentRepository.findOne({
+      where: { id },
+      relations: {
+        departmentProgram: true,
+        JobPosition: true,
+        departmentHead: true,
+      },
+    });
 
-      if (!departmentToRemove) {
-        throw new NotFoundException('Registro no encontrado');
-      }
-
-      if (departmentToRemove.JobPosition.length > 0) {
-        throw new BadRequestException(
-          'No se puede eliminar el departamento porque está relacionado con otros puestos de trabajo.',
-        );
-      }
-      return await this.departmentRepository.remove(departmentToRemove);
-    } catch (error) {
-      throw error;
+    if (!departmentToRemove) {
+      throw new NotFoundException('Registro no encontrado');
     }
+
+    // Check if the department is ADMINISTRACION or RRHH
+
+    if (departmentToRemove.JobPosition.length > 0) {
+      throw new BadRequestException(
+        'No se puede eliminar el departamento porque está relacionado con otros puestos de trabajo.',
+      );
+    }
+    const isImportantDepartment =
+      departmentToRemove.id === 1 || departmentToRemove.id === 3;
+
+    if (isImportantDepartment) {
+      throw new BadRequestException(
+        'No se puede eliminar este departamento porque es necesario para el funcionamiento de la aplicación.',
+      );
+    }
+    return await this.departmentRepository.remove(departmentToRemove);
   }
 
   async updateDepartmentHead(

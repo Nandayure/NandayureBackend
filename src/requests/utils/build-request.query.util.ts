@@ -47,7 +47,10 @@ export function buildRequestQuery(
   const options: FindManyOptions<Request> = {
     where,
     relations: {
-      RequestApprovals: true,
+      RequestApprovals: {
+        approver: true,
+        requester: true,
+      },
       RequestVacation: true,
       RequestSalaryCertificate: true,
       RequestPaymentConfirmation: true,

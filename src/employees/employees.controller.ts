@@ -55,6 +55,6 @@ export class EmployeesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.employeesService.findOneById(id);
+    return this.employeesService.getBasicInfoEmployee(id);
   }
 }

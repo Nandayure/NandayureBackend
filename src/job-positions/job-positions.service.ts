@@ -80,6 +80,17 @@ export class JobPositionsService {
         );
       }
 
+      // Check if the job position is ALCALDE or VICEALCALDE or ADMIN DE RECURSO HUMANO
+      const isImportantJobPosition =
+        jobPositionToRemove.id === 1 ||
+        jobPositionToRemove.id === 2 ||
+        jobPositionToRemove.id === 3;
+
+      if (isImportantJobPosition) {
+        throw new ConflictException(
+          'No se puede eliminar un este puesto de trabajo porque es necesario para el funcionamiento del sistema',
+        );
+      }
       return await this.jobPositionRepository.remove(jobPositionToRemove);
     } catch (error) {
       throw error;

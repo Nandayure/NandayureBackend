@@ -4,11 +4,14 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { GetTopEmployeesMostRequestsDto } from './dto/GetTopEmployeesMostRequestsDto';
+import { Roles } from 'src/auth/auth-roles/roles.decorator';
+import { Role } from 'src/auth/auth-roles/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('analitics')
 @ApiTags('analitics')
-// @Roles(Role.RRHH || Role.Mayor)
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(Role.RRHH || Role.Mayor)
 export class AnaliticsController {
   constructor(private readonly analiticsService: AnaliticsService) {}
 

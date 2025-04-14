@@ -54,5 +54,13 @@ export default class BaseSeeder implements Seeder {
       { name: 'RECURSOS HUMANOS' },
       { departmentHeadId: '504510677' },
     );
+    await departmentRepository.update(
+      { name: 'ADMINISTRACIÓN' },
+      { departmentHeadId: '504420108' },
+    );
+    await departmentRepository.update(
+      { name: 'TI' },
+      { departmentHeadId: '504488777' },
+    );
   }
 }

@@ -2,9 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { RequestRepository } from './repository/request.repository';
 import { RequestsStateService } from 'src/requests-state/requests-state.service';
 import { EmployeesService } from 'src/employees/employees.service';
-import { buildRequestQuery } from './utils/build-request.query.util';
 import { QueryRunner } from 'typeorm';
 import { GetRequestsQueryDto } from './dto/get-requests-query.dto';
+import { CancelRequestDto } from './dto/cancell-request.dto';
 
 @Injectable()
 export class RequestsService {
@@ -30,10 +30,11 @@ export class RequestsService {
   }
 
   async findAll(query: GetRequestsQueryDto) {
-    const { options, page, limit } = buildRequestQuery(query);
+    const page = Number(query.page ?? 1);
+    const limit = Number(query.limit ?? 10);
 
     const [data, totalItems] =
-      await this.requestRepository.findAllWithCount(options);
+      await this.requestRepository.findAllByEmployeeWithFilters(query);
 
     const totalPages = Math.ceil(totalItems / limit);
 
@@ -47,20 +48,7 @@ export class RequestsService {
       hasPreviousPage: page > 1,
     };
   }
-  // return await this.requestRepository.findAll({
-  //   relations: {
-  //     RequestApprovals: true,
-  //     RequestVacation: true,
-  //     RequestSalaryCertificate: true,
-  //     RequestPaymentConfirmation: true,
-  //     Employee: true,
-  //   },
-  // });
-  // }
 
-  // async findOne(id: number) {
-  //   return await this.requestRepository.findOneById(id);
-  // }
   async findPendingRequestsByRequester(requesterId: string) {
     return await this.requestRepository.findAll({
       where: { EmployeeId: requesterId, RequestStateId: 1, RequestTypeId: 1 },
@@ -71,10 +59,14 @@ export class RequestsService {
     EmployeeId: string,
     query: GetRequestsQueryDto,
   ) {
-    const { options, page, limit } = buildRequestQuery(query, EmployeeId);
+    const page = Number(query.page ?? 1);
+    const limit = Number(query.limit ?? 10);
 
     const [data, totalItems] =
-      await this.requestRepository.findAllWithCount(options);
+      await this.requestRepository.findAllByEmployeeWithFilters(
+        query,
+        EmployeeId,
+      );
 
     const totalPages = Math.ceil(totalItems / limit);
 
@@ -87,6 +79,22 @@ export class RequestsService {
       hasNextPage: page < totalPages,
       hasPreviousPage: page > 1,
     };
+    // const { options, page, limit } = buildRequestQuery(query, EmployeeId);
+
+    // const [data, totalItems] =
+    //   await this.requestRepository.findAllWithCount(options);
+
+    // const totalPages = Math.ceil(totalItems / limit);
+
+    // return {
+    //   data,
+    //   page,
+    //   limit,
+    //   totalItems,
+    //   totalPages,
+    //   hasNextPage: page < totalPages,
+    //   hasPreviousPage: page > 1,
+    // };
   }
 
   async remove(id: number) {
@@ -97,5 +105,32 @@ export class RequestsService {
     }
 
     return await this.requestRepository.remove(requestToRemove);
+  }
+
+  async cancelRequest(
+    id: number,
+    cancelRequestDto: CancelRequestDto,
+    EmployeeId: string,
+  ) {
+    const requestToCancel = await this.requestRepository.findOne({
+      where: { id, EmployeeId },
+    });
+
+    if (!requestToCancel) {
+      throw new NotFoundException('Solicitud no encontrada');
+    }
+
+    const isAvaibleToCancel = requestToCancel.RequestStateId === 1;
+
+    if (!isAvaibleToCancel) {
+      throw new NotFoundException(
+        'No se puede cancelar ya que ya fue procesada',
+      );
+    }
+
+    requestToCancel.RequestStateId = 4; // 4 = Cancelada
+    requestToCancel.CancelledReason = cancelRequestDto.CancelledReason;
+
+    return await this.requestRepository.save(requestToCancel);
   }
 }

@@ -16,7 +16,7 @@ import StudyCategorySeeder from 'src/studies-category/seed/studyCategory.seeder'
 import StudySeeder from 'src/studies/seed/study.seeder';
 import OvertimeSeeder from 'src/overtimes/seed/overtimes.seeder';
 import AnnuitySeeder from 'src/annuities/seed/annuity.seeder';
-import LaborCodeRegulationSeeder from 'src/labor-code-regulations/seed/roles.seeder';
+import LaborCodeRegulationSeeder from 'src/labor-code-regulations/seed/laborCode.seeder';
 import RequestsStateSeeder from 'src/requests-state/seed/requestState.seeder';
 import RequestTypeSeeder from 'src/request-types/seed/RequestType.seeder';
 import TruncateDataSeeder from './TruncateDataSeeder';

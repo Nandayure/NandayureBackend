@@ -13,6 +13,10 @@ import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { UpdateDepartmentHeadDto } from './dto/update-department-head.dto';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from 'src/auth/auth-roles/role.enum';
+import { Roles } from 'src/auth/auth-roles/roles.decorator';
 
 @ApiTags('departments')
 @Controller('departments')
@@ -41,6 +45,19 @@ export class DepartmentsController {
     @Body() updateDepartmentDto: UpdateDepartmentDto,
   ) {
     return this.departmentsService.update(+id, updateDepartmentDto);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.RRHH)
+  @Patch('updateDepartmentHead/:id')
+  updateDepartmentHead(
+    @Param('id') id: string,
+    @Body() updateDepartmentHeadDto: UpdateDepartmentHeadDto,
+  ) {
+    return this.departmentsService.updateDepartmentHead(
+      +id,
+      updateDepartmentHeadDto,
+    );
   }
 
   @Delete(':id')

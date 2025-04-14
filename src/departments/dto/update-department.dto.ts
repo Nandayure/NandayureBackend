@@ -1,4 +1,24 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateDepartmentDto } from './create-department.dto';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
-export class UpdateDepartmentDto extends PartialType(CreateDepartmentDto) {}
+export class UpdateDepartmentDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  departmentProgramId: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  budgetCodeId: number;
+}

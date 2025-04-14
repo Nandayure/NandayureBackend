@@ -129,7 +129,8 @@ export class DepartmentsService {
       }
 
       //Delete the department head role to the last department head
-      if (departmentToEdit.departmentHeadId) {
+      if (newHeadId !== null && currentHeadId !== null) {
+        //Remove the department head role from the last department head
         await userRolesTransactionRepo.delete({
           userId: departmentToEdit.departmentHeadId,
           roleId: 5,

@@ -59,7 +59,6 @@ export class DepartmentsService {
         relations: {
           departmentProgram: true,
           JobPosition: true,
-          BudgetCode: true,
           departmentHead: true,
         },
       });

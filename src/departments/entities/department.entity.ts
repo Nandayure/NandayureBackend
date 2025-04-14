@@ -1,4 +1,3 @@
-import { BudgetCode } from 'src/budget-codes/entities/budget-code.entity';
 import { DepartmentProgram } from 'src/department-programs/entities/department-program.entity';
 import { Employee } from 'src/employees/entities/employee.entity';
 import { JobPosition } from 'src/job-positions/entities/job-position.entity';
@@ -25,9 +24,6 @@ export class Department {
   @Column()
   departmentProgramId: number;
 
-  @Column()
-  budgetCodeId: number;
-
   @Column({ nullable: true })
   departmentHeadId: string;
 
@@ -40,10 +36,6 @@ export class Department {
 
   @OneToMany(() => JobPosition, (jobPosition) => jobPosition.Department)
   JobPosition: JobPosition[];
-
-  @ManyToOne(() => BudgetCode, (budgetCode) => budgetCode.Department, {})
-  @JoinColumn({ name: 'budgetCodeId' })
-  BudgetCode: BudgetCode;
 
   @ManyToOne(() => Employee, { nullable: true })
   @JoinColumn({ name: 'departmentHeadId' })

@@ -16,9 +16,4 @@ export class UpdateDepartmentDto {
   @IsNotEmpty()
   @IsNumber()
   departmentProgramId: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  budgetCodeId: number;
 }

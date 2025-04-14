@@ -16,7 +16,6 @@ import { MailClientService } from 'src/mail-client/mail-client.service';
 import { Department } from 'src/departments/entities/department.entity';
 import { Employee } from 'src/employees/entities/employee.entity';
 import { RequestsService } from 'src/requests/requests.service';
-import { RolesService } from 'src/roles/roles.service';
 import { HolidaysService } from 'src/holidays/holidays.service';
 
 @Injectable()
@@ -30,7 +29,6 @@ export class RequestVacationService {
     private readonly departmentService: DepartmentsService,
     private readonly mailClient: MailClientService,
     private readonly holidayService: HolidaysService,
-    private readonly roleService: RolesService,
   ) {}
 
   async getAvailableDaysBetweenTwoDates(entryDate: Date, departureDate: Date) {
@@ -207,7 +205,7 @@ export class RequestVacationService {
 
     if (!RequesterDepartment || !RRHHdepartment || !mayor) {
       throw new NotFoundException(
-        'No se encontraron los datos necesarios para la aprobación de la solicitud',
+        'Por favor, configure las entidades relacionadas con la solicitud de vacaciones (Alcalde, departamento de RRHH o departamento del empleado)',
       );
     }
 
@@ -251,9 +249,9 @@ export class RequestVacationService {
     const approvals: CreateRequestApprovalDto[] = [
       {
         approverId: departmentHeadId,
-        Name: departmentHead.Name,
-        Surname1: departmentHead.Surname1,
-        Surname2: departmentHead.Surname2,
+        // Name: departmentHead.Name,
+        // Surname1: departmentHead.Surname1,
+        // Surname2: departmentHead.Surname2,
         processNumber: 1,
         current: false,
         RequestId: requesterId,
@@ -261,9 +259,9 @@ export class RequestVacationService {
       },
       {
         approverId: RRHHHeadId,
-        Name: RRHHHead.Name,
-        Surname1: RRHHHead.Surname1,
-        Surname2: RRHHHead.Surname2,
+        // Name: RRHHHead.Name,
+        // Surname1: RRHHHead.Surname1,
+        // Surname2: RRHHHead.Surname2,
         processNumber: 2,
         current: false,
         RequestId: requesterId,
@@ -271,9 +269,9 @@ export class RequestVacationService {
       },
       {
         approverId: mayorId,
-        Name: mayor.Name,
-        Surname1: mayor.Surname1,
-        Surname2: mayor.Surname2,
+        // Name: mayor.Name,
+        // Surname1: mayor.Surname1,
+        // Surname2: mayor.Surname2,
         processNumber: 3,
         current: false,
         RequestId: requesterId,

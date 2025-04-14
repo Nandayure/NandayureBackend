@@ -29,6 +29,9 @@ export class Request {
   @Column({ type: 'int', nullable: false })
   RequestTypeId: number;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  CancelledReason: string;
+
   @Column()
   EmployeeId: string;
 

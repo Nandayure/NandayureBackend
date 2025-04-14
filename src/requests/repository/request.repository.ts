@@ -3,6 +3,7 @@ import { FindManyOptions, Repository } from 'typeorm';
 import { Request } from '../entities/request.entity';
 import { BaseAbstractRepostitory } from 'src/core/generic-repository/repository/base.repository';
 import { RequestRepositoryInterface } from './request.interface';
+import { GetRequestsQueryDto } from '../dto/get-requests-query.dto';
 
 export class RequestRepository
   extends BaseAbstractRepostitory<Request>
@@ -152,5 +153,69 @@ export class RequestRepository
 
   async findAllWithCount(options: FindManyOptions<Request>) {
     return this.requestGenericRepository.findAndCount(options);
+  }
+
+  // src/requests/request.repository.ts
+
+  async findAllByEmployeeWithFilters(
+    query: GetRequestsQueryDto,
+    employeeId?: string,
+  ): Promise<[Request[], number]> {
+    const {
+      page = 1,
+      limit = 10,
+      RequestStateId,
+      RequestTypeId,
+      startDate,
+      endDate,
+    } = query;
+
+    const take = Number(limit);
+    const skip = (Number(page) - 1) * take;
+
+    const qb = this.requestGenericRepository
+      .createQueryBuilder('request')
+      .leftJoinAndSelect('request.RequestApprovals', 'approval')
+      .leftJoinAndSelect('approval.approver', 'approver')
+      .leftJoinAndSelect('request.RequestType', 'requestType')
+      .leftJoinAndSelect('request.RequestStatus', 'requestStatus')
+      .leftJoinAndSelect('request.RequestVacation', 'vacation')
+      .leftJoinAndSelect('request.RequestSalaryCertificate', 'salary')
+      .leftJoinAndSelect('request.RequestPaymentConfirmation', 'payment')
+      .leftJoinAndSelect('request.Employee', 'employee')
+      // .where('request.employeeId = :employeeId', { employeeId })
+      .orderBy('request.date', 'DESC')
+      .skip(skip)
+      .take(take);
+
+    if (employeeId) {
+      qb.where('request.employeeId = :employeeId', { employeeId });
+    } else {
+      qb.where('1 = 1');
+    }
+
+    if (RequestStateId) {
+      qb.andWhere('request.requestStateId = :RequestStateId', {
+        RequestStateId,
+      });
+    }
+
+    if (RequestTypeId) {
+      qb.andWhere('request.requestTypeId = :RequestTypeId', { RequestTypeId });
+    }
+
+    if (startDate && endDate) {
+      qb.andWhere('request.date BETWEEN :start AND :end', {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      });
+    } else if (startDate) {
+      qb.andWhere('request.date >= :start', { start: new Date(startDate) });
+    } else if (endDate) {
+      qb.andWhere('request.date <= :end', { end: new Date(endDate) });
+    }
+
+    const [data, totalItems] = await qb.getManyAndCount();
+    return [data, totalItems];
   }
 }

@@ -1,4 +1,3 @@
-import { FinancialInstitution } from 'src/financial-institutions/entities/financial-institution.entity';
 import { Study } from 'src/studies/entities/study.entity';
 
 export class defaultEmployee {
@@ -29,8 +28,6 @@ export class defaultEmployee {
   JobPositionId?: number;
 
   EmbargoId?: number;
-
-  FinancialInstitutions?: FinancialInstitution[];
 
   Studies?: Study[];
 }

@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Request } from '../../requests/entities/request.entity';
+import { Employee } from 'src/employees/entities/employee.entity';
 
 @Entity()
 export class RequestApproval {
@@ -15,17 +16,25 @@ export class RequestApproval {
   @Column({ nullable: true })
   approverId: string;
 
-  @Column()
-  Name: string;
+  @ManyToOne(() => Employee, { eager: false })
+  @JoinColumn({ name: 'approverId' })
+  approver: Employee;
 
-  @Column()
-  Surname1: string;
+  // @Column()
+  // Name: string;
 
-  @Column()
-  Surname2: string;
+  // @Column()
+  // Surname1: string;
+
+  // @Column()
+  // Surname2: string;
 
   @Column()
   requesterId: string;
+
+  @ManyToOne(() => Employee, { eager: false })
+  @JoinColumn({ name: 'requesterId' })
+  requester: Employee;
 
   @Column()
   processNumber: number;

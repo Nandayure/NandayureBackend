@@ -19,11 +19,6 @@ export class CreateDepartmentDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsNumber()
-  budgetCodeId: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
   @IsString()
   departmentHeadId?: string;
 }

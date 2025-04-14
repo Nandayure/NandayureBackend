@@ -4,4 +4,5 @@ export const defaultRequestStateData: CreateRequestsStateDto[] = [
   { Name: 'En Proceso' },
   { Name: 'Aprobada' },
   { Name: 'Rechazada' },
+  { Name: 'Cancelada' },
 ];

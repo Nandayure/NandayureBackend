@@ -29,18 +29,9 @@ export class RequestApprovalsService {
   }
 
   async findCurrentRequestToApprove(approverId: string) {
-    return await this.requestApprovalRepository.findAll({
-      where: { approverId, approved: IsNull(), current: true },
-      relations: {
-        Request: {
-          RequestType: true,
-          RequestSalaryCertificate: true,
-          RequestPaymentConfirmation: true,
-          RequestVacation: true,
-          Employee: true,
-        },
-      },
-    });
+    return await this.requestApprovalRepository.findCurrentRequestToApproveWithoutCancelled(
+      approverId,
+    );
   }
 
   async findByRequestId(id: number) {
@@ -116,7 +107,7 @@ export class RequestApprovalsService {
         );
         //Case there is a next step to approve or reject
       } else {
-        const nextApprover = await this.employeeRepository.findOneById(
+        const nextApprover = await this.employeeRepository.getBasicInfoEmployee(
           nextStep.approverId,
         );
 
@@ -153,11 +144,8 @@ export class RequestApprovalsService {
       throw new BadRequestException('No es el proceso actual');
     }
 
-    if (
-      requestApproval.Request.RequestStateId === 2 ||
-      requestApproval.Request.RequestStateId === 3
-    ) {
-      throw new BadRequestException('La solicitud ya fue aprobada o rechazada');
+    if (requestApproval.Request.RequestStateId !== 1) {
+      throw new BadRequestException('La solicitud ya fue procesada');
     }
     return requestApproval;
   }
@@ -209,6 +197,12 @@ export class RequestApprovalsService {
     }
 
     return { mailType, nextStep, request };
+  }
+
+  async getCurrentApproval(requestId) {
+    return await this.requestApprovalRepository.findOne({
+      where: { RequestId: requestId, current: true },
+    });
   }
 
   async remove(id: number) {

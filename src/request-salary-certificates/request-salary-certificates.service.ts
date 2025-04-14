@@ -124,9 +124,9 @@ export class RequestSalaryCertificatesService {
     // Crear el objeto de aprobación con los campos adicionales
     const approval: CreateRequestApprovalDto = {
       approverId: departmentHeadId,
-      Name: approver.Name,
-      Surname1: approver.Surname1,
-      Surname2: approver.Surname2,
+      // Name: approver.Name,
+      // Surname1: approver.Surname1,
+      // Surname2: approver.Surname2,
       processNumber: 1,
       current: true,
       RequestId: requestId,

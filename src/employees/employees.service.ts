@@ -309,4 +309,27 @@ export class EmployeesService {
     }
     return employees;
   }
+
+  async getEmployeesByDepartment(departmentId: number) {
+    const employees = await this.employeeRepository.findAll({
+      where: { JobPosition: { DepartmentId: departmentId } },
+      relations: {
+        JobPosition: true,
+      },
+    });
+
+    return employees;
+  }
+
+  async getEmployeeAvaibleVacantionsDays(employeeId: string) {
+    const employee =
+      await this.employeeRepository.getEmployeeAvaibleVacantionsDays(
+        employeeId,
+      );
+
+    if (!employee) {
+      throw new NotFoundException('No existe el empleado con ese id');
+    }
+    return employee;
+  }
 }

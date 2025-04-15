@@ -43,4 +43,14 @@ export class EmployeeRepository
     }
     return { message: 'Empleado restaurado correctamente' };
   }
+
+  getEmployeeAvaibleVacantionsDays(employeeId: string) {
+    return this.employeeGenericRepository
+      .createQueryBuilder('employee')
+      .select('employee.id')
+      .addSelect('employee.Name')
+      .addSelect('employee.AvailableVacationDays')
+      .where('employee.id = :id', { id: employeeId })
+      .getOne();
+  }
 }

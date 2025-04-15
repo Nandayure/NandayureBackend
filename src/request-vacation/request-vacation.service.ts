@@ -150,7 +150,8 @@ export class RequestVacationService {
       await queryRunner.rollbackTransaction();
       if (
         error instanceof NotFoundException ||
-        error instanceof ConflictException
+        error instanceof ConflictException ||
+        error instanceof NotFoundException
       ) {
         throw error;
       }

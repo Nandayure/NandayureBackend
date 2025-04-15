@@ -175,15 +175,16 @@ export class RequestRepository
 
     const qb = this.requestGenericRepository
       .createQueryBuilder('request')
+      .withDeleted() // <-- solo aplica a request
       .leftJoinAndSelect('request.RequestApprovals', 'approval')
-      .leftJoinAndSelect('approval.approver', 'approver')
       .leftJoinAndSelect('request.RequestType', 'requestType')
       .leftJoinAndSelect('request.RequestStatus', 'requestStatus')
       .leftJoinAndSelect('request.RequestVacation', 'vacation')
       .leftJoinAndSelect('request.RequestSalaryCertificate', 'salary')
       .leftJoinAndSelect('request.RequestPaymentConfirmation', 'payment')
-      .leftJoinAndSelect('request.Employee', 'employee')
-      // .where('request.employeeId = :employeeId', { employeeId })
+      .leftJoinAndSelect('approval.approver', 'approver', undefined, {
+        withDeleted: true,
+      })
       .orderBy('request.date', 'DESC')
       .skip(skip)
       .take(take);

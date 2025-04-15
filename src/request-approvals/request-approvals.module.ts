@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RequestApprovalsService } from './request-approvals.service';
 import { RequestApprovalsController } from './request-approvals.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,9 +12,9 @@ import { MailClientModule } from 'src/mail-client/mail-client.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([RequestApproval]),
-    RequestsModule,
     EmployeesModule,
     MailClientModule,
+    forwardRef(() => RequestsModule),
   ],
   controllers: [RequestApprovalsController],
   providers: [RequestApprovalsService, RequestApprovalRepository],

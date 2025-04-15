@@ -199,9 +199,13 @@ export class RequestApprovalsService {
     return { mailType, nextStep, request };
   }
 
-  async getCurrentApproval(requestId) {
+  async getCurrentApproval(requestId: number) {
     return await this.requestApprovalRepository.findOne({
       where: { RequestId: requestId, current: true },
+      relations: {
+        requester: true,
+        approver: true,
+      },
     });
   }
 

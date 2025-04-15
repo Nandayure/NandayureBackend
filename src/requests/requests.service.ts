@@ -1,17 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RequestRepository } from './repository/request.repository';
-import { RequestsStateService } from 'src/requests-state/requests-state.service';
-import { EmployeesService } from 'src/employees/employees.service';
+
 import { QueryRunner } from 'typeorm';
 import { GetRequestsQueryDto } from './dto/get-requests-query.dto';
 import { CancelRequestDto } from './dto/cancell-request.dto';
+import { RequestApprovalsService } from 'src/request-approvals/request-approvals.service';
+import { MailClientService } from 'src/mail-client/mail-client.service';
 
 @Injectable()
 export class RequestsService {
   constructor(
     private readonly requestRepository: RequestRepository,
-    private readonly requestStateRepository: RequestsStateService,
-    private readonly employeeRepository: EmployeesService,
+    private readonly requestApprovalsRepository: RequestApprovalsService,
+    private readonly mailClient: MailClientService,
   ) {}
 
   async createRequest(
@@ -114,6 +115,9 @@ export class RequestsService {
   ) {
     const requestToCancel = await this.requestRepository.findOne({
       where: { id, EmployeeId },
+      relations: {
+        RequestType: true,
+      },
     });
 
     if (!requestToCancel) {
@@ -131,6 +135,19 @@ export class RequestsService {
     requestToCancel.RequestStateId = 4; // 4 = Cancelada
     requestToCancel.CancelledReason = cancelRequestDto.CancelledReason;
 
+    const currentRequestApproval =
+      await this.requestApprovalsRepository.getCurrentApproval(id);
+
+    if (currentRequestApproval && currentRequestApproval.approver) {
+      this.mailClient.sendCancelationRequestToApproverMail(
+        currentRequestApproval.approver.Email,
+        currentRequestApproval.requester.id,
+        currentRequestApproval.requester.Name,
+        requestToCancel.RequestType.name,
+        currentRequestApproval.requester.Email,
+        cancelRequestDto.CancelledReason,
+      );
+    }
     return await this.requestRepository.save(requestToCancel);
   }
 }

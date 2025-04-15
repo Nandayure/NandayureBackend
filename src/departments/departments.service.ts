@@ -108,23 +108,24 @@ export class DepartmentsService {
         },
       });
 
-      const lastHeadId = departmentToEdit.departmentHeadId;
+      // const lastHeadId = departmentToEdit.departmentHeadId;
 
       if (!departmentToEdit) {
         throw new NotFoundException('Departamento no encontrado');
       }
 
       const currentHeadId = departmentToEdit.departmentHeadId;
-      const newHeadId =
+
+      const hasNewHeadId =
         updateDepartmentHeadDto.departmentHeadId?.trim() || null;
 
-      if (!currentHeadId && !newHeadId) {
-        if (!currentHeadId && !newHeadId) {
+      if (!currentHeadId && !hasNewHeadId) {
+        if (!currentHeadId && !hasNewHeadId) {
           return { message: 'El departamento ya no tiene jefe asignado' };
         }
       }
 
-      if (currentHeadId === newHeadId) {
+      if (currentHeadId === hasNewHeadId) {
         return {
           message:
             'No se realizaron cambios. El jefe de departamento ya estaba asignado.',
@@ -134,7 +135,7 @@ export class DepartmentsService {
       }
 
       //Delete the department head role to the last department head
-      if (newHeadId !== null && currentHeadId !== null) {
+      if (currentHeadId !== null) {
         //Remove the department head role from the last department head
         await userRolesTransactionRepo.delete({
           userId: departmentToEdit.departmentHeadId,
@@ -142,7 +143,7 @@ export class DepartmentsService {
         });
       }
 
-      if (newHeadId === null) {
+      if (hasNewHeadId === null) {
         //Remove the department head from the department
         departmentToEdit.departmentHeadId = null;
         departmentToEdit.departmentHead = null;
@@ -189,8 +190,8 @@ export class DepartmentsService {
       return {
         message: 'Jefe de departamento actualizado correctamente',
         departmentId: departmentToEdit.id,
-        lastHeadId,
-        newHeadId: updateDepartmentHeadDto.departmentHeadId,
+        currentHeadId: currentHeadId,
+        newHeadId: updateDepartmentHeadDto.departmentHeadId ?? null,
       };
     } catch (error) {
       // Rollback the transaction in case of error

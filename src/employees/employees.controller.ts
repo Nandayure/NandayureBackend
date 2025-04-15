@@ -35,9 +35,19 @@ export class EmployeesController {
     return this.employeesService.restore(id);
   }
 
+  @Get('vacationDays/:id')
+  getEmployeeAvaibleVacantionsDays(@Param('id') id: string) {
+    return this.employeesService.getEmployeeAvaibleVacantionsDays(id);
+  }
+
   @Get()
   findAll() {
     return this.employeesService.findAll();
+  }
+
+  @Get('allByDepartment/:id')
+  findAllByDepartment(@Param('id') id: string) {
+    return this.employeesService.getEmployeesByDepartment(+id);
   }
 
   @Patch(':id')

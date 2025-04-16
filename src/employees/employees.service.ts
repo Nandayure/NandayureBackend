@@ -273,7 +273,7 @@ export class EmployeesService {
 
     console.log('deletedEmployees', deletedEmployees);
     if (deletedEmployees.length === 0) {
-      throw new NotFoundException('No hay empleados eliminados');
+      return { message: 'No hay empleados eliminados' };
     }
     return deletedEmployees;
   }
@@ -302,6 +302,10 @@ export class EmployeesService {
         Surname1: true,
         Surname2: true,
         Email: true,
+        Birthdate: true,
+        HiringDate: true,
+        CellPhone: true,
+        NumberChlidren: true,
       },
     });
     if (!employees) {

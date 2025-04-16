@@ -174,6 +174,8 @@ export class DepartmentsService {
         departmentToEdit.departmentHeadId =
           updateDepartmentHeadDto.departmentHeadId;
 
+        departmentToEdit.departmentHead = employee; // Assign the employee entity to the departmentHead property
+
         //Add the role to the new department head
         const existing = await userRolesTransactionRepo.findOneBy({
           userId: updateDepartmentHeadDto.departmentHeadId,

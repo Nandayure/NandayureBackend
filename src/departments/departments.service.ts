@@ -133,13 +133,13 @@ export class DepartmentsService {
       }
 
       //Delete the department head role to the last department head
-      if (currentHeadId !== null) {
-        //Remove the department head role from the last department head
-        await userRolesTransactionRepo.delete({
-          userId: currentHeadId,
-          roleId: 5,
-        });
-      }
+      // if (currentHeadId !== null) {
+      //   //Remove the department head role from the last department head
+      //   await userRolesTransactionRepo.delete({
+      //     userId: currentHeadId,
+      //     roleId: 5,
+      //   });
+      // }
 
       if (newHeadId === null) {
         //Remove the department head from the department
@@ -176,13 +176,22 @@ export class DepartmentsService {
 
         departmentToEdit.departmentHead = employee; // Assign the employee entity to the departmentHead property
 
-        //Add the role to the new department head
+        //Remove the department head role from the last department head
+        await userRolesTransactionRepo.delete({
+          userId: currentHeadId,
+          roleId: 5,
+        });
+
+        // Check if the new department head already has the role
         const existing = await userRolesTransactionRepo.findOneBy({
           userId: updateDepartmentHeadDto.departmentHeadId,
           roleId: 5,
         });
 
-        if (!existing) {
+        // If the new department head doesn't have the role, assign it
+        // to the new department head
+        if (existing === null) {
+          // Assign the department head role to the new department head
           await userRolesTransactionRepo.insert({
             userId: updateDepartmentHeadDto.departmentHeadId,
             roleId: 5,

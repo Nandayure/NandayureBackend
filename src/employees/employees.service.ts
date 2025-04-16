@@ -306,6 +306,7 @@ export class EmployeesService {
         HiringDate: true,
         CellPhone: true,
         NumberChlidren: true,
+        AvailableVacationDays: true,
       },
     });
     if (!employees) {

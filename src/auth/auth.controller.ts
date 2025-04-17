@@ -34,6 +34,20 @@ import { RolesGuard } from './guards/roles.guard';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.RRHH)
+  @Get('getAvaibleUsers')
+  async getAllUsers() {
+    return await this.authService.getAvaibleUsers();
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.RRHH)
+  @Get('getUnavaibleUsers')
+  async getUnavaibleUsers() {
+    return await this.authService.getUnavaibleUsers();
+  }
+
   @Post('login')
   async Login(@Body() loginDto: LoginDto) {
     return await this.authService.login(loginDto);
@@ -77,36 +91,10 @@ export class AuthController {
     return { exists };
   }
 
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.RRHH)
   @Patch('changeUserStatus')
   async changeUserStatus(@Body() changeUserStatusDto: ChangeUserStatusDto) {
     return await this.authService.changeUserStatus(changeUserStatusDto);
   }
-
-  //Crear endpoind para cambiar contraseña.
-
-  // @Roles(Role.Admin)
-  // @UseGuards(AuthGuard, RolesGuard)
-  // @UseGuards(AuthGuard)
-  // @Get()
-  // async SayHi(@Req() request: Request) {
-  //   //request trae el payload desencriptado de el guard
-  //   const user = (request as any).user; //buscar la forma de agregar tipo aqui y en el guard
-  //   return;
-  // }
-
-  // @Post('sendMail')
-  // async mail() {
-  //   return await this.authService.sendMail();
-  // }
-
-  // @Post('test')
-  // async mail() {
-  //   try {
-  //     throw new ForbiddenException('mala');
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // }
 }

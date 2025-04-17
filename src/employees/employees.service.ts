@@ -358,7 +358,7 @@ export class EmployeesService {
   async delete(id: string) {
     const employeeToDelete = await this.employeeRepository.findOne({
       where: { id },
-      relations: ['User'], // 🧠 ¡esto es clave!
+      relations: ['User'],
     });
     if (!employeeToDelete) {
       throw new NotFoundException('El usuario no existe o ya fue elmininado');

@@ -46,19 +46,10 @@ export class UpdateEmployeeDto extends PartialType(CreateEmployeeDto) {
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
-  AvailableVacationDays?: number;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsInt()
   MaritalStatusId?: number;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   GenderId?: number;
-
-  @ApiPropertyOptional()
-  @IsInt()
-  JobPositionId?: number;
 }

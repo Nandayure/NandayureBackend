@@ -27,11 +27,26 @@ export class UsersService {
     this.userRolesRepo = this.dataSource.getRepository('user_roles');
   }
 
-  async create(createUserDto: CreateUserDto, queryRunner: QueryRunner) {
+  async create(
+    createUserDto: CreateUserDto,
+    queryRunner: QueryRunner,
+    jobPositionId: number,
+  ) {
     try {
-      const initialRole = await this.findRoleByName('USER');
+      let rolesToNewUser;
+      //get Basic role (USER)
+      const initialRole = await this.roleRepository.findOneById(1);
       if (!initialRole) {
         throw new InternalServerErrorException('El rol inicial no se encontró');
+      }
+
+      if (jobPositionId === 1 || jobPositionId === 2) {
+        //if the user is alcalde o alcaldesa, add the role of alcalde
+        const roleVA = await this.roleRepository.findOneById(4);
+
+        rolesToNewUser = [initialRole, roleVA];
+      } else {
+        rolesToNewUser = [initialRole];
       }
 
       const password = await this.generatePassword(8, true, true);
@@ -40,7 +55,7 @@ export class UsersService {
       const user = this.userRepository.create({
         id: createUserDto.id,
         Password: hashedPassword,
-        Roles: [initialRole],
+        Roles: rolesToNewUser,
       });
 
       this.mailClient.sendWelcomeMail({

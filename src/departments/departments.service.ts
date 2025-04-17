@@ -202,7 +202,7 @@ export class DepartmentsService {
     userRolesTransactionRepo: Repository<any>;
   }) {
     const DEPARTMENT_HEAD_ROLE_ID = 5;
-    const VA_ROLE_ID = 4;
+    // const VA_ROLE_ID = 4;
     const RRHH_ROLE_ID = 3;
     const TI_ROLE_ID = 2;
 
@@ -214,12 +214,12 @@ export class DepartmentsService {
       });
 
       //Delete VHR role from the last department head if the department is Administracion
-      if (departmentId === 1) {
-        await userRolesTransactionRepo.delete({
-          userId: currentHeadId,
-          roleId: VA_ROLE_ID,
-        });
-      }
+      // if (departmentId === 1) {
+      //   await userRolesTransactionRepo.delete({
+      //     userId: currentHeadId,
+      //     roleId: VA_ROLE_ID,
+      //   });
+      // }
 
       //Delete VHR role from the last department head if the department is RRHH
       if (departmentId === 3) {
@@ -260,12 +260,12 @@ export class DepartmentsService {
       });
     }
 
-    if (departmentId === 1 && !hasRole(VA_ROLE_ID)) {
-      await userRolesTransactionRepo.insert({
-        userId: newHeadId,
-        roleId: VA_ROLE_ID,
-      });
-    }
+    // if (departmentId === 1 && !hasRole(VA_ROLE_ID)) {
+    //   await userRolesTransactionRepo.insert({
+    //     userId: newHeadId,
+    //     roleId: VA_ROLE_ID,
+    //   });
+    // }
 
     if (departmentId === 3 && !hasRole(RRHH_ROLE_ID)) {
       await userRolesTransactionRepo.insert({

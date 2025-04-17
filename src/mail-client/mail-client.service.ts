@@ -38,7 +38,7 @@ export class MailClientService {
         ],
       });
     } catch (error) {
-      throw new Error('Error al enviar el correo electrónico');
+      console.error('Error al enviar el correo de bienvenida:', error);
     }
   }
 
@@ -53,24 +53,31 @@ export class MailClientService {
     departmentName: string;
     pendingRequestsCount: number;
   }) {
-    await this.mailService.sendMail({
-      from: 'RH-Nandayure',
-      to: newHeadEmail,
-      subject: 'Asignación como Jefe de Departamento',
-      html: await NewDepartmentHeadMail(
-        newHeadName,
-        departmentName,
-        pendingRequestsCount,
-        this.configService.get('FrontEndLoginURL'), // o localhost si estás en dev
-      ),
-      attachments: [
-        {
-          filename: 'MuniLogo.jpeg',
-          path: './src/mail-client/assets/MuniLogo.jpeg',
-          cid: 'logoImage',
-        },
-      ],
-    });
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: newHeadEmail,
+        subject: 'Asignación como Jefe de Departamento',
+        html: await NewDepartmentHeadMail(
+          newHeadName,
+          departmentName,
+          pendingRequestsCount,
+          this.configService.get('FrontEndLoginURL'), // o localhost si estás en dev
+        ),
+        attachments: [
+          {
+            filename: 'MuniLogo.jpeg',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error(
+        'Error al enviar el correo de nuevo jefe de departamento:',
+        error,
+      );
+    }
   }
 
   async sendCancelationRequestToApproverMail(
@@ -103,7 +110,7 @@ export class MailClientService {
         ],
       });
     } catch (error) {
-      throw new Error('Error al enviar el correo de cancelación');
+      console.error('error al enviar el correo de cancelación:', error);
     }
   }
 
@@ -124,7 +131,7 @@ export class MailClientService {
         ],
       });
     } catch (error) {
-      throw new Error('Error al enviar el correo electrónico');
+      console.error('Error al enviar el correo electrónico');
     }
   }
 
@@ -148,7 +155,7 @@ export class MailClientService {
         ],
       });
     } catch (error) {
-      console.error('❌ Error al enviar RequestResolutionMail:', error);
+      console.error(' Error al enviar RequestResolutionMail:', error);
     }
   }
 
@@ -179,7 +186,7 @@ export class MailClientService {
         ],
       });
     } catch (error) {
-      console.error('❌ Error al enviar RequestResolutionMail:', error);
+      console.error(' Error al enviar RequestResolutionMail:', error);
     }
   }
 
@@ -211,19 +218,3 @@ export class MailClientService {
     }
   }
 }
-
-// //->
-// async sendNewRequestProcessRequesterMail(
-//   approverName: string,
-//   requesterEmail: string,
-//   requesterName: string,
-//   requestType: string,
-// ) {
-//   this.mailService.sendMail({
-//     from: 'RRHH-Nandayure',
-//     to: requesterEmail,
-//     subject: `Su solicitud de ${requestType} está en proceso`,
-//     text: `Estimado ${requesterName} en este momento su solicitud está a la espera de de la revision de ${approverName}`,
-//     //html: welcomeMail,
-//   });
-// }

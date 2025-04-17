@@ -162,12 +162,14 @@ export class DepartmentsService {
 
       //Send mail to the new department head to notify about the new role and the number of approvals assigned to him/her
 
-      this.mailClient.sendNewDepartmentHeadMail({
-        newHeadEmail: newEmployeeDepartmentHead.Email,
-        newHeadName: `${newEmployeeDepartmentHead.Name} ${newEmployeeDepartmentHead.Surname1}`,
-        departmentName: departmentToEdit.name,
-        pendingRequestsCount: currentApprovals,
-      });
+      if (newEmployeeDepartmentHead) {
+        this.mailClient.sendNewDepartmentHeadMail({
+          newHeadEmail: newEmployeeDepartmentHead.Email,
+          newHeadName: `${newEmployeeDepartmentHead.Name} ${newEmployeeDepartmentHead.Surname1}`,
+          departmentName: departmentToEdit.name,
+          pendingRequestsCount: currentApprovals,
+        });
+      }
 
       await queryRunner.commitTransaction();
       return {

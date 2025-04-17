@@ -20,15 +20,6 @@ export class RequestApproval {
   @JoinColumn({ name: 'approverId' })
   approver: Employee;
 
-  // @Column()
-  // Name: string;
-
-  // @Column()
-  // Surname1: string;
-
-  // @Column()
-  // Surname2: string;
-
   @Column()
   requesterId: string;
 

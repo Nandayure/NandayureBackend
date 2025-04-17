@@ -14,7 +14,6 @@ import { DepartmentsService } from 'src/departments/departments.service';
 import { RequestApprovalRepository } from 'src/request-approvals/repository/request-approvals.repository';
 import { MailClientService } from 'src/mail-client/mail-client.service';
 import { Department } from 'src/departments/entities/department.entity';
-import { Employee } from 'src/employees/entities/employee.entity';
 import { RequestsService } from 'src/requests/requests.service';
 import { HolidaysService } from 'src/holidays/holidays.service';
 
@@ -93,7 +92,7 @@ export class RequestVacationService {
       await this.validateIfThereIsPendingRequest(EmployeeId);
 
       // 3. Get the entities needed for the approval process
-      const { RRHHdepartment, mayor, RequesterDepartment } =
+      const { RRHHdepartment, AdministrationDepartment, RequesterDepartment } =
         await this.getApprovalEntities(EmployeeId);
       // 4. Create the request who will be related to the vacation request and approvals
       //requestTypeId 1 is for vacation requests
@@ -108,7 +107,7 @@ export class RequestVacationService {
         EmployeeId,
         RequesterDepartment.departmentHeadId,
         RRHHdepartment.departmentHeadId,
-        mayor.id,
+        AdministrationDepartment.departmentHeadId,
         request.id,
       );
 
@@ -117,7 +116,7 @@ export class RequestVacationService {
         approvals,
         RequesterDepartment,
         RRHHdepartment,
-        mayor,
+        AdministrationDepartment,
         EmployeeId,
       );
 
@@ -199,20 +198,28 @@ export class RequestVacationService {
   async getApprovalEntities(EmployeeId: string) {
     const RRHHdepartment = await this.departmentService.findOne(3);
 
-    const mayor = await this.employeeRService.findMayor();
+    //const mayor = await this.employeeRService.findMayor();
+
+    const AdministrationDepartment = await this.departmentService.findOne(1); // 1 is the id of the administration department
 
     const RequesterDepartment =
       await this.employeeRService.getEmployeeDepartment(EmployeeId);
 
-    if (!RequesterDepartment || !RRHHdepartment || !mayor) {
+    if (
+      !RequesterDepartment ||
+      !RRHHdepartment ||
+      !AdministrationDepartment ||
+      !RequesterDepartment.departmentHeadId ||
+      !AdministrationDepartment.departmentHeadId
+    ) {
       throw new NotFoundException(
-        'Por favor, configure las entidades relacionadas con la solicitud de vacaciones (Alcalde, departamento de RRHH o departamento del empleado)',
+        'Por favor comuniquese con el encargado para que configure las entidades relacionadas con la solicitud de vacaciones jefes de los departamentos de: Administración Y RRHH',
       );
     }
 
     await this.departmentService.validateDepartmentHead(RRHHdepartment);
 
-    return { RRHHdepartment, mayor, RequesterDepartment }; //return the entities who will be used in the approval process
+    return { RRHHdepartment, AdministrationDepartment, RequesterDepartment }; //return the entities who will be used in the approval process
   }
 
   async validateIfThereIsPendingRequest(EmployeeId: string) {
@@ -287,13 +294,12 @@ export class RequestVacationService {
     approvals: CreateRequestApprovalDto[],
     RequesterDepartment: Department,
     RRHHdepartment: Department,
-    mayor: Employee,
+    AdministrationDepartment: Department,
     EmployeeId: string,
   ) {
     const requester = await this.employeeRService.findRequester(EmployeeId);
-    const isMayor = requester.User.Roles.some((role) => role.id === 4)
-      ? true
-      : false;
+    const isMayor =
+      requester.id === AdministrationDepartment.departmentHeadId ? true : false;
 
     // If the department head is not assigned, or the department head is the employee who is requesting the vacation, the department approval is true
     if (
@@ -316,7 +322,7 @@ export class RequestVacationService {
     if (isMayor) {
       approvals[2].approved = true;
       approvals[2].observation =
-        'La solicitud fue aprobada automáticamente por el sistema en el proceso 3 ya que el solicitante tiene rol de Alcalde o Vicealcalde';
+        'La solicitud fue aprobada automáticamente por el sistema en el proceso 3 ya que el solicitante es el actual jefe del departamento de el departamento administración';
       approvals[2].ApprovedDate = new Date();
     }
 

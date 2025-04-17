@@ -8,18 +8,24 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import * as generatePassword from 'generate-password';
 import { MailClientService } from 'src/mail-client/mail-client.service';
-import { ConfigService } from '@nestjs/config';
 import { RolesService } from 'src/roles/roles.service';
-import { QueryRunner } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 
+type UserRoleRow = {
+  userId: number;
+  roleId: number;
+};
 @Injectable()
 export class UsersService {
+  private userRolesRepo: Repository<UserRoleRow>;
   constructor(
     private readonly userRepository: UserRepository,
     private readonly mailClient: MailClientService,
-    private readonly configService: ConfigService,
     private readonly roleRepository: RolesService,
-  ) {}
+    private readonly dataSource: DataSource,
+  ) {
+    this.userRolesRepo = this.dataSource.getRepository('user_roles');
+  }
 
   async create(createUserDto: CreateUserDto, queryRunner: QueryRunner) {
     try {
@@ -40,7 +46,6 @@ export class UsersService {
       this.mailClient.sendWelcomeMail({
         to: createUserDto.Email,
         subject: 'Bienvenido',
-        LoginURL: await this.configService.get('FrontEndLoginURL'),
         EmployeeId: createUserDto.id,
         Password: password,
       });

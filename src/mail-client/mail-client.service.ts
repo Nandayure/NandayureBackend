@@ -7,10 +7,15 @@ import { RequestConfirmationMail } from './templates/RequestConfirmationMail';
 import { ApproverNotificationMail } from './templates/ApproverNotificationMail';
 import { RequestResolutionMail } from './templates/RequestResolutionMail';
 import { CancelationRequestMailToApprover } from './templates/CancelationRequestMailToApprover';
+import { ConfigService } from '@nestjs/config';
+import { NewDepartmentHeadMail } from './templates/NewDepartmentHeadMail';
 
 @Injectable()
 export class MailClientService {
-  constructor(private readonly mailService: MailerService) {}
+  constructor(
+    private readonly mailService: MailerService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async sendWelcomeMail(createMailClientDto: CreateMailClientDto) {
     try {
@@ -22,7 +27,7 @@ export class MailClientService {
         html: await WelcomeMail(
           createMailClientDto.EmployeeId,
           createMailClientDto.Password,
-          createMailClientDto.LoginURL,
+          this.configService.get('FrontEndLoginURL'),
         ),
         attachments: [
           {
@@ -35,6 +40,37 @@ export class MailClientService {
     } catch (error) {
       throw new Error('Error al enviar el correo electrónico');
     }
+  }
+
+  async sendNewDepartmentHeadMail({
+    newHeadEmail,
+    newHeadName,
+    departmentName,
+    pendingRequestsCount,
+  }: {
+    newHeadEmail: string;
+    newHeadName: string;
+    departmentName: string;
+    pendingRequestsCount: number;
+  }) {
+    await this.mailService.sendMail({
+      from: 'RH-Nandayure',
+      to: newHeadEmail,
+      subject: 'Asignación como Jefe de Departamento',
+      html: await NewDepartmentHeadMail(
+        newHeadName,
+        departmentName,
+        pendingRequestsCount,
+        this.configService.get('FrontEndLoginURL'), // o localhost si estás en dev
+      ),
+      attachments: [
+        {
+          filename: 'MuniLogo.jpeg',
+          path: './src/mail-client/assets/MuniLogo.jpeg',
+          cid: 'logoImage',
+        },
+      ],
+    });
   }
 
   async sendCancelationRequestToApproverMail(
@@ -56,6 +92,7 @@ export class MailClientService {
           requestType,
           requesterEmail,
           cancelationReason,
+          this.configService.get('FrontEndLoginURL'),
         ),
         attachments: [
           {
@@ -98,7 +135,10 @@ export class MailClientService {
         to: mail,
         subject: `Solicitud de ${requestType} enviada`,
         text: 'Su solicitud ha sido enviada con éxito, pronto recibirá una respuesta',
-        html: await RequestConfirmationMail(requestType),
+        html: await RequestConfirmationMail(
+          requestType,
+          this.configService.get('FrontEndLoginURL'),
+        ),
         attachments: [
           {
             filename: 'MuniLogo',
@@ -128,6 +168,7 @@ export class MailClientService {
           requesterId,
           requesterName,
           requestType,
+          this.configService.get('FrontEndLoginURL'),
         ),
         attachments: [
           {
@@ -152,7 +193,11 @@ export class MailClientService {
         from: 'RH-Nandayure',
         to: requesterEmail,
         subject: `Respuesta de solicitud de ${requestType}`,
-        html: await RequestResolutionMail(approved, requestType),
+        html: await RequestResolutionMail(
+          approved,
+          requestType,
+          this.configService.get('FrontEndLoginURL'),
+        ),
         attachments: [
           {
             filename: 'MuniLogo',
@@ -162,7 +207,7 @@ export class MailClientService {
         ],
       });
     } catch (error) {
-      console.error('❌ Error al enviar RequestResolutionMail:', error);
+      console.error('Error al enviar RequestResolutionMail:', error);
     }
   }
 }

@@ -50,7 +50,6 @@ import { HolidaysModule } from './holidays/holidays.module';
     MunicipalityModule,
     JobPositionsModule,
     TrainingsModule,
-
     AttendanceModule,
     AttendanceStatusModule,
     StudiesModule,

@@ -4,12 +4,12 @@ export async function CancelationRequestMailToApprover(
   requestType: string,
   requesterEmail: string,
   cancelationReason: string,
+  appLink: string, // 👈 agregado para el botón
 ) {
   return `<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Solicitud Cancelada</title>
     <style>
       body {
@@ -66,11 +66,6 @@ export async function CancelationRequestMailToApprover(
         font-size: 16px;
         color: #555555;
       }
-      .footer {
-        margin-top: 30px;
-        font-size: 12px;
-        color: #aaaaaa;
-      }
       .reason {
         background-color: #f9eaea;
         padding: 10px;
@@ -78,6 +73,45 @@ export async function CancelationRequestMailToApprover(
         margin-top: 15px;
         color: #c0392b;
         font-style: italic;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        margin-top: 25px;
+        background-color: #3498db;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+      }
+      .bandera {
+        margin-top: 5%;
+        width: 100%;
+        height: 30px;
+        margin-bottom: 0;
+      }
+      .verde {
+        background-color: #008000;
+        height: 10%;
+        width: 33.33%;
+        float: left;
+      }
+      .amarillo {
+        background-color: #ffff00;
+        height: 10%;
+        width: 33.33%;
+        float: left;
+      }
+      .celeste {
+        background-color: #00bfff;
+        height: 10%;
+        width: 33.33%;
+        float: left;
+      }
+      .footer {
+        margin-top: 40px;
+        font-size: 12px;
+        color: #aaaaaa;
       }
     </style>
   </head>
@@ -87,18 +121,12 @@ export async function CancelationRequestMailToApprover(
         <td>
           <div class="header">
             <h1>Municipalidad de Nandayure</h1>
-            <img
-              src="cid:logoImage"
-              alt="Logo"
-              style="max-width: 100px; height: auto"
-            />
+            <img src="cid:logoImage" alt="Logo Municipalidad de Nandayure" style="max-width: 100px; height: auto;" />
             <h2>Notificación de Cancelación</h2>
           </div>
           <div class="main">
             <p>Estimado/a funcionario/a,</p>
-            <p>
-              Le informamos que la siguiente solicitud ha sido cancelada antes de ser procesada:
-            </p>
+            <p>Le informamos que la siguiente solicitud ha sido cancelada antes de ser procesada:</p>
             <p><strong>Tipo de solicitud:</strong> ${requestType}</p>
             <p><strong>Solicitante:</strong> ${requesterName} (${requesterId})</p>
             <p><strong>Correo del solicitante:</strong> ${requesterEmail}</p>
@@ -107,11 +135,21 @@ export async function CancelationRequestMailToApprover(
               ${cancelationReason}
             </div>
             <p>Si tiene preguntas sobre esta cancelación, por favor comuníquese con el solicitante.</p>
+
+            <a href="${appLink}" class="btn">Ir a la aplicación</a>
+
+            <div class="bandera">
+              <div class="verde"></div>
+              <div class="amarillo"></div>
+              <div class="celeste"></div>
+            </div>
+
+            <p style="margin-top: 20px; font-size: 12px; color: #888;">
+              Este es un correo automático. Por favor, no respondas a este mensaje.
+            </p>
           </div>
           <div class="footer">
-            <p>
-              © 2024 Municipalidad de Nandayure. Todos los derechos reservados.
-            </p>
+            <p>© 2024 Municipalidad de Nandayure. Todos los derechos reservados.</p>
           </div>
         </td>
       </tr>

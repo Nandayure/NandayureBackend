@@ -159,4 +159,11 @@ export class UsersService {
     user.enabled = status;
     return await this.userRepository.save(user);
   }
+
+  async getAvaibleUsers() {
+    return await this.userRepository.findAvaibleUsers();
+  }
+  async getUnavaibleUsers() {
+    return await this.userRepository.findUnavaibleUsers();
+  }
 }

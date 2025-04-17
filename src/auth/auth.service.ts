@@ -209,4 +209,11 @@ export class AuthService {
 
     return this.userService.UpdateUserStatus(id, status);
   }
+
+  async getAvaibleUsers() {
+    return await this.userService.getAvaibleUsers();
+  }
+  async getUnavaibleUsers() {
+    return await this.userService.getUnavaibleUsers();
+  }
 }

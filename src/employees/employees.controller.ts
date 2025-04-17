@@ -13,6 +13,10 @@ import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { UpdateEmployeeJobPosition } from './dto/updateEmployeeJobPosition';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Role } from 'src/auth/auth-roles/role.enum';
+import { Roles } from 'src/auth/auth-roles/roles.decorator';
 @ApiTags('employees')
 @Controller('employees')
 @UseGuards(AuthGuard)
@@ -56,6 +60,19 @@ export class EmployeesController {
     @Body() updateEmployeeDto: UpdateEmployeeDto,
   ) {
     return this.employeesService.update(id, updateEmployeeDto);
+  }
+
+  @UseGuards(RolesGuard)
+  @Roles(Role.RRHH)
+  @Patch('updateEmployeeJobPosition/:employeeId')
+  updateJobPosition(
+    @Param('employeeId') employeeId: string,
+    @Body() updateEmployeeJobPosition: UpdateEmployeeJobPosition,
+  ) {
+    return this.employeesService.updateEmployeeJobPosition(
+      employeeId,
+      updateEmployeeJobPosition,
+    );
   }
 
   @Delete(':id')

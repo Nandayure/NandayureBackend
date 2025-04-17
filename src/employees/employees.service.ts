@@ -14,6 +14,8 @@ import { DataSource, IsNull, Not } from 'typeorm';
 import { JobPositionsService } from 'src/job-positions/job-positions.service';
 import { GoogleDriveFilesService } from 'src/google-drive-files/google-drive-files.service';
 import { DriveFolderRepository } from 'src/drive-folder/repository/drive-folder.repository';
+import { UpdateEmployeeJobPosition } from './dto/updateEmployeeJobPosition';
+import { Employee } from './entities/employee.entity';
 
 @Injectable()
 export class EmployeesService {
@@ -32,6 +34,9 @@ export class EmployeesService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+    // const userRolesTransactionRepo =
+    //   queryRunner.manager.getRepository('user_roles');
+    // const userTransactionRepo = queryRunner.manager.getRepository(User);
     try {
       await this.validateDataToCreate(createEmployeeDto);
 
@@ -45,6 +50,7 @@ export class EmployeesService {
           Email: createEmployeeDto.Email,
         },
         queryRunner,
+        createEmployeeDto.JobPositionId,
       );
       const employeeWholeName = `${created.Name} ${created.Surname1}`;
 
@@ -141,6 +147,7 @@ export class EmployeesService {
     await this.validateEmployeeEmail(dto.Email);
     await this.validateMaritalStatus(dto.MaritalStatusId);
     await this.validateGender(dto.GenderId);
+    await this.validateJobPosition(dto.JobPositionId, dto.id);
   }
 
   async validateDataToUpdate(dto: UpdateEmployeeDto) {
@@ -152,9 +159,9 @@ export class EmployeesService {
       await this.validateGender(dto.GenderId);
     }
 
-    if (dto.JobPositionId) {
-      await this.validateJobPosition(dto.JobPositionId);
-    }
+    // if (dto.JobPositionId) {
+    //   await this.validateJobPosition(dto.JobPositionId);
+    // }
 
     if (dto.Email) {
       await this.validateEmployeeEmail(dto.Email);
@@ -193,11 +200,102 @@ export class EmployeesService {
       throw new ConflictException('No existe el género seleccionado');
     }
   }
-  async validateJobPosition(JobPositionId: number) {
-    const existGender =
+  async validateJobPosition(JobPositionId: number, employeeId: string) {
+    const existJobPosition =
       await this.jobPositionService.findOneById(JobPositionId);
-    if (!existGender) {
+    if (!existJobPosition) {
       throw new ConflictException('No existe el puesto seleccionado');
+    }
+
+    const restrictedPositions = [1, 2];
+
+    if (restrictedPositions.includes(JobPositionId)) {
+      const existEmployeeInThisJobPosition =
+        await this.employeeRepository.findOne({
+          where: { JobPositionId },
+        });
+
+      if (
+        existEmployeeInThisJobPosition &&
+        existEmployeeInThisJobPosition.id !== employeeId
+      ) {
+        throw new ConflictException(
+          'No se puede asignar más de un empleado a este puesto',
+        );
+      }
+    }
+  }
+
+  async updateEmployeeJobPosition(
+    employeeId: string,
+    updateEmployeeJobPosition: UpdateEmployeeJobPosition,
+  ) {
+    // 1. Create a new transaction
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const employeeTransactionRepo =
+        queryRunner.manager.getRepository(Employee);
+      const userRolesTransactionRepo =
+        queryRunner.manager.getRepository('user_roles');
+
+      const existEmployee = await employeeTransactionRepo.findOneBy({
+        id: employeeId,
+      });
+
+      const currentJobPositionId = existEmployee.JobPositionId;
+      const newJobPositionId = updateEmployeeJobPosition.JobPositionId;
+
+      if (!existEmployee) {
+        throw new NotFoundException('El empleado no existe o ya fue eliminado');
+      }
+
+      if (currentJobPositionId === newJobPositionId) {
+        return { message: 'El puesto de trabajo es el mismo que el actual' };
+      }
+
+      await this.validateJobPosition(newJobPositionId, employeeId);
+
+      const updatedEmployee = await employeeTransactionRepo.save({
+        ...existEmployee,
+        JobPositionId: newJobPositionId,
+      });
+
+      const VA_ROLE_ID = 4;
+      const positionsWithVArole = [1, 2];
+
+      if (
+        positionsWithVArole.includes(currentJobPositionId) &&
+        !positionsWithVArole.includes(newJobPositionId)
+      ) {
+        await userRolesTransactionRepo.delete({
+          userId: employeeId,
+          roleId: VA_ROLE_ID,
+        });
+      }
+      if (
+        !positionsWithVArole.includes(currentJobPositionId) &&
+        positionsWithVArole.includes(newJobPositionId)
+      ) {
+        await userRolesTransactionRepo.upsert(
+          {
+            userId: employeeId,
+            roleId: VA_ROLE_ID,
+          },
+          ['userId', 'roleId'],
+        );
+      }
+
+      await queryRunner.commitTransaction();
+
+      return updatedEmployee;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.log('error', error);
+      throw error;
+    } finally {
+      await queryRunner.release();
     }
   }
 

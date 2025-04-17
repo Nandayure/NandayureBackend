@@ -37,6 +37,10 @@ export class RolesService {
     });
   }
 
+  async findOneById(id: number) {
+    return this.roleRepository.findOneById(id);
+  }
+
   // update(id: number, updateRoleDto: UpdateRoleDto) {
   //   return `This action updates a #${id} role`;
   // }

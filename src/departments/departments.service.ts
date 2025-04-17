@@ -8,15 +8,17 @@ import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { DepartmentRepository } from './repository/Department.repository';
 import { Department } from './entities/department.entity';
 import { UpdateDepartmentHeadDto } from './dto/update-department-head.dto';
-import { EmployeesService } from 'src/employees/employees.service';
-import { DataSource } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Employee } from 'src/employees/entities/employee.entity';
+import { RequestApproval } from 'src/request-approvals/entities/request-approval.entity';
+import { User } from 'src/users/entities/user.entity';
+import { MailClientService } from 'src/mail-client/mail-client.service';
 
 @Injectable()
 export class DepartmentsService {
   constructor(
     private readonly departmentRepository: DepartmentRepository,
-    private readonly employeesService: EmployeesService,
+    private readonly mailClient: MailClientService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -93,29 +95,23 @@ export class DepartmentsService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    try {
-      const employeeTransactionRepo =
-        queryRunner.manager.getRepository(Employee);
-      const userRolesTransactionRepo =
-        queryRunner.manager.getRepository('user_roles');
-      const departmentTransactionRepo =
-        queryRunner.manager.getRepository(Department);
+    const employeeTransactionRepo = queryRunner.manager.getRepository(Employee);
+    const userRolesTransactionRepo =
+      queryRunner.manager.getRepository('user_roles');
+    const usersTransactionRepo = queryRunner.manager.getRepository(User);
+    const departmentTransactionRepo =
+      queryRunner.manager.getRepository(Department);
+    const approvalsTransactionRepo =
+      queryRunner.manager.getRepository(RequestApproval);
+    let newEmployeeDepartmentHead: Employee | null = null;
 
-      const departmentToEdit = await departmentTransactionRepo.findOne({
-        where: { id: departmentId },
-        relations: {
-          departmentHead: true,
-        },
+    try {
+      const departmentToEdit = await this.validateDepartmentExist({
+        departmentTransactionRepo,
+        departmentId,
       });
 
-      // const lastHeadId = departmentToEdit.departmentHeadId;
-
-      if (!departmentToEdit) {
-        throw new NotFoundException('Departamento no encontrado');
-      }
-
       const currentHeadId = departmentToEdit.departmentHeadId;
-
       const newHeadId =
         updateDepartmentHeadDto.departmentHeadId?.trim() || null;
 
@@ -132,73 +128,46 @@ export class DepartmentsService {
         };
       }
 
-      //Delete the department head role to the last department head
-      // if (currentHeadId !== null) {
-      //   //Remove the department head role from the last department head
-      //   await userRolesTransactionRepo.delete({
-      //     userId: currentHeadId,
-      //     roleId: 5,
-      //   });
-      // }
-
       if (newHeadId === null) {
         //Remove the department head from the department
         departmentToEdit.departmentHeadId = null;
         departmentToEdit.departmentHead = null;
       } else {
-        //Validate if the employee is already a department head in another department
-        const employee = await employeeTransactionRepo.findOne({
-          where: {
-            id: updateDepartmentHeadDto.departmentHeadId,
-            JobPosition: { DepartmentId: departmentId },
-          },
+        newEmployeeDepartmentHead = await this.validateNewDepartmentHead({
+          employeeTransactionRepo,
+          departmentTransactionRepo,
+          newHeadId,
+          departmentId,
         });
-
-        if (!employee) {
-          throw new NotFoundException(
-            'Empleado no pertenece al departamento al que se le quiere asignar como jefe',
-          );
-        }
-
-        const departmentHead = await departmentTransactionRepo.findOne({
-          where: { departmentHeadId: employee.id },
-        });
-
-        if (departmentHead && departmentHead.id !== departmentId) {
-          throw new BadRequestException(
-            'El empleado ya es jefe de otro departamento',
-          );
-        }
 
         //Assign the new department head to the department
         departmentToEdit.departmentHeadId =
           updateDepartmentHeadDto.departmentHeadId;
 
-        departmentToEdit.departmentHead = employee; // Assign the employee entity to the departmentHead property
-
-        //Remove the department head role from the last department head
-        await userRolesTransactionRepo.delete({
-          userId: currentHeadId,
-          roleId: 5,
-        });
-
-        // Check if the new department head already has the role
-        const existing = await userRolesTransactionRepo.findOneBy({
-          userId: updateDepartmentHeadDto.departmentHeadId,
-          roleId: 5,
-        });
-
-        // If the new department head doesn't have the role, assign it
-        // to the new department head
-        if (existing === null) {
-          // Assign the department head role to the new department head
-          await userRolesTransactionRepo.insert({
-            userId: updateDepartmentHeadDto.departmentHeadId,
-            roleId: 5,
-          });
-        }
+        departmentToEdit.departmentHead = newEmployeeDepartmentHead; // Assign the employee entity to the departmentHead property
       }
       await departmentTransactionRepo.save(departmentToEdit);
+      await this.updateRoles({
+        currentHeadId,
+        newHeadId,
+        departmentId,
+        userRolesTransactionRepo,
+        usersTransactionRepo,
+      });
+      const currentApprovals = await this.reassignApprovalProcesses({
+        approvalsTransactionRepo,
+        previousHeadId: currentHeadId,
+        newHeadId,
+      });
+
+      //Send mail to the new department head to notify about the new role and the number of approvals assigned to him/her
+
+      this.mailClient.sendNewDepartmentHeadMail({
+        newHeadEmail: newEmployeeDepartmentHead.Email,
+        newHeadName: `${newEmployeeDepartmentHead.Name} ${newEmployeeDepartmentHead.Surname1}`,
+        departmentName: departmentToEdit.name,
+        pendingRequestsCount: currentApprovals,
+      });
 
       await queryRunner.commitTransaction();
       return {
@@ -210,10 +179,163 @@ export class DepartmentsService {
     } catch (error) {
       // Rollback the transaction in case of error
       await queryRunner.rollbackTransaction();
+      console.log(error);
       throw error;
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async updateRoles({
+    currentHeadId,
+    newHeadId,
+    departmentId,
+    usersTransactionRepo,
+    userRolesTransactionRepo,
+  }: {
+    currentHeadId?: string;
+    newHeadId?: string;
+    departmentId: number;
+    usersTransactionRepo: Repository<User>;
+    userRolesTransactionRepo: Repository<any>;
+  }) {
+    const DEPARTMENT_HEAD_ROLE_ID = 5;
+    const VA_ROLE_ID = 4;
+    const RRHH_ROLE_ID = 3;
+    const TI_ROLE_ID = 2;
+
+    if (currentHeadId && !newHeadId) {
+      //Remove the department head role from the last department head
+      await userRolesTransactionRepo.delete({
+        userId: currentHeadId,
+        roleId: DEPARTMENT_HEAD_ROLE_ID,
+      });
+
+      //Delete VHR role from the last department head if the department is Administracion
+      if (departmentId === 1) {
+        await userRolesTransactionRepo.delete({
+          userId: currentHeadId,
+          roleId: VA_ROLE_ID,
+        });
+      }
+
+      //Delete VHR role from the last department head if the department is RRHH
+      if (departmentId === 3) {
+        await userRolesTransactionRepo.delete({
+          userId: currentHeadId,
+          roleId: RRHH_ROLE_ID,
+        });
+      }
+      //Delete TI role from the last department head if the department is TI
+      if (departmentId === 2) {
+        await userRolesTransactionRepo.delete({
+          userId: currentHeadId,
+          roleId: TI_ROLE_ID,
+        });
+      }
+    }
+
+    if (!newHeadId) {
+      return;
+    }
+
+    const { Roles: currentRolesOfNewHead } = await usersTransactionRepo.findOne(
+      {
+        where: { id: newHeadId },
+        relations: { Roles: true },
+      },
+    );
+
+    // Check if the new department head already has the DEPARTMENT_HEAD_ROLE_ID
+    const hasRole = (role: number) =>
+      currentRolesOfNewHead?.some((r) => r.id === role);
+
+    // If the new department head doesn't have the role, assign it
+    if (!hasRole(DEPARTMENT_HEAD_ROLE_ID)) {
+      await userRolesTransactionRepo.insert({
+        userId: newHeadId,
+        roleId: DEPARTMENT_HEAD_ROLE_ID,
+      });
+    }
+
+    if (departmentId === 1 && !hasRole(VA_ROLE_ID)) {
+      await userRolesTransactionRepo.insert({
+        userId: newHeadId,
+        roleId: VA_ROLE_ID,
+      });
+    }
+
+    if (departmentId === 3 && !hasRole(RRHH_ROLE_ID)) {
+      await userRolesTransactionRepo.insert({
+        userId: newHeadId,
+        roleId: RRHH_ROLE_ID,
+      });
+    }
+
+    if (departmentId === 2 && !hasRole(TI_ROLE_ID)) {
+      await userRolesTransactionRepo.insert({
+        userId: newHeadId,
+        roleId: TI_ROLE_ID,
+      });
+    }
+  }
+
+  async validateNewDepartmentHead({
+    employeeTransactionRepo,
+    departmentTransactionRepo,
+    newHeadId,
+    departmentId,
+  }: {
+    employeeTransactionRepo: Repository<Employee>;
+    departmentTransactionRepo: Repository<Department>;
+    newHeadId: string;
+    departmentId: number;
+  }) {
+    const employee = await employeeTransactionRepo.findOne({
+      where: {
+        id: newHeadId,
+        JobPosition: { DepartmentId: departmentId },
+      },
+    });
+
+    if (!employee) {
+      throw new NotFoundException(
+        'Empleado no pertenece al departamento al que se le quiere asignar como jefe',
+      );
+    }
+
+    const departmentHead = await departmentTransactionRepo.findOne({
+      where: { departmentHeadId: employee.id },
+    });
+
+    if (departmentHead && departmentHead.id !== departmentId) {
+      throw new BadRequestException(
+        'El empleado ya es jefe de otro departamento',
+      );
+    }
+
+    return employee;
+  }
+
+  async validateDepartmentExist({
+    departmentTransactionRepo,
+    departmentId,
+  }: {
+    departmentTransactionRepo: Repository<Department>;
+    departmentId: number;
+  }) {
+    const departmentToEdit = await departmentTransactionRepo.findOne({
+      where: { id: departmentId },
+      relations: {
+        departmentHead: true,
+      },
+    });
+
+    if (!departmentToEdit) {
+      throw new NotFoundException('Departamento no encontrado');
+    }
+
+    return departmentToEdit;
   }
 
   async validateDepartmentHead(department: Department) {
@@ -222,5 +344,41 @@ export class DepartmentsService {
         `El departamento ${department.name} no tiene jefe asignado`,
       );
     }
+  }
+
+  async reassignApprovalProcesses({
+    approvalsTransactionRepo,
+    previousHeadId,
+    newHeadId,
+  }: {
+    approvalsTransactionRepo: Repository<RequestApproval>;
+    previousHeadId: string;
+    newHeadId: string;
+  }) {
+    let currentApprovals = 0;
+    const approvalsToUpdate = await approvalsTransactionRepo
+      .createQueryBuilder('approvals')
+      .leftJoinAndSelect('approvals.Request', 'request')
+      .where('approvals.approverId = :previousHeadId', {
+        previousHeadId,
+      })
+      .andWhere('approvals.approved IS NULL')
+      .andWhere('request.RequestStateId = 1')
+      .getMany();
+
+    if (approvalsToUpdate.length === 0) {
+      return currentApprovals;
+    }
+
+    currentApprovals = approvalsToUpdate.filter(
+      (a) => a.current === true,
+    ).length;
+
+    for (const approval of approvalsToUpdate) {
+      approval.approverId = newHeadId;
+    }
+    await approvalsTransactionRepo.save(approvalsToUpdate);
+
+    return currentApprovals;
   }
 }

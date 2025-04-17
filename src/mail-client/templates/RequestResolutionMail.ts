@@ -1,19 +1,19 @@
 export async function RequestResolutionMail(
   isApproved: boolean,
   requestType: string,
+  appLink: string,
 ) {
   const message = isApproved
     ? `Tu solicitud de ${requestType} ha sido aprobada`
     : `Tu solicitud de ${requestType} ha sido rechazada`;
   const details = isApproved
-    ? 'Estamos contentos de informarte que tu solicitud ha sido aprobada exitosamente. Para ver mas detalles de la aprobacion visita nuestro sitio web.'
-    : 'Lamentamos informarte que tu solicitud ha sido rechazada. Para ver mas detalles de la aprobacion visita nuestro sitio web.';
+    ? 'Estamos contentos de informarte que tu solicitud ha sido aprobada exitosamente. Para ver más detalles, visita nuestro sitio web.'
+    : 'Lamentamos informarte que tu solicitud ha sido rechazada. Para ver más detalles, visita nuestro sitio web.';
 
   return `<!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
     <title>Notificación de Solicitud</title>
     <style>
       body {
@@ -33,9 +33,9 @@ export async function RequestResolutionMail(
       }
       img {
         border: 0;
-        line-height: 100%;
-        text-decoration: none;
-        -ms-interpolation-mode: bicubic;
+        max-width: 100px;
+        height: auto;
+        margin-bottom: 10px;
       }
       .wrapper {
         max-width: 600px;
@@ -56,19 +56,14 @@ export async function RequestResolutionMail(
       p {
         font-family: "Times New Roman", Times, serif;
         margin: 0 0 10px;
-        color: #000000;
         line-height: 1.5;
       }
       h1 {
         font-size: 24px;
+        color: #2c3e50;
       }
       h2 {
         font-size: 20px;
-        color: #2c3e50;
-      }
-      p {
-        font-size: 16px;
-        color: #555555;
       }
       .approved {
         color: green;
@@ -78,21 +73,43 @@ export async function RequestResolutionMail(
         color: red;
         font-weight: bold;
       }
-      a {
-        display: block;
-        width: 220px;
-        margin: 20px auto;
-        padding: 15px;
-        text-align: center;
+      p {
+        font-size: 16px;
+        color: #555555;
+      }
+      .btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 24px;
         background-color: #3498db;
         color: #ffffff;
         text-decoration: none;
-        font-size: 18px;
-        border-radius: 5px;
-        transition: background-color 0.3s;
+        border-radius: 6px;
+        font-weight: bold;
       }
-      a:hover {
-        background-color: #2980b9;
+      .bandera {
+        margin-top: 5%;
+        width: 100%;
+        height: 30px;
+        margin-bottom: 0;
+      }
+      .verde {
+        background-color: #008000;
+        height: 10%;
+        width: 33.33%;
+        float: left;
+      }
+      .amarillo {
+        background-color: #ffff00;
+        height: 10%;
+        width: 33.33%;
+        float: left;
+      }
+      .celeste {
+        background-color: #00bfff;
+        height: 10%;
+        width: 33.33%;
+        float: left;
       }
       .footer {
         margin-top: 30px;
@@ -100,36 +117,35 @@ export async function RequestResolutionMail(
         color: #aaaaaa;
       }
     </style>
-</head>
-<body>
-  <table role="presentation" class="wrapper">
-    <tr>
-      <td>
-        <div class="header">
-          <h1>Municipalidad de Nandayure</h1>
-          <img
-            src="cid:logoImage"
-            alt="Logo"
-            style="max-width: 100px; height: auto"
-          />
-          <h2 class="${isApproved ? 'approved' : 'rejected'}">${message}</h2>
-        </div>
-        <div class="main">
-          <p>Estimado usuario,</p>
-          <p>${details}</p>
-          <div class="bandera">
-            <div class="verde"></div>
-            <div class="amarillo"></div>
-            <div class="celeste"></div>
+  </head>
+  <body>
+    <table role="presentation" class="wrapper">
+      <tr>
+        <td>
+          <div class="header">
+            <h1>Municipalidad de Nandayure</h1>
+            <img src="cid:logoImage" alt="Logo Municipalidad de Nandayure" style="max-width: 100px; height: auto;" />
+            <h2 class="${isApproved ? 'approved' : 'rejected'}">${message}</h2>
           </div>
-          <p>Este es un correo automático. Por favor, no respondas a este mensaje.</p>
-        </div>
-        <div class="footer">
-          <p>© 2024 Municipalidad de Nandayure. Todos los derechos reservados.</p>
-        </div>
-      </td>
-    </tr>
-  </table>
-</body>
+          <div class="main">
+            <p>Estimado usuario,</p>
+            <p>${details}</p>
+            <a href="${appLink}" class="btn">Ir a la aplicación</a>
+            <div class="bandera">
+              <div class="verde"></div>
+              <div class="amarillo"></div>
+              <div class="celeste"></div>
+            </div>
+            <p style="margin-top: 20px;">
+              Este es un correo automático. Por favor, no respondas a este mensaje.
+            </p>
+          </div>
+          <div class="footer">
+            <p>© 2024 Municipalidad de Nandayure. Todos los derechos reservados.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
 </html>`;
 }

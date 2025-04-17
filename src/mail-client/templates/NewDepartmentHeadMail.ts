@@ -1,12 +1,14 @@
-export async function RequestConfirmationMail(
-  requestType: string,
-  appLink: string, // 👈 nuevo parámetro para el botón
+export async function NewDepartmentHeadMail(
+  headName: string,
+  departmentName: string,
+  pendingRequestsCount: number,
+  appLink: string,
 ) {
   return `<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Correo de Confirmación</title>
+    <title>Nuevo Jefe de Departamento</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -22,12 +24,6 @@ export async function RequestConfirmationMail(
         border-collapse: collapse;
         width: 100%;
         margin: 0 auto;
-      }
-      img {
-        border: 0;
-        max-width: 100px;
-        height: auto;
-        margin-bottom: 10px;
       }
       .wrapper {
         max-width: 600px;
@@ -45,13 +41,17 @@ export async function RequestConfirmationMail(
         font-size: 24px;
         color: #2c3e50;
       }
-      h2 {
-        font-size: 20px;
-        color: #2c3e50;
-      }
       p {
         font-size: 16px;
         color: #555555;
+      }
+      .count {
+        background-color: #eafaf1;
+        padding: 10px;
+        border-left: 4px solid #2ecc71;
+        margin: 20px 0;
+        font-weight: bold;
+        color: #27ae60;
       }
       .btn {
         display: inline-block;
@@ -62,6 +62,17 @@ export async function RequestConfirmationMail(
         text-decoration: none;
         border-radius: 6px;
         font-weight: bold;
+      }
+      img {
+        border: 0;
+        max-width: 100px;
+        height: auto;
+        margin-bottom: 10px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #aaaaaa;
       }
       .bandera {
         margin-top: 5%;
@@ -87,11 +98,6 @@ export async function RequestConfirmationMail(
         width: 33.33%;
         float: left;
       }
-      .footer {
-        margin-top: 40px;
-        font-size: 12px;
-        color: #aaaaaa;
-      }
     </style>
   </head>
   <body>
@@ -100,14 +106,24 @@ export async function RequestConfirmationMail(
         <td>
           <div class="header">
             <h1>Municipalidad de Nandayure</h1>
-        <img src="cid:logoImage" alt="Logo Municipalidad de Nandayure" style="max-width: 100px; height: auto;" />
-            <h2>Solicitud de ${requestType} Enviada Exitosamente</h2>
+        <img
+              src="cid:logoImage"
+              alt="Logo"
+              style="max-width: 100px; height: auto"
+            />
+            <h2>¡Felicidades, ${headName}!</h2>
+            <p>Has sido asignado/a como Jefe del Departamento de <strong>${departmentName}</strong>.</p>
           </div>
           <div class="main">
-            <p>Estimado usuario,</p>
-            <p>
-              Hemos enviado tu solicitud correctamente. Queda a la espera de las revisiones por parte de los responsables respectivos.
-            </p>
+            ${
+              pendingRequestsCount > 0
+                ? `<p>Actualmente tienes <strong>${pendingRequestsCount}</strong> solicitudes activas heredadas del jefe anterior que requieren tu atención.</p>`
+                : `<p>En este momento no hay solicitudes pendientes heredadas. ¡Buen comienzo!</p>`
+            }
+
+            <div class="count">
+              Total de solicitudes activas: ${pendingRequestsCount}
+            </div>
 
             <a href="${appLink}" class="btn">Ir a la aplicación</a>
 

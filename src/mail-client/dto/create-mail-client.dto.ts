@@ -9,7 +9,5 @@ export class CreateMailClientDto {
 
   Password?: string;
 
-  LoginURL?: string;
-
   RecoverPasswordURL?: string;
 }

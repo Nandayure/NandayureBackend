@@ -9,7 +9,6 @@ import { UserRepository } from './repository/user.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), MailClientModule, RolesModule],
-  // controllers: [UsersController],
   providers: [UsersService, UserRepository],
   exports: [UsersService, UserRepository],
 })

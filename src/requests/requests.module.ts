@@ -8,6 +8,7 @@ import { RequestsStateModule } from 'src/requests-state/requests-state.module';
 import { EmployeesModule } from 'src/employees/employees.module';
 import { RequestApprovalsModule } from 'src/request-approvals/request-approvals.module';
 import { MailClientModule } from 'src/mail-client/mail-client.module';
+import { DepartmentsModule } from 'src/departments/departments.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { MailClientModule } from 'src/mail-client/mail-client.module';
     RequestsStateModule,
     EmployeesModule,
     MailClientModule,
+    DepartmentsModule,
     forwardRef(() => RequestApprovalsModule),
   ],
   controllers: [RequestsController],

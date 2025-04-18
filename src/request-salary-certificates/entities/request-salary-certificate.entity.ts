@@ -1,5 +1,6 @@
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
@@ -24,4 +25,7 @@ export class RequestSalaryCertificate {
   @OneToOne(() => Request, (request) => request.RequestVacation)
   @JoinColumn({ name: 'RequestId' })
   Request: Request;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

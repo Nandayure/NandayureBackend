@@ -1,5 +1,6 @@
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -48,4 +49,7 @@ export class RequestApproval {
   @ManyToOne(() => Request, (request) => request.RequestApprovals)
   @JoinColumn({ name: 'RequestId' })
   Request: Request;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

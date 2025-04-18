@@ -15,7 +15,7 @@ export class EmployeeRepository
     super(employeeGenericRepository);
   }
 
-  async softDelete(employeeToRemove: Employee) {
+  async softRemove(employeeToRemove: Employee) {
     const deleted =
       await this.employeeGenericRepository.softRemove(employeeToRemove);
 

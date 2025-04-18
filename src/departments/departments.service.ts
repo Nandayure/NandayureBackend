@@ -34,6 +34,13 @@ export class DepartmentsService {
     });
   }
 
+  async findRRHHDepartmentHead() {
+    return await this.departmentRepository.findOne({
+      where: { id: 3 },
+      relations: { departmentHead: true },
+    });
+  }
+
   async findOne(id: number) {
     return await this.departmentRepository.findOneById(id);
   }

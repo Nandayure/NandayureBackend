@@ -6,6 +6,7 @@ import { GetRequestsQueryDto } from './dto/get-requests-query.dto';
 import { CancelRequestDto } from './dto/cancell-request.dto';
 import { RequestApprovalsService } from 'src/request-approvals/request-approvals.service';
 import { MailClientService } from 'src/mail-client/mail-client.service';
+import { DepartmentsService } from 'src/departments/departments.service';
 
 @Injectable()
 export class RequestsService {
@@ -13,6 +14,7 @@ export class RequestsService {
     private readonly requestRepository: RequestRepository,
     private readonly requestApprovalsRepository: RequestApprovalsService,
     private readonly mailClient: MailClientService,
+    private readonly departmentService: DepartmentsService,
   ) {}
 
   async createRequest(
@@ -138,9 +140,27 @@ export class RequestsService {
     const currentRequestApproval =
       await this.requestApprovalsRepository.getCurrentApproval(id);
 
+    const RRHHDepartment =
+      await this.departmentService.findRRHHDepartmentHead();
+
+    const DepartmentHead = RRHHDepartment?.departmentHead;
+
+    //SENT TO CURRENT REQUEST APPROVAL
     if (currentRequestApproval && currentRequestApproval.approver) {
       this.mailClient.sendCancelationRequestToApproverMail(
         currentRequestApproval.approver.Email,
+        currentRequestApproval.requester.id,
+        currentRequestApproval.requester.Name,
+        requestToCancel.RequestType.name,
+        currentRequestApproval.requester.Email,
+        cancelRequestDto.CancelledReason,
+      );
+    }
+
+    //SENT TO HR DEPARTMENT HEAD
+    if (DepartmentHead) {
+      this.mailClient.sendCancelationRequestToApproverMail(
+        DepartmentHead.Email,
         currentRequestApproval.requester.id,
         currentRequestApproval.requester.Name,
         requestToCancel.RequestType.name,

@@ -7,6 +7,7 @@ import { RequestVacation } from 'src/request-vacation/entities/request-vacation.
 import { RequestsState } from 'src/requests-state/entities/requests-state.entity';
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -50,27 +51,31 @@ export class Request {
   @OneToOne(
     () => RequestVacation,
     (requestVacation) => requestVacation.Request,
-    { nullable: true },
+    { nullable: true, cascade: ['soft-remove'] },
   )
   RequestVacation: RequestVacation;
 
   @OneToOne(
     () => RequestSalaryCertificate,
     (requestSalaryCertificate) => requestSalaryCertificate.Request,
-    { nullable: true },
+    { nullable: true, cascade: ['soft-remove'] },
   )
   RequestSalaryCertificate: RequestSalaryCertificate;
 
   @OneToOne(
     () => RequestPaymentConfirmation,
     (requestPaymentConfirmation) => requestPaymentConfirmation.Request,
-    { nullable: true },
+    { nullable: true, cascade: ['soft-remove'] },
   )
   RequestPaymentConfirmation: RequestPaymentConfirmation;
 
   @OneToMany(
     () => RequestApproval,
     (requestApproval) => requestApproval.Request,
+    { cascade: ['soft-remove'] },
   )
   RequestApprovals: RequestApproval[];
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

@@ -16,6 +16,13 @@ import { GoogleDriveFilesService } from 'src/google-drive-files/google-drive-fil
 import { DriveFolderRepository } from 'src/drive-folder/repository/drive-folder.repository';
 import { UpdateEmployeeJobPosition } from './dto/updateEmployeeJobPosition';
 import { Employee } from './entities/employee.entity';
+import { User } from 'src/users/entities/user.entity';
+import { DriveFolder } from 'src/drive-folder/entities/drive-folder.entity';
+import { RequestVacation } from 'src/request-vacation/entities/request-vacation.entity';
+import { RequestSalaryCertificate } from 'src/request-salary-certificates/entities/request-salary-certificate.entity';
+import { RequestPaymentConfirmation } from 'src/request-payment-confirmations/entities/request-payment-confirmation.entity';
+import { RequestApproval } from 'src/request-approvals/entities/request-approval.entity';
+import { Request } from 'src/requests/entities/request.entity';
 
 @Injectable()
 export class EmployeesService {
@@ -358,12 +365,21 @@ export class EmployeesService {
   async delete(id: string) {
     const employeeToDelete = await this.employeeRepository.findOne({
       where: { id },
-      relations: ['User'],
+      relations: {
+        User: true,
+        DriveFolder: true,
+        requests: {
+          RequestVacation: true,
+          RequestSalaryCertificate: true,
+          RequestPaymentConfirmation: true,
+          RequestApprovals: true,
+        },
+      },
     });
     if (!employeeToDelete) {
       throw new NotFoundException('El usuario no existe o ya fue elmininado');
     }
-    return this.employeeRepository.softDelete(employeeToDelete);
+    return this.employeeRepository.softRemove(employeeToDelete);
   }
 
   async getEmployeesDeleted() {
@@ -377,18 +393,83 @@ export class EmployeesService {
   }
 
   async restore(id: string) {
-    const employeeToRestore = await this.employeeRepository.findOne({
-      where: { id, deletedAt: Not(IsNull()) },
-      withDeleted: true,
-      relations: ['User'],
-    });
-    if (!employeeToRestore) {
-      throw new NotFoundException('El empleado no está eliminado');
-    }
-    await this.employeeRepository.restore(employeeToRestore.id);
-    await this.userService.restore(employeeToRestore.User.id);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    return { message: 'Empleado restaurado correctamente' };
+    try {
+      const employeeTransactionRepo =
+        queryRunner.manager.getRepository(Employee);
+      const userTransactionRepo = queryRunner.manager.getRepository(User);
+      const driveFolderTransactionRepo =
+        queryRunner.manager.getRepository(DriveFolder);
+      const requestTransactionRepo = queryRunner.manager.getRepository(Request);
+      const vacationRepo = queryRunner.manager.getRepository(RequestVacation);
+      const salaryRepo = queryRunner.manager.getRepository(
+        RequestSalaryCertificate,
+      );
+      const paymentRepo = queryRunner.manager.getRepository(
+        RequestPaymentConfirmation,
+      );
+      const approvalRepo = queryRunner.manager.getRepository(RequestApproval);
+
+      const employeeToRestore = await employeeTransactionRepo.findOne({
+        where: { id, deletedAt: Not(IsNull()) },
+        withDeleted: true,
+        relations: {
+          User: true,
+          DriveFolder: true,
+          requests: {
+            RequestVacation: true,
+            RequestSalaryCertificate: true,
+            RequestPaymentConfirmation: true,
+            RequestApprovals: true,
+          },
+        },
+      });
+
+      if (!employeeToRestore) {
+        throw new NotFoundException('El empleado no está eliminado');
+      }
+      await employeeTransactionRepo.restore(employeeToRestore.id);
+      if (employeeToRestore.User) {
+        await userTransactionRepo.restore(employeeToRestore.User.id);
+      }
+      if (employeeToRestore.DriveFolder) {
+        await driveFolderTransactionRepo.restore(
+          employeeToRestore.DriveFolder.id,
+        );
+      }
+
+      for (const request of employeeToRestore.requests || []) {
+        await requestTransactionRepo.restore(request.id);
+
+        if (request.RequestVacation) {
+          await vacationRepo.restore(request.RequestVacation.id);
+        }
+
+        if (request.RequestSalaryCertificate) {
+          await salaryRepo.restore(request.RequestSalaryCertificate.id);
+        }
+
+        if (request.RequestPaymentConfirmation) {
+          await paymentRepo.restore(request.RequestPaymentConfirmation.id);
+        }
+
+        for (const approval of request.RequestApprovals || []) {
+          await approvalRepo.restore(approval.id);
+        }
+      }
+
+      await queryRunner.commitTransaction();
+
+      return { message: 'Empleado restaurado correctamente' };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async getBasicInfoEmployee(id: string) {

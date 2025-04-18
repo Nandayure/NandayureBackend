@@ -1,6 +1,7 @@
 import { Request } from 'src/requests/entities/request.entity';
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
@@ -24,4 +25,7 @@ export class RequestPaymentConfirmation {
   @OneToOne(() => Request, (request) => request.RequestPaymentConfirmation)
   @JoinColumn({ name: 'RequestId' })
   Request: Request;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

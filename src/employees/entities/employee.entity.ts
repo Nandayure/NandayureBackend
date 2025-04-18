@@ -1,4 +1,3 @@
-import { Attendance } from 'src/attendance/entities/attendance.entity';
 import { DriveFolder } from 'src/drive-folder/entities/drive-folder.entity';
 import { Gender } from 'src/genders/entities/gender.entity';
 import { JobPosition } from 'src/job-positions/entities/job-position.entity';
@@ -94,10 +93,9 @@ export class Employee {
   @JoinTable({ name: 'employee_studies' })
   Studies: Study[];
 
-  @OneToMany(() => Attendance, (attendance) => attendance.employee)
-  attendances: Attendance[];
-
-  @OneToMany(() => Request, (request) => request.Employee)
+  @OneToMany(() => Request, (request) => request.Employee, {
+    cascade: ['soft-remove'],
+  })
   requests: Request[];
 
   @DeleteDateColumn()

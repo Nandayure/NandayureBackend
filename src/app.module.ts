@@ -11,8 +11,6 @@ import { GendersModule } from './genders/genders.module';
 import { MunicipalityModule } from './municipality/municipality.module';
 import { JobPositionsModule } from './job-positions/job-positions.module';
 import { TrainingsModule } from './trainings/trainings.module';
-import { AttendanceModule } from './attendance/attendance.module';
-import { AttendanceStatusModule } from './attendance-status/attendance-status.module';
 import { StudiesModule } from './studies/studies.module';
 import { StudiesCategoryModule } from './studies-category/studies-category.module';
 import { RequestsModule } from './requests/requests.module';
@@ -50,8 +48,6 @@ import { HolidaysModule } from './holidays/holidays.module';
     MunicipalityModule,
     JobPositionsModule,
     TrainingsModule,
-    AttendanceModule,
-    AttendanceStatusModule,
     StudiesModule,
     StudiesCategoryModule,
     RequestsModule,

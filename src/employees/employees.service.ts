@@ -363,23 +363,54 @@ export class EmployeesService {
   }
 
   async delete(id: string) {
-    const employeeToDelete = await this.employeeRepository.findOne({
-      where: { id },
-      relations: {
-        User: true,
-        DriveFolder: true,
-        requests: {
-          RequestVacation: true,
-          RequestSalaryCertificate: true,
-          RequestPaymentConfirmation: true,
-          RequestApprovals: true,
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const employeeTransactionRepo =
+        queryRunner.manager.getRepository(Employee);
+      const requestTransactionRepo = queryRunner.manager.getRepository(Request);
+
+      const employeeToDelete = await employeeTransactionRepo.findOne({
+        where: { id },
+        relations: {
+          User: true,
+          DriveFolder: true,
+          requests: {
+            RequestVacation: true,
+            RequestSalaryCertificate: true,
+            RequestPaymentConfirmation: true,
+            RequestApprovals: true,
+          },
         },
-      },
-    });
-    if (!employeeToDelete) {
-      throw new NotFoundException('El usuario no existe o ya fue elmininado');
+      });
+      if (!employeeToDelete) {
+        throw new NotFoundException('El usuario no existe o ya fue elmininado');
+      }
+
+      const canceledStatusId = 4;
+      const canceledReason =
+        'La solicitud fue cancelada automáticamente por el sistema debido a la eliminación del empleado';
+      for (const request of employeeToDelete.requests || []) {
+        //IF request is in process or pending then cancel it
+        if (request.RequestStateId === 1) {
+          await requestTransactionRepo.save({
+            ...request,
+            RequestStateId: canceledStatusId,
+            CancelledReason: canceledReason,
+          });
+        }
+      }
+      await employeeTransactionRepo.softRemove(employeeToDelete);
+
+      await queryRunner.commitTransaction();
+
+      return { message: 'Empleado eliminado correctamente' };
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
     }
-    return this.employeeRepository.softRemove(employeeToDelete);
   }
 
   async getEmployeesDeleted() {

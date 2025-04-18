@@ -48,7 +48,7 @@ export class UserRepository
       .take(take);
 
     if (id) {
-      qb.andWhere('LOWER(user.id) LIKE :id', { id: `%${id.toLowerCase()}%` });
+      qb.andWhere('LOWER(user.id) LIKE :id', { id: `${id.toLowerCase()}%` });
     }
 
     if (name) {

@@ -20,35 +20,6 @@ export class UserRepository
     return await this.userGenericRepository.restore(id);
   }
 
-  async findAvaibleUsers() {
-    return await this.userGenericRepository
-      .createQueryBuilder('user')
-      .select('user.id', 'userId')
-      .addSelect('user.enabled', 'enabled')
-      .addSelect('employee.Name', 'name')
-      .addSelect('employee.Surname1', 'surname1')
-      .addSelect('employee.Surname2', 'surname2')
-      .addSelect('employee.Email', 'email')
-      .addSelect('employee.CellPhone', 'cellPhone')
-      .innerJoin('user.Employee', 'employee')
-      .where('user.enabled = true')
-      .getRawMany();
-  }
-  async findUnavaibleUsers() {
-    return await this.userGenericRepository
-      .createQueryBuilder('user')
-      .select('user.id', 'userId')
-      .addSelect('user.enabled', 'enabled')
-      .addSelect('employee.Name', 'name')
-      .addSelect('employee.Surname1', 'surname1')
-      .addSelect('employee.Surname2', 'surname2')
-      .addSelect('employee.Email', 'email')
-      .addSelect('employee.CellPhone', 'cellPhone')
-      .innerJoin('user.Employee', 'employee')
-      .where('user.enabled = false')
-      .getRawMany();
-  }
-
   async findAllWithFilters(query: GetUsersQueryDto): Promise<[User[], number]> {
     const { page = 1, limit = 5, name, enabled, id } = query;
 
@@ -57,10 +28,21 @@ export class UserRepository
 
     const qb = this.userGenericRepository
       .createQueryBuilder('user')
-      .leftJoinAndSelect('user.Employee', 'employee')
-      .leftJoinAndSelect('employee.JobPosition', 'jobPosition')
-      .leftJoinAndSelect('user.Roles', 'role')
+      .leftJoin('user.Employee', 'employee')
+      .leftJoin('employee.JobPosition', 'jobPosition')
+      .leftJoin('user.Roles', 'role')
       // .withDeleted() // solo si querés incluir eliminados
+      .addSelect([
+        'employee.id',
+        'employee.Name',
+        'employee.Surname1',
+        'employee.Surname2',
+        'employee.Email',
+        'jobPosition.Name',
+        'role.id',
+        'role.RoleName',
+        'role.Description',
+      ])
       .orderBy('employee.Name', 'ASC')
       .skip(skip)
       .take(take);

@@ -23,12 +23,6 @@ import { Role } from 'src/auth/auth-roles/role.enum';
 import { ChangeUserStatusDto } from './dto/change-user-status-dto';
 import { RolesGuard } from './guards/roles.guard';
 import { GetUsersQueryDto } from 'src/users/dto/GetUsersQueryDto';
-// import { RegisterDto } from './dto/register-dto';
-// import { AuthGuard } from './guards/auth.guard';
-// import { RolesGuard } from './guards/roles.guard';
-// import { Roles } from './auth-roles/roles.decorator';
-// import { Role } from './auth-roles/role.enum';
-// import { UpdateDto } from './dto/update-dto';
 
 @ApiTags('auth')
 @Controller('auth')

@@ -11,6 +11,7 @@ import { MailClientService } from 'src/mail-client/mail-client.service';
 import { RolesService } from 'src/roles/roles.service';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { GetUsersQueryDto } from './dto/GetUsersQueryDto';
+import { instanceToPlain } from 'class-transformer';
 
 type UserRoleRow = {
   userId: number;
@@ -78,13 +79,13 @@ export class UsersService {
     const page = Number(getUsersQueryDto.page ?? 1);
     const limit = Number(getUsersQueryDto.limit ?? 10);
 
-    const [data, totalItems] =
+    const [users, totalItems] =
       await this.userRepository.findAllWithFilters(getUsersQueryDto);
 
     const totalPages = Math.ceil(totalItems / limit);
 
     return {
-      data,
+      data: instanceToPlain(users),
       page,
       limit,
       totalItems,
@@ -179,12 +180,5 @@ export class UsersService {
     }
     user.enabled = status;
     return await this.userRepository.save(user);
-  }
-
-  async getAvaibleUsers() {
-    return await this.userRepository.findAvaibleUsers();
-  }
-  async getUnavaibleUsers() {
-    return await this.userRepository.findUnavaibleUsers();
   }
 }

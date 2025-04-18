@@ -22,6 +22,7 @@ import { Roles } from 'src/auth/auth-roles/roles.decorator';
 import { Role } from 'src/auth/auth-roles/role.enum';
 import { ChangeUserStatusDto } from './dto/change-user-status-dto';
 import { RolesGuard } from './guards/roles.guard';
+import { GetUsersQueryDto } from 'src/users/dto/GetUsersQueryDto';
 // import { RegisterDto } from './dto/register-dto';
 // import { AuthGuard } from './guards/auth.guard';
 // import { RolesGuard } from './guards/roles.guard';
@@ -35,17 +36,10 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.RRHH)
-  @Get('getAvaibleUsers')
-  async getAllUsers() {
-    return await this.authService.getAvaibleUsers();
-  }
-
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.RRHH)
-  @Get('getUnavaibleUsers')
-  async getUnavaibleUsers() {
-    return await this.authService.getUnavaibleUsers();
+  @Roles(Role.TI)
+  @Get('getAllUsersWithFilters')
+  async getAllUsersWithFilters(@Query() query: GetUsersQueryDto) {
+    return await this.authService.getAllUsersWithFilters(query);
   }
 
   @Post('login')

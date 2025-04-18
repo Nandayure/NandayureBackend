@@ -10,6 +10,7 @@ import * as generatePassword from 'generate-password';
 import { MailClientService } from 'src/mail-client/mail-client.service';
 import { RolesService } from 'src/roles/roles.service';
 import { DataSource, QueryRunner, Repository } from 'typeorm';
+import { GetUsersQueryDto } from './dto/GetUsersQueryDto';
 
 type UserRoleRow = {
   userId: number;
@@ -71,6 +72,26 @@ export class UsersService {
         message: 'Error al crear el usuario: ' + error.message,
       });
     }
+  }
+
+  async findAllUserWithFilters(getUsersQueryDto: GetUsersQueryDto) {
+    const page = Number(getUsersQueryDto.page ?? 1);
+    const limit = Number(getUsersQueryDto.limit ?? 10);
+
+    const [data, totalItems] =
+      await this.userRepository.findAllWithFilters(getUsersQueryDto);
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      data,
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    };
   }
 
   async findOneById(id: string) {

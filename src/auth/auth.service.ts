@@ -17,6 +17,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
 import { ChangeUserStatusDto } from './dto/change-user-status-dto';
+import { GetUsersQueryDto } from 'src/users/dto/GetUsersQueryDto';
 //import { SendmailerService } from 'src/sendmailer/sendmailer.service';
 
 @Injectable()
@@ -215,5 +216,9 @@ export class AuthService {
   }
   async getUnavaibleUsers() {
     return await this.userService.getUnavaibleUsers();
+  }
+
+  async getAllUsersWithFilters(getUsersQueryDto: GetUsersQueryDto) {
+    return await this.userService.findAllUserWithFilters(getUsersQueryDto);
   }
 }

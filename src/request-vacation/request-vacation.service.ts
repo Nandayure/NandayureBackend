@@ -250,7 +250,7 @@ export class RequestVacationService {
     // Verificar que los aprobadores existen
     if (!departmentHead || !RRHHHead || !mayor) {
       throw new NotFoundException(
-        'No se pudieron obtener los datos de los aprobadores.',
+        'No se pudieron obtener los datos de los aprobadores por favor, contactar al administrador para configurar las persona relacionadas con la aprovacion de solicitudes de vacaciones.',
       );
     }
 

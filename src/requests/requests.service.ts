@@ -37,7 +37,7 @@ export class RequestsService {
     const limit = Number(query.limit ?? 10);
 
     const [data, totalItems] =
-      await this.requestRepository.findAllByEmployeeWithFilters(query);
+      await this.requestRepository.findAllWithFilters(query);
 
     const totalPages = Math.ceil(totalItems / limit);
 

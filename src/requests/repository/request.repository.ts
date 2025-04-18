@@ -159,7 +159,7 @@ export class RequestRepository
 
   async findAllByEmployeeWithFilters(
     query: GetRequestsQueryDto,
-    employeeId?: string,
+    employeeId: string,
   ): Promise<[Request[], number]> {
     const {
       page = 1,
@@ -168,6 +168,70 @@ export class RequestRepository
       RequestTypeId,
       startDate,
       endDate,
+      EmployeeId,
+    } = query;
+
+    const take = Number(limit);
+    const skip = (Number(page) - 1) * take;
+
+    const qb = this.requestGenericRepository
+      .createQueryBuilder('request')
+      .withDeleted() // <-- solo aplica a request
+      .leftJoinAndSelect('request.RequestApprovals', 'approval')
+      .leftJoinAndSelect('request.RequestType', 'requestType')
+      .leftJoinAndSelect('request.RequestStatus', 'requestStatus')
+      .leftJoinAndSelect('request.RequestVacation', 'vacation')
+      .leftJoinAndSelect('request.RequestSalaryCertificate', 'salary')
+      .leftJoinAndSelect('request.RequestPaymentConfirmation', 'payment')
+      .leftJoinAndSelect('approval.approver', 'approver', undefined, {
+        withDeleted: true,
+      })
+      .where('request.employeeId = :employeeId', { employeeId: employeeId })
+      .orderBy('request.date', 'DESC')
+      .skip(skip)
+      .take(take);
+
+    if (EmployeeId && !employeeId) {
+      qb.andWhere('LOWER(request.employeeId) LIKE :EmployeeId', {
+        EmployeeId: `${EmployeeId.toLowerCase()}%`,
+      });
+    }
+
+    if (RequestStateId) {
+      qb.andWhere('request.requestStateId = :RequestStateId', {
+        RequestStateId,
+      });
+    }
+
+    if (RequestTypeId) {
+      qb.andWhere('request.requestTypeId = :RequestTypeId', { RequestTypeId });
+    }
+
+    if (startDate && endDate) {
+      qb.andWhere('request.date BETWEEN :start AND :end', {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      });
+    } else if (startDate) {
+      qb.andWhere('request.date >= :start', { start: new Date(startDate) });
+    } else if (endDate) {
+      qb.andWhere('request.date <= :end', { end: new Date(endDate) });
+    }
+
+    const [data, totalItems] = await qb.getManyAndCount();
+    return [data, totalItems];
+  }
+  async findAllWithFilters(
+    query: GetRequestsQueryDto,
+  ): Promise<[Request[], number]> {
+    const {
+      page = 1,
+      limit = 10,
+      RequestStateId,
+      RequestTypeId,
+      startDate,
+      endDate,
+      EmployeeId,
     } = query;
 
     const take = Number(limit);
@@ -189,10 +253,10 @@ export class RequestRepository
       .skip(skip)
       .take(take);
 
-    if (employeeId) {
-      qb.where('request.employeeId = :employeeId', { employeeId });
-    } else {
-      qb.where('1 = 1');
+    if (EmployeeId) {
+      qb.andWhere('LOWER(request.employeeId) LIKE :EmployeeId', {
+        EmployeeId: `${EmployeeId.toLowerCase()}%`,
+      });
     }
 
     if (RequestStateId) {

@@ -23,6 +23,7 @@ import { Role } from 'src/auth/auth-roles/role.enum';
 import { ChangeUserStatusDto } from './dto/change-user-status-dto';
 import { RolesGuard } from './guards/roles.guard';
 import { GetUsersQueryDto } from 'src/users/dto/GetUsersQueryDto';
+import { UpdateUserRolesDto } from './dto/update-user-roles.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -84,5 +85,20 @@ export class AuthController {
   @Patch('changeUserStatus')
   async changeUserStatus(@Body() changeUserStatusDto: ChangeUserStatusDto) {
     return await this.authService.changeUserStatus(changeUserStatusDto);
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.TI)
+  @Post('addRoleToUser')
+  async addRoleToUser(@Body() updateUserRolesDto: UpdateUserRolesDto) {
+    const { userId, roleId } = updateUserRolesDto;
+    return await this.authService.addRoleToUser(userId, roleId);
+  }
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.TI)
+  @Post('removeRoleToUser')
+  async removeRoleToUser(@Body() updateUserRolesDto: UpdateUserRolesDto) {
+    const { userId, roleId } = updateUserRolesDto;
+    return await this.authService.removeRoleToUser(userId, roleId);
   }
 }

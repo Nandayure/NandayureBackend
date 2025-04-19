@@ -23,7 +23,7 @@ export class UsersService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly mailClient: MailClientService,
-    private readonly roleRepository: RolesService,
+    private readonly rolesService: RolesService,
     private readonly dataSource: DataSource,
   ) {
     this.userRolesRepo = this.dataSource.getRepository('user_roles');
@@ -37,14 +37,14 @@ export class UsersService {
     try {
       let rolesToNewUser;
       //get Basic role (USER)
-      const initialRole = await this.roleRepository.findOneById(1);
+      const initialRole = await this.rolesService.findOneById(1);
       if (!initialRole) {
         throw new InternalServerErrorException('El rol inicial no se encontró');
       }
 
       if (jobPositionId === 1 || jobPositionId === 2) {
         //if the user is alcalde o alcaldesa, add the role of alcalde
-        const roleVA = await this.roleRepository.findOneById(4);
+        const roleVA = await this.rolesService.findOneById(4);
 
         rolesToNewUser = [initialRole, roleVA];
       } else {
@@ -134,7 +134,7 @@ export class UsersService {
   }
 
   async findRoleByName(name: string) {
-    return await this.roleRepository.findOneByName(name);
+    return await this.rolesService.findOneByName(name);
   }
 
   async generatePassword(
@@ -173,6 +173,15 @@ export class UsersService {
     }
   }
 
+  async findUserWithRoles(id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: { Roles: true },
+    });
+
+    return user;
+  }
+
   async UpdateUserStatus(id: string, status: boolean) {
     const user = await this.userRepository.findOneById(id);
     if (!user) {
@@ -180,5 +189,67 @@ export class UsersService {
     }
     user.enabled = status;
     return await this.userRepository.save(user);
+  }
+
+  async AddRoleToUser(userId: string, RoleId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { Roles: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    const roles = user.Roles;
+
+    const roleExists = roles.some((role) => role.id === RoleId);
+
+    if (roleExists) {
+      return { message: 'El usuario ya posee este rol' };
+    }
+
+    const roleToAdd = await this.rolesService.findOneById(RoleId);
+
+    if (!roleToAdd) {
+      throw new NotFoundException('Rol no encontrado!');
+    }
+
+    roles.push(roleToAdd);
+
+    return await this.userRepository.save({
+      ...user,
+      Roles: roles,
+    });
+  }
+  async RemoveRoleToUser(userId: string, RoleId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { Roles: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    const roles = user.Roles;
+
+    const roleExists = roles.some((role) => role.id === RoleId);
+
+    if (!roleExists) {
+      return { message: 'El usuario no posee el rol a eliminar' };
+    }
+
+    const roleToDelete = await this.rolesService.findOneById(RoleId);
+
+    if (!roleToDelete) {
+      throw new NotFoundException('Rol no encontrado!');
+    }
+
+    // Filtrar roles eliminando el que coincide con RoleId
+    const updatedRoles = roles.filter((role) => role.id !== RoleId);
+
+    return await this.userRepository.save({
+      ...user,
+      Roles: updatedRoles,
+    });
   }
 }

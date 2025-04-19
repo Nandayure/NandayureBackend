@@ -18,6 +18,7 @@ import { Cache } from 'cache-manager';
 import { v4 as uuidv4 } from 'uuid';
 import { ChangeUserStatusDto } from './dto/change-user-status-dto';
 import { GetUsersQueryDto } from 'src/users/dto/GetUsersQueryDto';
+import { RolesService } from 'src/roles/roles.service';
 //import { SendmailerService } from 'src/sendmailer/sendmailer.service';
 
 @Injectable()
@@ -27,6 +28,7 @@ export class AuthService {
     private jwtService: JwtService,
     private readonly mailClient: MailClientService,
     private readonly configService: ConfigService,
+    private readonly rolesService: RolesService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -213,5 +215,12 @@ export class AuthService {
 
   async getAllUsersWithFilters(getUsersQueryDto: GetUsersQueryDto) {
     return await this.userService.findAllUserWithFilters(getUsersQueryDto);
+  }
+
+  async addRoleToUser(userId: string, RoleId: number) {
+    return await this.userService.AddRoleToUser(userId, RoleId);
+  }
+  async removeRoleToUser(userId: string, RoleId: number) {
+    return await this.userService.RemoveRoleToUser(userId, RoleId);
   }
 }

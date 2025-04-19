@@ -1,11 +1,11 @@
 import {
   Controller,
-  //Get,
+  Get,
   Post,
   Body,
   UseGuards,
   // Patch,
-  // Param,
+  Param,
   // Delete,
 } from '@nestjs/common';
 import { RolesService } from './roles.service';
@@ -25,23 +25,13 @@ export class RolesController {
     return this.rolesService.create(createRoleDto);
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.rolesService.findAll();
-  // }
+  @Get()
+  findAll() {
+    return this.rolesService.findAll();
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return id; //this.rolesService.findOne(+id);
-  // }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-  //   return this.rolesService.update(+id, updateRoleDto);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.rolesService.remove(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return id; //this.rolesService.findOne(+id);
+  }
 }

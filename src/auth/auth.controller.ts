@@ -80,7 +80,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.RRHH)
+  @Roles(Role.TI)
   @Patch('changeUserStatus')
   async changeUserStatus(@Body() changeUserStatusDto: ChangeUserStatusDto) {
     return await this.authService.changeUserStatus(changeUserStatusDto);

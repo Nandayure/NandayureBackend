@@ -19,16 +19,18 @@ export class JobPositionRepository
   async getJobPositionsWithFilter(
     getJobPositionFilterDto: GetJobPositionFilterDto,
   ): Promise<[JobPosition[], number]> {
-    const { id, name, limit = 5, page = 1 } = getJobPositionFilterDto;
+    const { id, name, limit, page = 1 } = getJobPositionFilterDto;
 
-    const take = Number(limit);
+    const take = limit ? Number(limit) : null;
     const skip = (Number(page) - 1) * take;
 
     const query = this.jobPositionGenericRepository
       .createQueryBuilder('jobPosition')
-      .orderBy('jobPosition.Name', 'ASC')
-      .skip(skip)
-      .take(take);
+      .orderBy('jobPosition.Name', 'ASC');
+    if (take) {
+      query.take(take);
+      query.skip(skip);
+    }
 
     if (id) {
       query.andWhere('jobPosition.id = :id', { id });

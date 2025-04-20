@@ -36,6 +36,17 @@ export class DriveFolderService {
       relations: {
         Employee: true,
       },
+      select: {
+        id: true,
+        FolderId: true,
+        Employee: {
+          id: true,
+          Name: true,
+          Surname1: true,
+          Surname2: true,
+          Email: true,
+        },
+      },
     });
   }
 

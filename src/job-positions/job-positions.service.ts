@@ -7,6 +7,7 @@ import {
 import { CreateJobPositionDto } from './dto/create-job-position.dto';
 import { UpdateJobPositionDto } from './dto/update-job-position.dto';
 import { JobPositionRepository } from './repository/job-position.repository';
+import { GetJobPositionFilterDto } from './dto/get-jobPosition-filter.dto';
 
 @Injectable()
 export class JobPositionsService {
@@ -28,8 +29,24 @@ export class JobPositionsService {
     return await this.jobPositionRepository.save(newJobPosition);
   }
 
-  async findAll() {
-    return this.jobPositionRepository.findAll();
+  async findAll(getJobPositionFilterDto: GetJobPositionFilterDto) {
+    const page = Number(getJobPositionFilterDto.page ?? 1);
+    const limit = Number(getJobPositionFilterDto.limit ?? 10);
+    const [data, totalItems] =
+      await this.jobPositionRepository.getJobPositionsWithFilter(
+        getJobPositionFilterDto,
+      );
+
+    const totalPages = Math.ceil(totalItems / limit);
+    return {
+      data,
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    };
   }
 
   async findOneByName(Name: string) {

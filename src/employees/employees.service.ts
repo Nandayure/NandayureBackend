@@ -23,6 +23,7 @@ import { RequestSalaryCertificate } from 'src/request-salary-certificates/entiti
 import { RequestPaymentConfirmation } from 'src/request-payment-confirmations/entities/request-payment-confirmation.entity';
 import { RequestApproval } from 'src/request-approvals/entities/request-approval.entity';
 import { Request } from 'src/requests/entities/request.entity';
+import { GetEmployeesFilterDto } from './dto/get-employees-filter.dto';
 
 @Injectable()
 export class EmployeesService {
@@ -90,15 +91,26 @@ export class EmployeesService {
     }
   }
 
-  async findAll() {
-    try {
-      return await this.employeeRepository.findAll();
-    } catch (error) {
-      throw new InternalServerErrorException(
-        error,
-        'Error al obtener información de los empleados',
+  async findAll(getEmployeesFilterDto: GetEmployeesFilterDto) {
+    const page = Number(getEmployeesFilterDto.page ?? 1);
+    const limit = Number(getEmployeesFilterDto.limit ?? 10);
+
+    const [data, totalItems] =
+      await this.employeeRepository.findAllEmployeesWithFilters(
+        getEmployeesFilterDto,
       );
-    }
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      data,
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    };
   }
 
   async findOneById(id: string) {

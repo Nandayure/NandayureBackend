@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { EmployeesService } from './employees.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
@@ -17,6 +18,7 @@ import { UpdateEmployeeJobPosition } from './dto/updateEmployeeJobPosition';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/auth/auth-roles/role.enum';
 import { Roles } from 'src/auth/auth-roles/roles.decorator';
+import { GetEmployeesFilterDto } from './dto/get-employees-filter.dto';
 @ApiTags('employees')
 @Controller('employees')
 @UseGuards(AuthGuard)
@@ -45,8 +47,8 @@ export class EmployeesController {
   }
 
   @Get()
-  findAll() {
-    return this.employeesService.findAll();
+  findAll(@Query() query: GetEmployeesFilterDto) {
+    return this.employeesService.findAll(query);
   }
 
   @Get('allByDepartment/:id')

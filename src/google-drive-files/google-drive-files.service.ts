@@ -113,7 +113,7 @@ export class GoogleDriveFilesService {
           parents: [parentFolderId],
         },
         {
-          name: 'Solicitudes de constancias salariales',
+          name: 'Constancias salariales',
           mimeType: 'application/vnd.google-apps.folder',
           description: 'Carpeta de documentos de constancias salariales',
           parents: [parentFolderId],

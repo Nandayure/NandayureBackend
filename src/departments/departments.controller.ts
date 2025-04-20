@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { DepartmentsService } from './departments.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
@@ -17,6 +18,7 @@ import { UpdateDepartmentHeadDto } from './dto/update-department-head.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Role } from 'src/auth/auth-roles/role.enum';
 import { Roles } from 'src/auth/auth-roles/roles.decorator';
+import { GetDepartmentsFilterDto } from './dto/get-departments-fiter.dto';
 
 @ApiTags('departments')
 @Controller('departments')
@@ -30,8 +32,8 @@ export class DepartmentsController {
   }
 
   @Get()
-  findAll() {
-    return this.departmentsService.findAll();
+  findAll(@Query() getDepartmentsFilterDto: GetDepartmentsFilterDto) {
+    return this.departmentsService.findAll(getDepartmentsFilterDto);
   }
 
   @Get(':id')

@@ -13,6 +13,7 @@ import { Employee } from 'src/employees/entities/employee.entity';
 import { RequestApproval } from 'src/request-approvals/entities/request-approval.entity';
 import { User } from 'src/users/entities/user.entity';
 import { MailClientService } from 'src/mail-client/mail-client.service';
+import { GetDepartmentsFilterDto } from './dto/get-departments-fiter.dto';
 
 @Injectable()
 export class DepartmentsService {
@@ -28,10 +29,26 @@ export class DepartmentsService {
     return await this.departmentRepository.save(newDepartment);
   }
 
-  async findAll() {
-    return await this.departmentRepository.findAll({
-      relations: { departmentHead: true },
-    });
+  async findAll(getDepartmentsFilterDto: GetDepartmentsFilterDto) {
+    const page = Number(getDepartmentsFilterDto.page ?? 1);
+    const limit = Number(getDepartmentsFilterDto.limit ?? 10);
+
+    const [data, totalItems] =
+      await this.departmentRepository.getDepartmentsWithFilter(
+        getDepartmentsFilterDto,
+      );
+
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      data,
+      page,
+      limit,
+      totalItems,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1,
+    };
   }
 
   async findRRHHDepartmentHead() {

@@ -16,9 +16,4 @@ export class CreateDepartmentDto {
   @IsNotEmpty()
   @IsNumber()
   departmentProgramId: number;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  departmentHeadId?: string;
 }

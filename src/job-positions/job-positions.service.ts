@@ -31,13 +31,13 @@ export class JobPositionsService {
 
   async findAll(getJobPositionFilterDto: GetJobPositionFilterDto) {
     const page = Number(getJobPositionFilterDto.page ?? 1);
-    const limit = Number(getJobPositionFilterDto.limit ?? 10);
+    const limit = Number(getJobPositionFilterDto.limit ?? null);
     const [data, totalItems] =
       await this.jobPositionRepository.getJobPositionsWithFilter(
         getJobPositionFilterDto,
       );
 
-    const totalPages = Math.ceil(totalItems / limit);
+    const totalPages = limit ? Math.ceil(totalItems / limit) : 1;
     return {
       data,
       page,

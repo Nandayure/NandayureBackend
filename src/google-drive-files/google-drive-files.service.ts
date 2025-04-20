@@ -10,6 +10,7 @@ import { CreateGoogleDriveFileDto } from './dto/create-google-drive-file.dto';
 import { ConfigService } from '@nestjs/config';
 import { DriveFolderService } from 'src/drive-folder/drive-folder.service';
 import { Readable } from 'stream';
+import { GetFilesFilterDto } from './dto/get-files-filter.dto';
 
 //import { DriveFolderService } from 'src/drive-folder/drive-folder.service';
 //import { GoogleDriveService } from 'nestjs-googledrive-upload';
@@ -36,28 +37,6 @@ export class GoogleDriveFilesService {
     file: Express.Multer.File,
   ) {
     try {
-      // const userFolder = await this.driveFolderService.findOne(
-      //   createGoogleDriveFileDto.EmployeeId,
-      // );
-
-      // if (!userFolder) {
-      //   throw new ConflictException(
-      //     'El usuario no tiene un forder en Google Drive',
-      //   );
-      // }
-
-      // if (!userFolder) {
-      //   const user = await this.employeesService.findOneById(
-      //     createGoogleDriveFileDto.EmployeeId,
-      //   );
-
-      //   if (!user) {
-      //     throw new Error('El usuario no existe');
-      //   }
-
-      //   await this.createMainFolder(user.id, `${user.Name} ${user.Surname1}`);
-      // }
-
       const fileStream = this.bufferToStream(file.buffer);
       const response = await this.driveClient.files.create({
         requestBody: {
@@ -156,24 +135,30 @@ export class GoogleDriveFilesService {
     }
   }
 
-  async findMyAllFiles(id: string) {
+  async findMyAllFiles(id: string, pageToken?: string, limit: number = 10) {
     const userFolder = await this.driveFolderService.findOne(id);
+
+    if (!userFolder) {
+      throw new NotFoundException(
+        'El usuario no tiene un folder en Google Drive',
+      );
+    }
+
     try {
-      if (!userFolder) {
-        throw new NotFoundException(
-          'El usuario no tiene un forder en Google Drive',
-        );
-      }
       const res = await this.driveClient.files.list({
-        q: `'${(await userFolder).FolderId}' in parents`,
-        pageSize: 10,
+        q: `'${userFolder.FolderId}' in parents`,
+        pageSize: limit,
+        pageToken: pageToken || undefined, // importante para paginación
         fields:
           'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, mimeType)',
         supportsAllDrives: true,
-        orderby: 'odifiedTime desc',
+        orderBy: 'modifiedTime desc',
       });
 
-      return res.data.files;
+      return {
+        files: res.data.files,
+        nextPageToken: res.data.nextPageToken || null,
+      };
     } catch (e) {
       throw e;
     }
@@ -275,48 +260,47 @@ export class GoogleDriveFilesService {
       throw e;
     }
   }
-  async findAllFilesByFolder(folderId: string) {
+  async findAllFilesByFolder(
+    folderId: string,
+    getFilesFilterDto: GetFilesFilterDto,
+  ) {
     try {
-      // const userFolder = await this.driveFolderService.findOne(
-      //   getFilesByFolderDto.userId,
-      // );
-      // if (!userFolder) {
-      //   throw new NotFoundException(
-      //     'El usuario no tiene un forder en Google Drive',
-      //   );
-      // }
+      const {
+        pageToken,
+        limit = 10,
+        orderDirection = 'desc',
+        orderBy = 'modifiedTime',
+        name,
+      } = getFilesFilterDto;
 
-      // // Verificar si folderId pertenece a userFolder.id
-      // const folderMetadata = await this.driveClient.files.get({
-      //   fileId: folderId,
-      //   fields: 'parents',
-      //   supportsAllDrives: true,
-      // });
-
-      // if (
-      //   !folderMetadata.data.parents ||
-      //   !folderMetadata.data.parents.includes(userFolder.FolderId)
-      // ) {
-      //   throw new ForbiddenException(
-      //     'El folder no pertenece al usuario o no está dentro de su folder principal',
-      //   );
-      // }
+      let q = `'${folderId}' in parents`;
+      if (name) q += ` and name contains '${name}'`;
 
       const res = await this.driveClient.files.list({
-        q: `'${folderId}' in parents`,
-        pageSize: 10,
+        q,
+        pageSize: limit,
+        pageToken: pageToken || undefined,
         fields:
           'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType,parents)',
         supportsAllDrives: true,
-        orderby: 'odifiedTime desc',
+        orderBy: `${orderBy} ${orderDirection}`,
       });
 
-      return res.data.files;
+      return {
+        data: res.data.files,
+        limit,
+        nextPageToken: res.data.nextPageToken || null,
+        totalItems: res.data.files.length || 0,
+      };
     } catch (e) {
       throw e;
     }
   }
-  async findAllMyFilesByFolder(userId: string, folderId: string) {
+  async findAllMyFilesByFolder(
+    userId: string,
+    folderId: string,
+    getFilesFilterDto: GetFilesFilterDto,
+  ) {
     const userFolder = await this.driveFolderService.findOne(userId);
     if (!userFolder) {
       throw new NotFoundException(
@@ -340,16 +324,33 @@ export class GoogleDriveFilesService {
       );
     }
 
+    const {
+      pageToken,
+      limit = 10,
+      orderDirection = 'desc',
+      orderBy = 'modifiedTime',
+      name,
+    } = getFilesFilterDto;
+
+    let q = `'${folderId}' in parents`;
+    if (name) q += ` and name contains '${name}'`;
+
     const res = await this.driveClient.files.list({
-      q: `'${folderId}' in parents`,
-      pageSize: 10,
+      q,
+      pageSize: limit,
+      pageToken: pageToken || undefined,
       fields:
-        'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType,parents)',
+        'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, webContentLink, mimeType, parents)',
       supportsAllDrives: true,
-      orderby: 'odifiedTime desc',
+      orderBy: `${orderBy} ${orderDirection}`,
     });
 
-    return res.data.files;
+    return {
+      data: res.data.files,
+      limit,
+      nextPageToken: res.data.nextPageToken || null,
+      totalItems: res.data.files.length || 0,
+    };
   }
 
   async downloadFile(fileId: string, res: Response) {

@@ -14,6 +14,7 @@ import {
   Param,
   Res,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { GoogleDriveFilesService } from './google-drive-files.service';
@@ -25,6 +26,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from 'src/auth/auth-roles/roles.decorator';
 import { Role } from 'src/auth/auth-roles/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { GetFilesFilterDto } from './dto/get-files-filter.dto';
 
 @ApiTags('google-drive-files')
 @Controller('google-drive-files')
@@ -57,10 +59,18 @@ export class GoogleDriveFilesController {
   }
 
   //Este ya no se usa
-  @Get('MyFiles')
-  findAll(@Req() req) {
-    return this.googleDriveFilesService.findMyAllFiles(req.user.id);
-  }
+  // @Get('MyFiles')
+  // findAll(
+  //   @Req() req,
+  //   @Query('pageToken') pageToken?: string,
+  //   @Query('limit') limit?: number,
+  // ) {
+  //   return this.googleDriveFilesService.findMyAllFiles(
+  //     req.user.id,
+  //     pageToken,
+  //     +limit,
+  //   );
+  // }
 
   //Este es el que se usa para listar las carpetas de un usuario (para que yeilin pueda ver las carptas de un empleado)
 
@@ -78,17 +88,22 @@ export class GoogleDriveFilesController {
   }
 
   //Este tampoco se usa, era el anterior ahora se usa el de ABAJO
-  @Get('FilesByEmployee/:employeeId')
-  findAllByUser(@Param('employeeId') employeeId: string) {
-    return this.googleDriveFilesService.findAllFilesByUser(employeeId);
-  }
+  // @Get('FilesByEmployee/:employeeId')
+  // findAllByUser(@Param('employeeId') employeeId: string) {
+  //   return this.googleDriveFilesService.findAllFilesByUser(employeeId);
+  // }
 
   //Este es el que se usa luego de entrar en una carpeta para listar los archivos dentro de ella(Funciona solo para la vista del usuario logueado que ve sus propios archivos)
   @Get('MyFilesByFolder/:folderId')
-  findAllFilesByFolder(@Param('folderId') folderId: string, @Req() req) {
+  findAllFilesByFolder(
+    @Param('folderId') folderId: string,
+    @Req() req,
+    @Query() query: GetFilesFilterDto,
+  ) {
     return this.googleDriveFilesService.findAllMyFilesByFolder(
       req.user.id,
       folderId,
+      query,
     );
   }
 
@@ -96,8 +111,11 @@ export class GoogleDriveFilesController {
   @Roles(Role.RRHH)
   @UseGuards(RolesGuard)
   @Get('FilesByFolder/:folderId')
-  findAllByFolder(@Param('folderId') folderId: string) {
-    return this.googleDriveFilesService.findAllFilesByFolder(folderId);
+  findAllByFolder(
+    @Param('folderId') folderId: string,
+    @Query() query: GetFilesFilterDto,
+  ) {
+    return this.googleDriveFilesService.findAllFilesByFolder(folderId, query);
   }
 
   //Este es el que se usa para descargar un archivo de los que se listaron con el de arriba y sin importar la vista solo necesita el fileId

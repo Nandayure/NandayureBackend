@@ -177,15 +177,52 @@ export class RequestRepository
     const qb = this.requestGenericRepository
       .createQueryBuilder('request')
       .withDeleted() // <-- solo aplica a request
-      .leftJoinAndSelect('request.RequestApprovals', 'approval')
-      .leftJoinAndSelect('request.RequestType', 'requestType')
-      .leftJoinAndSelect('request.RequestStatus', 'requestStatus')
-      .leftJoinAndSelect('request.RequestVacation', 'vacation')
-      .leftJoinAndSelect('request.RequestSalaryCertificate', 'salary')
-      .leftJoinAndSelect('request.RequestPaymentConfirmation', 'payment')
-      .leftJoinAndSelect('approval.approver', 'approver', undefined, {
+      .leftJoin('request.RequestType', 'requestType')
+      .leftJoin('request.RequestStatus', 'requestStatus')
+      .leftJoin('request.RequestVacation', 'vacation')
+      .leftJoin('request.RequestSalaryCertificate', 'salary')
+      .leftJoin('request.RequestApprovals', 'approval')
+      .leftJoin('request.RequestPaymentConfirmation', 'payment')
+      .leftJoin('approval.approver', 'approver', undefined, {
         withDeleted: true,
       })
+      .select([
+        'request.id',
+        'request.date',
+        'request.CancelledReason',
+        'request.RequestStateId',
+        'request.RequestTypeId',
+        'request.EmployeeId',
+        'requestType.name',
+        'requestStatus.Name',
+        'vacation.id',
+        'vacation.daysRequested',
+        'vacation.departureDate',
+        'vacation.entryDate',
+        'vacation.RequestId',
+        'salary.id',
+        'salary.reason',
+        'salary.date',
+        'salary.RequestId',
+        'payment.id',
+        'payment.reason',
+        'payment.date',
+        'payment.RequestId',
+        'approval.id',
+        'approval.approverId',
+        'approval.requesterId',
+        'approval.processNumber',
+        'approval.RequestId',
+        'approval.observation',
+        'approval.approved',
+        'approval.current',
+        'approval.ApprovedDate',
+        'approver.id',
+        'approver.Name',
+        'approver.Surname1',
+        'approver.Surname2',
+        'approver.Email',
+      ])
       .where('request.employeeId = :employeeId', { employeeId: employeeId })
       .orderBy('request.date', 'DESC')
       .skip(skip)
@@ -240,15 +277,58 @@ export class RequestRepository
     const qb = this.requestGenericRepository
       .createQueryBuilder('request')
       .withDeleted() // <-- solo aplica a request
-      .leftJoinAndSelect('request.RequestApprovals', 'approval')
-      .leftJoinAndSelect('request.RequestType', 'requestType')
-      .leftJoinAndSelect('request.RequestStatus', 'requestStatus')
-      .leftJoinAndSelect('request.RequestVacation', 'vacation')
-      .leftJoinAndSelect('request.RequestSalaryCertificate', 'salary')
-      .leftJoinAndSelect('request.RequestPaymentConfirmation', 'payment')
-      .leftJoinAndSelect('approval.approver', 'approver', undefined, {
+      .leftJoin('request.Employee', 'employee')
+      .leftJoin('request.RequestType', 'requestType')
+      .leftJoin('request.RequestStatus', 'requestStatus')
+      .leftJoin('request.RequestVacation', 'vacation')
+      .leftJoin('request.RequestSalaryCertificate', 'salary')
+      .leftJoin('request.RequestApprovals', 'approval')
+      .leftJoin('request.RequestPaymentConfirmation', 'payment')
+      .leftJoin('approval.approver', 'approver', undefined, {
         withDeleted: true,
       })
+      .select([
+        'request.id',
+        'request.date',
+        'request.CancelledReason',
+        'request.RequestStateId',
+        'request.RequestTypeId',
+        'request.EmployeeId',
+        'employee.id',
+        'employee.Name',
+        'employee.Surname1',
+        'employee.Surname2',
+        'employee.Email',
+        'requestType.name',
+        'requestStatus.Name',
+        'vacation.id',
+        'vacation.daysRequested',
+        'vacation.departureDate',
+        'vacation.entryDate',
+        'vacation.RequestId',
+        'salary.id',
+        'salary.reason',
+        'salary.date',
+        'salary.RequestId',
+        'payment.id',
+        'payment.reason',
+        'payment.date',
+        'payment.RequestId',
+        'approval.id',
+        'approval.approverId',
+        'approval.requesterId',
+        'approval.processNumber',
+        'approval.RequestId',
+        'approval.observation',
+        'approval.approved',
+        'approval.current',
+        'approval.ApprovedDate',
+        'approver.id',
+        'approver.Name',
+        'approver.Surname1',
+        'approver.Surname2',
+        'approver.Email',
+      ])
       .orderBy('request.date', 'DESC')
       .skip(skip)
       .take(take);

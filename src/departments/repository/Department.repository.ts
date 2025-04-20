@@ -27,16 +27,19 @@ export class DepartmentRepository
     const query = this.departmentRepository
       .createQueryBuilder('department')
       .leftJoin('department.departmentHead', 'departmentHead')
+      .leftJoin('department.departmentProgram', 'departmentProgram')
       .select([
         'department.id',
         'department.name',
         'department.description',
         'departmentHead.id',
-        'departmentHead.Name AS departmentHeadName',
+        'departmentHead.Name',
         'departmentHead.Surname1',
         'departmentHead.Surname2',
         'departmentHead.Email',
         'departmentHead.CellPhone',
+        'departmentProgram.id',
+        'departmentProgram.name',
       ])
       .orderBy('department.name', 'ASC')
       .skip(skip)

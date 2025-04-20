@@ -11,4 +11,9 @@ export class CreateGoogleDriveFileDto {
   @IsNotEmpty()
   @IsString()
   FileName: string;
+
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // @IsString()
+  // EmloyeeId: string;
 }

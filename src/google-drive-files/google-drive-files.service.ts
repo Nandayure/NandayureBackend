@@ -11,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { DriveFolderService } from 'src/drive-folder/drive-folder.service';
 import { Readable } from 'stream';
 import { GetFilesFilterDto } from './dto/get-files-filter.dto';
+import { MailClientService } from 'src/mail-client/mail-client.service';
 
 //import { DriveFolderService } from 'src/drive-folder/drive-folder.service';
 //import { GoogleDriveService } from 'nestjs-googledrive-upload';
@@ -21,7 +22,7 @@ export class GoogleDriveFilesService {
     @Inject('GOOGLE_DRIVE_CLIENT') private readonly driveClient: any,
     private readonly configService: ConfigService,
     private readonly driveFolderService: DriveFolderService,
-    // private readonly employeesService: EmployeesService,
+    private readonly mailClient: MailClientService,
   ) {}
 
   // Función para convertir un buffer en un stream
@@ -38,6 +39,7 @@ export class GoogleDriveFilesService {
   ) {
     try {
       const fileStream = this.bufferToStream(file.buffer);
+
       const response = await this.driveClient.files.create({
         requestBody: {
           name: `${createGoogleDriveFileDto.FileName}.${file.mimetype.split('/')[1]}`,
@@ -50,7 +52,36 @@ export class GoogleDriveFilesService {
         },
         fields: 'id, name',
       });
-      return response.data;
+
+      const ParentFolder = await this.driveClient.files.get({
+        fileId: createGoogleDriveFileDto.FolderId,
+        fields: 'name, parents',
+        supportsAllDrives: true,
+      });
+
+      const principalParentFolderId = ParentFolder.data.parents[0];
+
+      //Find employee upload folder to send mail
+      const employeeUploadFolder =
+        await this.driveFolderService.findOneWithRelationsByFolderId(
+          principalParentFolderId,
+        );
+
+      if (employeeUploadFolder) {
+        this.mailClient.sendNewFileUploadedMail({
+          employeeEmail: employeeUploadFolder.Employee.Email,
+          employeeName: `${employeeUploadFolder.Employee.Name} ${employeeUploadFolder.Employee.Surname1} ${employeeUploadFolder.Employee.Surname2}`,
+          fileName: response.data.name,
+          folderName: ParentFolder.data.name,
+        });
+      }
+
+      const responseData = {
+        id: response.data.id,
+        name: response.data.name,
+      };
+
+      return responseData;
     } catch (err) {
       throw err;
     }

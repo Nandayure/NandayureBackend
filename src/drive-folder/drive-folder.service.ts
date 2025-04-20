@@ -30,6 +30,26 @@ export class DriveFolderService {
     }
   }
 
+  async findOneWithRelationsByFolderId(id: string) {
+    return this.driveFolderRepository.findOne({
+      where: { FolderId: id },
+      relations: {
+        Employee: true,
+      },
+      select: {
+        id: true,
+        FolderId: true,
+        Employee: {
+          id: true,
+          Name: true,
+          Surname1: true,
+          Surname2: true,
+          Email: true,
+        },
+      },
+    });
+  }
+
   async findAll() {
     return this.driveFolderRepository.findAll();
   }

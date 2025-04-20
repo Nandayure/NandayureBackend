@@ -9,6 +9,7 @@ import { RequestResolutionMail } from './templates/RequestResolutionMail';
 import { CancelationRequestMailToApprover } from './templates/CancelationRequestMailToApprover';
 import { ConfigService } from '@nestjs/config';
 import { NewDepartmentHeadMail } from './templates/NewDepartmentHeadMail';
+import { NewFileUploadedMail } from './templates/NewFileUploadedMail';
 
 @Injectable()
 export class MailClientService {
@@ -80,6 +81,43 @@ export class MailClientService {
     }
   }
 
+  async sendNewFileUploadedMail({
+    employeeEmail,
+    employeeName,
+    fileName,
+    folderName,
+    // fileLink,
+  }: {
+    employeeEmail: string;
+    employeeName: string;
+    fileName: string;
+    folderName: string;
+    // fileLink: string;
+  }) {
+    try {
+      await this.mailService.sendMail({
+        from: 'RH-Nandayure',
+        to: employeeEmail,
+        subject: 'Nuevo documento disponible',
+        html: await NewFileUploadedMail(
+          employeeName,
+          fileName,
+          folderName,
+          `${this.configService.get('FrontEndBaseURL')}/my-file`,
+        ),
+        attachments: [
+          {
+            filename: 'MuniLogo.jpeg',
+            path: './src/mail-client/assets/MuniLogo.jpeg',
+            cid: 'logoImage',
+          },
+        ],
+      });
+    } catch (error) {
+      console.error('Error al enviar el correo de nuevo documento:', error);
+    }
+  }
+
   async sendCancelationRequestToApproverMail(
     approverMail: string,
     requesterId: string,
@@ -99,7 +137,7 @@ export class MailClientService {
           requestType,
           requesterEmail,
           cancelationReason,
-          this.configService.get('FrontEndLoginURL'),
+          this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {
@@ -144,7 +182,7 @@ export class MailClientService {
         text: 'Su solicitud ha sido enviada con éxito, pronto recibirá una respuesta',
         html: await RequestConfirmationMail(
           requestType,
-          this.configService.get('FrontEndLoginURL'),
+          this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {
@@ -175,7 +213,7 @@ export class MailClientService {
           requesterId,
           requesterName,
           requestType,
-          this.configService.get('FrontEndLoginURL'),
+          this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {
@@ -203,7 +241,7 @@ export class MailClientService {
         html: await RequestResolutionMail(
           approved,
           requestType,
-          this.configService.get('FrontEndLoginURL'),
+          this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {

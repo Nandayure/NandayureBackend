@@ -13,9 +13,6 @@ import { Readable } from 'stream';
 import { GetFilesFilterDto } from './dto/get-files-filter.dto';
 import { MailClientService } from 'src/mail-client/mail-client.service';
 
-//import { DriveFolderService } from 'src/drive-folder/drive-folder.service';
-//import { GoogleDriveService } from 'nestjs-googledrive-upload';
-//MUNICIPALITY_FOLDER_ID
 @Injectable()
 export class GoogleDriveFilesService {
   constructor(
@@ -166,34 +163,38 @@ export class GoogleDriveFilesService {
     }
   }
 
-  async findMyAllFiles(id: string, pageToken?: string, limit: number = 10) {
-    const userFolder = await this.driveFolderService.findOne(id);
+  // async findMyAllFiles(id: string, pageToken?: string, limit: number = 10) {
+  //   const userFolder = await this.driveFolderService.findOne(id);
 
-    if (!userFolder) {
-      throw new NotFoundException(
-        'El usuario no tiene un folder en Google Drive',
-      );
-    }
+  //   if (!userFolder) {
+  //     throw new NotFoundException(
+  //       'El usuario no tiene un folder en Google Drive',
+  //     );
+  //   }
 
-    try {
-      const res = await this.driveClient.files.list({
-        q: `'${userFolder.FolderId}' in parents`,
-        pageSize: limit,
-        pageToken: pageToken || undefined, // importante para paginación
-        fields:
-          'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, mimeType)',
-        supportsAllDrives: true,
-        orderBy: 'modifiedTime desc',
-      });
+  //   try {
+  //     const res = await this.driveClient.files.list({
+  //       q: `'${userFolder.FolderId}' in parents`,
+  //       pageSize: limit,
+  //       pageToken: pageToken || undefined, // importante para paginación
+  //       fields:
+  //         'nextPageToken, files(id, name, webViewLink, thumbnailLink, iconLink, mimeType)',
+  //       supportsAllDrives: true,
+  //       orderBy: 'modifiedTime desc',
+  //     });
 
-      return {
-        files: res.data.files,
-        nextPageToken: res.data.nextPageToken || null,
-      };
-    } catch (e) {
-      throw e;
-    }
-  }
+  //     return {
+  //       files: res.data.files,
+  //       nextPageToken: res.data.nextPageToken || null,
+  //       previusPageToken: res.data.previusPageToken || null,
+  //       hasNextPage: res.data.nextPageToken ? true : false,
+  //       hasPreviusPage: res.data.previusPageToken ? true : false,
+  //       TotalPages: res.data.files.length || 0,
+  //     };
+  //   } catch (e) {
+  //     throw e;
+  //   }
+  // }
 
   async getMyFolders(id: string) {
     try {
@@ -320,8 +321,10 @@ export class GoogleDriveFilesService {
       return {
         data: res.data.files,
         limit,
+        previusPageToken: res.data.previusPageToken || null,
         nextPageToken: res.data.nextPageToken || null,
-        totalItems: res.data.files.length || 0,
+        hasNextPage: res.data.nextPageToken ? true : false,
+        hasPreviusPage: res.data.previusPageToken ? true : false,
       };
     } catch (e) {
       throw e;
@@ -379,8 +382,10 @@ export class GoogleDriveFilesService {
     return {
       data: res.data.files,
       limit,
+      previusPageToken: res.data.previusPageToken || null,
       nextPageToken: res.data.nextPageToken || null,
-      totalItems: res.data.files.length || 0,
+      hasNextPage: res.data.nextPageToken ? true : false,
+      hasPreviusPage: res.data.previusPageToken ? true : false,
     };
   }
 

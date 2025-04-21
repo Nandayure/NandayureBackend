@@ -58,22 +58,6 @@ export class GoogleDriveFilesController {
     };
   }
 
-  //Este ya no se usa
-  // @Get('MyFiles')
-  // findAll(
-  //   @Req() req,
-  //   @Query('pageToken') pageToken?: string,
-  //   @Query('limit') limit?: number,
-  // ) {
-  //   return this.googleDriveFilesService.findMyAllFiles(
-  //     req.user.id,
-  //     pageToken,
-  //     +limit,
-  //   );
-  // }
-
-  //Este es el que se usa para listar las carpetas de un usuario (para que yeilin pueda ver las carptas de un empleado)
-
   @Roles(Role.RRHH)
   @UseGuards(RolesGuard)
   @Get('EmployeeFolders/:employeeId')
@@ -86,12 +70,6 @@ export class GoogleDriveFilesController {
   async getMyFolders(@Req() req) {
     return this.googleDriveFilesService.getMyFolders(req.user.id);
   }
-
-  //Este tampoco se usa, era el anterior ahora se usa el de ABAJO
-  // @Get('FilesByEmployee/:employeeId')
-  // findAllByUser(@Param('employeeId') employeeId: string) {
-  //   return this.googleDriveFilesService.findAllFilesByUser(employeeId);
-  // }
 
   //Este es el que se usa luego de entrar en una carpeta para listar los archivos dentro de ella(Funciona solo para la vista del usuario logueado que ve sus propios archivos)
   @Get('MyFilesByFolder/:folderId')

@@ -101,4 +101,13 @@ export class AuthController {
     const { userId, roleId } = updateUserRolesDto;
     return await this.authService.removeRoleToUser(userId, roleId);
   }
+
+  @UseGuards(AuthGuard)
+  @Get('me')
+  async getCurrentUser(@Req() req) {
+    const tokenRoles: Role[] = req.user.roles;
+    const userId = req.user.id;
+
+    return await this.authService.authMe(userId, tokenRoles);
+  }
 }

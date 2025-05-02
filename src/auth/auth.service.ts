@@ -1,4 +1,5 @@
 import {
+  HttpException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -19,6 +20,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChangeUserStatusDto } from './dto/change-user-status-dto';
 import { GetUsersQueryDto } from 'src/users/dto/GetUsersQueryDto';
 import { RolesService } from 'src/roles/roles.service';
+import { Role } from './auth-roles/role.enum';
 //import { SendmailerService } from 'src/sendmailer/sendmailer.service';
 
 @Injectable()
@@ -222,5 +224,23 @@ export class AuthService {
   }
   async removeRoleToUser(userId: string, RoleId: number) {
     return await this.userService.RemoveRoleToUser(userId, RoleId);
+  }
+
+  async authMe(userId: string, tokenRoles: Role[]) {
+    const user = await this.userService.findUserWithRoles(userId);
+    const dbRoles: Role[] = user.Roles.map((role) => role.RoleName as Role);
+
+    const rolesChanged =
+      tokenRoles.length !== dbRoles.length ||
+      !tokenRoles.every((r) => dbRoles.includes(r)) ||
+      !dbRoles.every((r) => tokenRoles.includes(r));
+
+    if (rolesChanged) {
+      throw new HttpException('Sesión desactualizada.', 629);
+    }
+
+    return {
+      message: 'Sesión valida',
+    };
   }
 }

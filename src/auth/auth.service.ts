@@ -228,6 +228,7 @@ export class AuthService {
 
   async authMe(userId: string, tokenRoles: Role[]) {
     const user = await this.userService.findUserWithRoles(userId);
+    if (!user.enabled) throw new HttpException('Sesión desactualizada.', 629);
     const dbRoles: Role[] = user.Roles.map((role) => role.RoleName as Role);
 
     const rolesChanged =

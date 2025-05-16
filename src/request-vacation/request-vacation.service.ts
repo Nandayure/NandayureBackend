@@ -30,9 +30,9 @@ export class RequestVacationService {
     private readonly holidayService: HolidaysService,
   ) {}
 
-  async getAvailableDaysBetweenTwoDates(entryDate: Date, departureDate: Date) {
-    const start = new Date(entryDate); // Fecha de inicio
-    const end = new Date(departureDate); // Fecha de fin
+  async getAvailableDaysBetweenTwoDates(departureDate: Date, entryDate: Date) {
+    const start = new Date(departureDate); // Fecha de inicio
+    const end = new Date(entryDate); // Fecha de fin
 
     let totalDays = 0; // Contador de días hábiles
 
@@ -74,8 +74,8 @@ export class RequestVacationService {
 
     try {
       const daysRequested = await this.getAvailableDaysBetweenTwoDates(
-        createRequestVacationDto.entryDate,
         createRequestVacationDto.departureDate,
+        createRequestVacationDto.entryDate,
       );
 
       if (daysRequested <= 0) {

@@ -31,7 +31,7 @@ export class DepartmentsService {
 
   async findAll(getDepartmentsFilterDto: GetDepartmentsFilterDto) {
     const page = Number(getDepartmentsFilterDto.page ?? 1);
-    const limit = Number(getDepartmentsFilterDto.limit ?? 10);
+    const limit = Number(getDepartmentsFilterDto.limit ?? 30);
 
     const [data, totalItems] =
       await this.departmentRepository.getDepartmentsWithFilter(

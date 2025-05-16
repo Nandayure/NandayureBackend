@@ -28,7 +28,7 @@ export class MailClientService {
         html: await WelcomeMail(
           createMailClientDto.EmployeeId,
           createMailClientDto.Password,
-          this.configService.get('FrontEndLoginURL'),
+          `${await this.configService.get('FrontEndBaseURL')}auth/login`,
         ),
         attachments: [
           {
@@ -63,7 +63,7 @@ export class MailClientService {
           newHeadName,
           departmentName,
           pendingRequestsCount,
-          this.configService.get('FrontEndLoginURL'), // o localhost si estás en dev
+          `${await this.configService.get('FrontEndBaseURL')}auth/login`, // o localhost si estás en dev
         ),
         attachments: [
           {
@@ -103,7 +103,7 @@ export class MailClientService {
           employeeName,
           fileName,
           folderName,
-          `${this.configService.get('FrontEndBaseURL')}/my-file`,
+          `${await this.configService.get('FrontEndBaseURL')}my-file`,
         ),
         attachments: [
           {
@@ -137,7 +137,7 @@ export class MailClientService {
           requestType,
           requesterEmail,
           cancelationReason,
-          this.configService.get('FrontEndBaseURL'),
+          await this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {
@@ -182,7 +182,7 @@ export class MailClientService {
         text: 'Su solicitud ha sido enviada con éxito, pronto recibirá una respuesta',
         html: await RequestConfirmationMail(
           requestType,
-          this.configService.get('FrontEndBaseURL'),
+          await this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {
@@ -213,7 +213,7 @@ export class MailClientService {
           requesterId,
           requesterName,
           requestType,
-          this.configService.get('FrontEndBaseURL'),
+          await this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {
@@ -241,7 +241,7 @@ export class MailClientService {
         html: await RequestResolutionMail(
           approved,
           requestType,
-          this.configService.get('FrontEndBaseURL'),
+          await this.configService.get('FrontEndBaseURL'),
         ),
         attachments: [
           {

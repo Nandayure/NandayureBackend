@@ -58,7 +58,6 @@ export class GoogleDriveFilesService {
 
       const principalParentFolderId = ParentFolder.data.parents[0];
       const fileParentFolderId = response.data.parents[0];
-      const folderId = fileParentFolderId.id;
 
       //Find employee upload folder to send mail
       const employeeUploadFolder =
@@ -72,7 +71,7 @@ export class GoogleDriveFilesService {
           employeeName: `${employeeUploadFolder.Employee.Name} ${employeeUploadFolder.Employee.Surname1} ${employeeUploadFolder.Employee.Surname2}`,
           fileName: response.data.name,
           folderName: ParentFolder.data.name,
-          folderId,
+          folderId: fileParentFolderId,
         });
       }
 

@@ -86,13 +86,13 @@ export class MailClientService {
     employeeName,
     fileName,
     folderName,
-    // fileLink,
+    folderId,
   }: {
     employeeEmail: string;
     employeeName: string;
     fileName: string;
     folderName: string;
-    // fileLink: string;
+    folderId: string;
   }) {
     try {
       await this.mailService.sendMail({
@@ -103,7 +103,7 @@ export class MailClientService {
           employeeName,
           fileName,
           folderName,
-          `${await this.configService.get('FrontEndBaseURL')}my-file`,
+          `${await this.configService.get('FrontEndBaseURL')}my-file/${folderId}`,
         ),
         attachments: [
           {

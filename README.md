@@ -92,12 +92,6 @@ Crear un archivo `.env` en la raíz del proyecto y completar con lo siguiente:
 # Puerto en el que se ejecuta el servidor (por defecto: 8000)
 PORT=8000
 
-# ⚙️ Configuración de la base de datos (modo local)
-DB_HOST=localhost                  # Dirección del servidor de la base de datos
-DB_PORT=3306                       # Puerto de conexión (3306 para MySQL)
-DB_USERNAME=tu_usuario_mysql       # Usuario de la base de datos
-DB_PASSWORD=tu_contraseña_mysql    # Contraseña del usuario
-DB_NAME=nombre_base_datos_local    # Nombre de la base de datos local
 
 # ☁️ Conexión a base de datos en Railway (modo producción)
 MYSQL_PUBLIC_URL=mysql://usuario:contraseña@host:puerto/base_de_datos
@@ -107,13 +101,7 @@ JWT_SECRET=una_clave_secreta_segura_para_firmar_tokens
 
 # 🌐 URLs del frontend
 FrontEndBaseURL=http://localhost:3000/                  # Dirección raíz del frontend
-FrontEndLoginURL=http://localhost:3000/auth/login       # Ruta de pantalla de inicio de sesión
-ResetPasswordURL=http://localhost:3000/auth/reset-password # Ruta de restablecimiento de contraseña
 
-# 📧 Configuración SMTP para envío de correos
-EMAIL_HOST=host_smtp               # Ej: sandbox.smtp.mailtrap.io
-EMAIL_USERNAME=usuario_smtp
-EMAIL_PASSWORD=contraseña_smtp
 
 # ☁️ Google Drive API
 MUNICIPALITY_FOLDER_ID=id_de_la_carpeta_en_drive
@@ -123,10 +111,8 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...clave privada...\n-----END P
 ```
 > 🔁 **Notas importantes:**
 >
-> - Las **URLs del frontend** (`FrontEndBaseURL`, `FrontEndLoginURL`, `ResetPasswordURL`) deben coincidir con las rutas definidas en el frontend.  
+> - La **URL del frontend** (`FrontEndBaseURL`) debe coincidir con las rutas definidas en el frontend.  
 >   En entorno de producción, recordá actualizar estas URLs al dominio real de la aplicación.
->
-> - Para **desarrollo**, se recomienda usar [Mailtrap](https://mailtrap.io/) como servicio SMTP para evitar el envío de correos reales.
 >
 > - En **producción**, es recomendable usar un proveedor real como **Gmail** (usando App Passwords o OAuth2) o **Google Workspace** para asegurar la entrega de correos.
 >
@@ -137,7 +123,6 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...clave privada...\n-----END P
 > Para el correcto funcionamiento del sistema, se recomienda crear una cuenta de Google exclusiva del proyecto institucional (ej. `sistemarrhh.nandayure@gmail.com`).  
 > Esta cuenta será utilizada para:
 >
-> - Enviar correos electrónicos mediante SMTP (por ejemplo, con Gmail y App Passwords).
 > - Configurar y acceder a la **API de Google Drive** a través de una **cuenta de servicio** vinculada.
 
 
@@ -147,31 +132,8 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...clave privada...\n-----END P
 
 ### 📬 Envío de correos
 
-#### ➤ Opción 1: Configurar Mailtrap (recomendado para desarrollo)
 
-1. Crear una cuenta en [Mailtrap.io](https://mailtrap.io/).
-2. Iniciar sesión y crear un nuevo inbox.
-<br>
-<img width="933" alt="ASDF" src="https://github.com/user-attachments/assets/91b0f693-fac9-48df-8707-6bffc4352e98" />
-<br>
-3. Elegir el inbox creado.
-4. Elegir la integración con **SMTP** y copiar:
-   - `EMAIL_HOST`
-   - `EMAIL_USERNAME`
-   - `EMAIL_PASSWORD`
-5. Agregar estos valores al archivo `.env`.
-
-📷 Nuevo inbox:
-<br>
-<img width="500" alt="mailtrapHome" src="https://github.com/user-attachments/assets/5cb813af-df06-46f7-b87f-fa5979cddb54" />
-<br>
-
-📷 Ejemplo de configuración SMTP en Mailtrap:
-<br>
-<img width="500" alt="mailtrapCredential" src="https://github.com/user-attachments/assets/9c7664a8-6df3-4be9-ba3a-13f440b9cd29" />
-<br>
-
-### ➤ Opción 2: Configurar un proveedor real (producción)
+### ➤ Configurar un proveedor real (producción)
 
 #### Ejemplo: Usar Gmail con App Passwords
 
@@ -323,9 +285,4 @@ npm run start
 El backend quedará escuchando en el puerto definido en tu archivo .env (por defecto el 8000):
 http://localhost:8000
 
-### ✅ Si estás en desarrollo, también podés usar:
 
-```bash
-npm run start:dev
-```
-**para que se reinicie automáticamente al guardar cambios.**

@@ -103,7 +103,7 @@ export class MailClientService {
           employeeName,
           fileName,
           folderName,
-          `${await this.configService.get('FrontEndBaseURL')}my-file/${folderId}/name=${fileName}`,
+          `${await this.configService.get('FrontEndBaseURL')}my-file/${folderId}?/name=${fileName}`,
         ),
         attachments: [
           {

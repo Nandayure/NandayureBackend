@@ -36,7 +36,7 @@ export class RequestVacationService {
 
     let totalDays = 0; // Contador de días hábiles
 
-    while (start <= end) {
+    while (end <= start) {
       const dayOfWeek = start.getDay(); // Obtener el día de la semana (0-6, donde 0 es domingo y 6 es sábado)
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
         // Contar solo días hábiles (lunes a viernes y no festivos)

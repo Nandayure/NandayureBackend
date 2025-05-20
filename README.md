@@ -107,8 +107,6 @@ JWT_SECRET=una_clave_secreta_segura_para_firmar_tokens
 
 # 🌐 URLs del frontend
 FrontEndBaseURL=http://localhost:3000/                  # Dirección raíz del frontend
-FrontEndLoginURL=http://localhost:3000/auth/login       # Ruta de pantalla de inicio de sesión
-ResetPasswordURL=http://localhost:3000/auth/reset-password # Ruta de restablecimiento de contraseña
 
 # 📧 Configuración SMTP para envío de correos
 EMAIL_HOST=host_smtp               # Ej: sandbox.smtp.mailtrap.io
@@ -123,12 +121,10 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...clave privada...\n-----END P
 ```
 > 🔁 **Notas importantes:**
 >
-> - Las **URLs del frontend** (`FrontEndBaseURL`, `FrontEndLoginURL`, `ResetPasswordURL`) deben coincidir con las rutas definidas en el frontend.  
+> - La **URL del frontend** (`FrontEndBaseURL`) deben coincidir con las ruta definida en el frontend.  
 >   En entorno de producción, recordá actualizar estas URLs al dominio real de la aplicación.
 >
-> - Para **desarrollo**, se recomienda usar [Mailtrap](https://mailtrap.io/) como servicio SMTP para evitar el envío de correos reales.
 >
-> - En **producción**, es recomendable usar un proveedor real como **Gmail** (usando App Passwords o OAuth2) o **Google Workspace** para asegurar la entrega de correos.
 >
 > - Asegurate de que la clave privada (`GOOGLE_PRIVATE_KEY`) mantenga los saltos de línea con `\n` escapados, como en el ejemplo, para evitar errores de autenticación.
 > - 
@@ -328,4 +324,19 @@ http://localhost:8000
 ```bash
 npm run start:dev
 ```
-**para que se reinicie automáticamente al guardar cambios.**
+## ♻️ Redeploy manual en Railway
+
+En caso de necesitar realizar un **redeploy manual** del backend en Railway (por ejemplo, después de actualizar variables de entorno o solucionar errores sin hacer un nuevo commit), seguí estos pasos:
+
+### 🔁 Opción 1: Redeploy desde el panel de Railway
+
+1. Iniciá sesión en [https://railway.app](https://railway.app).
+2. Ingresá a tu proyecto **NandayureBackend**.
+3. Hacé clic en la pestaña **"Deployments"** del servicio correspondiente.
+4. En la esquina superior derecha, hacé clic en **"⋮" (tres puntos)** y luego en **"Redeploy"**.
+5. Railway va a volver a construir e iniciar el proyecto sin necesidad de cambios en el código.
+📷 Ejemplo:  
+<img width="600" alt="redeploy" src="https://github.com/user-attachments/assets/4131b1a8-48df-4b6b-89f6-f8ced8118fff" />
+
+
+

@@ -328,7 +328,7 @@ npm run start:dev
 
 En caso de necesitar realizar un **redeploy manual** del backend en Railway (por ejemplo, después de actualizar variables de entorno o solucionar errores sin hacer un nuevo commit), seguí estos pasos:
 
-### 🔁 Opción 1: Redeploy desde el panel de Railway
+### 🔁  Redeploy desde el panel de Railway
 
 1. Iniciá sesión en [https://railway.app](https://railway.app).
 2. Ingresá a tu proyecto **NandayureBackend**.

@@ -159,7 +159,7 @@ export class AuthService {
       const token = await this.jwtService.signAsync(payload, {
         expiresIn: '10m',
       });
-      const FrontendRecoverURL = `${await this.configService.get('FrontEndBaseURL')}/auth/reset-password`;
+      const FrontendRecoverURL = `${await this.configService.get('FrontEndBaseURL')}auth/reset-password`;
       const url = `${FrontendRecoverURL}?token=${token}`;
 
       this.mailClient.sendRecoverPasswordMail({

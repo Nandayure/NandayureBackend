@@ -17,14 +17,14 @@ export class GetRequestsQueryDto {
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  @Max(3)
+  @Max(4)
   RequestStateId?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  @Max(3)
+  @Max(4)
   RequestTypeId?: number;
 
   @IsOptional()

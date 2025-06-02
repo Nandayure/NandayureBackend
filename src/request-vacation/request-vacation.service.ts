@@ -209,7 +209,7 @@ export class RequestVacationService {
       !RequesterDepartment ||
       !RRHHdepartment ||
       !AdministrationDepartment ||
-      // !RequesterDepartment.departmentHeadId ||
+      !RRHHdepartment.departmentHeadId ||
       !AdministrationDepartment.departmentHeadId
     ) {
       throw new NotFoundException(

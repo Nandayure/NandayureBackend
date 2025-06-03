@@ -280,10 +280,10 @@ export class RequestRepository
       .leftJoin('request.Employee', 'employee')
       .leftJoin('request.RequestType', 'requestType')
       .leftJoin('request.RequestStatus', 'requestStatus')
-      .leftJoin('request.RequestVacation', 'vacation')
-      .leftJoin('request.RequestSalaryCertificate', 'salary')
+      .innerJoin('request.RequestVacation', 'vacation')
+      .innerJoin('request.RequestSalaryCertificate', 'salary')
+      .innerJoin('request.RequestPaymentConfirmation', 'payment')
       .leftJoin('request.RequestApprovals', 'approval')
-      .leftJoin('request.RequestPaymentConfirmation', 'payment')
       .leftJoin('approval.approver', 'approver', undefined, {
         withDeleted: true,
       })

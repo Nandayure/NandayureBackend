@@ -22,7 +22,7 @@ export class RequestSalaryCertificate {
   @Column({ unique: true })
   RequestId: number;
 
-  @OneToOne(() => Request, (request) => request.RequestVacation)
+  @OneToOne(() => Request, (request) => request.RequestSalaryCertificate)
   @JoinColumn({ name: 'RequestId' })
   Request: Request;
 

@@ -52,15 +52,15 @@ export default class BaseSeeder implements Seeder {
     const departmentRepository = dataSource.getRepository('Department');
     await departmentRepository.update(
       { name: 'RECURSOS HUMANOS' },
-      { departmentHeadId: '504510677' },
+      { departmentHeadId: '503730488' },
     );
-    await departmentRepository.update(
-      { name: 'ADMINISTRACIÓN' },
-      { departmentHeadId: '504420108' },
-    );
-    await departmentRepository.update(
-      { name: 'TI' },
-      { departmentHeadId: '504488777' },
-    );
+    // await departmentRepository.update(
+    //   { name: 'ADMINISTRACIÓN' },
+    //   { departmentHeadId: '504420108' },
+    // );
+    // await departmentRepository.update(
+    //   { name: 'TI' },
+    //   { departmentHeadId: '504488777' },
+    // );
   }
 }
